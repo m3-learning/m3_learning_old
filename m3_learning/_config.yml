@@ -2,13 +2,14 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: "M3 Learning: Multifunctional Materials and Machine Learning"
-author: Joshua C. Agar, Assistant Professor Drexel University
-logo: jupyterbook/m3_logo.png
+author: "Joshua C. Agar, Assistant Professor Drexel University"
+logo: jupyterbook/figs/m3_logo.png
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: force
+  execute_notebooks: "cache"
+  timeout: 6000
 
 # Define the name of the latex output file for PDF builds
 latex:
@@ -17,7 +18,7 @@ latex:
 
 # Add a bibtex file so that we can create citations
 # bibtex_bibfiles:
-  # - jupyterbook/references.bib
+# - jupyterbook/references.bib
 
 # Information about where the book exists on the web
 repository:
@@ -30,7 +31,7 @@ repository:
 html:
   use_issues_button: true
   use_repository_button: true
-  favicon: jupyterbook/m3_logo.png
+  favicon: jupyterbook/figs/m3_logo.png
 
 # Adds colab button to book
 launch_buttons:
