@@ -1,0 +1,9 @@
+format: jb-book
+root: "jupyterbook\Introduction"
+options:
+  numbered: true
+parts:
+  - caption: "Tutorials"
+    chapters:
+      - file: m3_learning/Tutorials/Physics_constrained_AE/Physics_Constrained_AE
+        title: Physics Constrained Autoencoders
