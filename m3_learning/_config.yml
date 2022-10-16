@@ -22,8 +22,8 @@ latex:
 
 # Information about where the book exists on the web
 repository:
-  url: https://github.com/jagar2/m3_learning # Online location of your book
-  # path_to_book: docs # Optional path to your book, relative to the repository root
+  url: https://github.com/jagar2/m3_learning/ # Online location of your book
+  path_to_book: m3_learning # Optional path to your book, relative to the repository root
   branch: main # Which branch of the repository should be used when creating links (optional)
 
 # Add GitHub buttons to your book
@@ -37,3 +37,13 @@ html:
 launch_buttons:
   colab_url: "https://colab.research.google.com"
   jupyterhub_url: "https://jupyterhub.coe.drexel.edu"
+
+sphinx:
+  extra_extensions:
+    - "sphinx.ext.autodoc"
+    - "sphinx.ext.napoleon"
+    - "sphinx.ext.viewcode"
+    - "sphinx.ext.autosummary"
+  config:
+    add_module_names: False
+    autosummary_generate: True

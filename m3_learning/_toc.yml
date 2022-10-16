@@ -7,3 +7,7 @@ parts:
     chapters:
       - file: Tutorials/Physics_constrained_AE/Physics_Constrained_AE
         title: Physics Constrained Autoencoders
+  - caption: "Documentation"
+    chapters:
+      - file: docs/api
+        title: docs

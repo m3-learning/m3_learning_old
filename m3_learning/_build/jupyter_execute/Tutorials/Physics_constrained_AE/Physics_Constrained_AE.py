@@ -10,7 +10,7 @@
 
 # ![](figs/3-swissroll-unfolded.png)
 
-# # Autoencoder
+# ## Autoencoder
 # 
 # ![imag](figs/Autoencoder.png)
 # 
@@ -19,8 +19,7 @@
 # * **Decoder** - Neural network that translates the latent space to original dimensionality. 
 # 
 
-# 
-# ## Mathematical Objective
+# ### Mathematical Objective
 # * Minimize the reconstruction loss based on some metric. 
 #   * Mean squared error
 # 
@@ -30,14 +29,12 @@
 #   Good at capturing details within spectra
 # 
 
-# 
-# ## Optimizers
+# ### Optimizers
 # * Standard optimizers like ADAM tend to be sufficient
 # * Can use more complex optimizers 2nd order, adhessian to optimize small models. 
 # 
 
-# 
-# ## Practical Objective
+# ### Practical Objective
 # * Create an autoencoder that has performant reconstruction
 # * Create a low-dimensional and interpretable latent space
 #   * Reduce the dimensionality
