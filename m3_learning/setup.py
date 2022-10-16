@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
-# with open('src/DeepMatter/requirements.txt') as f:
-#     requirements = f.read().splitlines()
+with open('./requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 setup(
     name='m3_learning',
