@@ -1,11 +1,9 @@
 from setuptools import setup, find_packages
 import os
-with open('./requirements.txt') as f:
-    requirements = f.read().splitlines()
 
 setup(
     name='m3_learning',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages(where="src"),
     url='https://github.com/jagar2/m3_learning.git',
     # install_requires=requirements,
