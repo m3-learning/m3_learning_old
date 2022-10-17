@@ -5,8 +5,8 @@ options:
 parts:
   - caption: "Tutorials"
     chapters:
-      - file: Tutorials/Physics_constrained_AE/Physics_Constrained_AE
-        title: Physics Constrained Autoencoders
+      - file: Tutorials/Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders
+        title: Unsupervised Learning with Autoencoders
   - caption: "Documentation"
     chapters:
       - file: docs/api
