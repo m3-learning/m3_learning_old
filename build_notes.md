@@ -1,5 +1,5 @@
 # building the wheel
-python setup.py sdist
+python setup.py sdist bdist_wheel
 
 # install from local build
 pip install .
