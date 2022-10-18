@@ -7,6 +7,8 @@ parts:
     chapters:
       - file: Tutorials/Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders
         title: Unsupervised Learning with Autoencoders
+      - file: Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/Cycle_Consistent_Spatial_Transformer_Autoencoder
+        title: Cycle Consistent Spatial Transforming Autoencoder
   - caption: "Documentation"
     chapters:
       - file: docs/api

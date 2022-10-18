@@ -9,3 +9,4 @@ torchsummary
 py-cpuinfo
 jupyter-book
 m3_learning
+opencv-python
