@@ -5,9 +5,9 @@ import random
 
 def rand_tensor(min=0, max=1, size=(1)):
     """ Function that generates random tensor between a range of an arbitrary size
-    :param min:  sets the minimum value of parameter
+    :param min:  sets the minimum value of the parameter
     :type min: float
-    :param max:  sets the maximum value of parameter
+    :param max:  sets the maximum value of the parameter
     :type max: float
     :param size: sets the size of the random vector to generate
     :type size: tuple

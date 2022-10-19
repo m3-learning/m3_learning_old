@@ -1,0 +1,2025 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Physics Constrain Autoencoders &#8212; M3 Learning: Multifunctional Materials and Machine Learning</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <link rel="shortcut icon" href="../../_static/m3_logo.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../../_static/m3_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">M3 Learning: Multifunctional Materials and Machine Learning</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../jupyterbook/Introduction.html">
+                    M3-Learning: Multifunctional Materials and Machine learning
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Tutorials
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders.html">
+   Unsupervised Spectral Unmixing with Autoencoders
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Cycle_Consistent_Spatial_Transformer_Autoencoder/Cycle_Consistent_Spatial_Transformer_Autoencoder.html">
+   Cycle Consistent Spatial Transforming Autoencoder
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Documentation
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../docs/api.html">
+   docs
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../../docs/_autosummary/m3_learning.html">
+     m3_learning
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../docs/_autosummary/m3_learning.nn.html">
+       m3_learning.nn
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+      <label for="toctree-checkbox-3">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../docs/_autosummary/m3_learning.nn.time_series_nn.html">
+         m3_learning.nn.time_series_nn
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../docs/_autosummary/m3_learning.util.html">
+       m3_learning.util
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../docs/_autosummary/m3_learning.util.data_generators.html">
+         m3_learning.util.data_generators
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../docs/_autosummary/m3_learning.util.file_IO.html">
+         m3_learning.util.file_IO
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../../docs/_autosummary/m3_learning.viz.html">
+       m3_learning.viz
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../../docs/_autosummary/m3_learning.viz.layout.html">
+         m3_learning.viz.layout
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/m3-learning/m3_learning/main?urlpath=tree/m3_learning/Tutorials/Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://jupyterhub.coe.drexel.edu/hub/user-redirect/git-pull?repo=https%3A//github.com/m3-learning/m3_learning/&urlpath=tree/m3_learning/m3_learning/Tutorials/Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.ipynb&branch=main"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on JupyterHub"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../../_static/images/logo_jupyterhub.svg">
+  </span>
+<span class="headerbtn__text-container">JupyterHub</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://colab.research.google.com/github/m3-learning/m3_learning/blob/main/m3_learning/Tutorials/Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Colab"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="headerbtn__text-container">Colab</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/m3-learning/m3_learning/"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/m3-learning/m3_learning//issues/new?title=Issue%20on%20page%20%2FTutorials/Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../../_sources/Tutorials/Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Physics Constrain Autoencoders
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#imports-packages">
+   Imports Packages
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-some-data-based-on-the-image">
+     Generating some data based on the image
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#define-a-non-linear-function">
+       Define a non-linear function
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualize-and-example-generated-curve">
+     Visualize and example generated curve
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#recurrent-neural-network-autoencoders">
+     Recurrent Neural Network Autoencoders
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#builds-the-autoencoder">
+       Builds the autoencoder
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualize-the-reconstruction">
+     Visualize the reconstruction
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-data-as-validation">
+     Generating Data as validation
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#loads-and-image-of-my-dog-nala">
+       Loads and image of my dog Nala
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#displays-the-image">
+     Displays the image
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#there-is-minimal-resemblance-to-the-true-features">
+     There is minimal resemblance to the true features
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#let-s-try-a-bigger-model">
+   Let’s try a bigger model
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   Visualize the reconstruction
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#now-there-are-just-more-features-but-still-no-resemblance-between-the-parameters">
+     Now there are just more features but still no resemblance between the parameters.
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#physics-constrained-neural-network">
+   Physics constrained neural network
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#try-with-a-better-optimizer-adahessian">
+   Try with a better optimizer AdaHessian
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Physics Constrain Autoencoders</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Physics Constrain Autoencoders
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#imports-packages">
+   Imports Packages
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-some-data-based-on-the-image">
+     Generating some data based on the image
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#define-a-non-linear-function">
+       Define a non-linear function
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualize-and-example-generated-curve">
+     Visualize and example generated curve
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#recurrent-neural-network-autoencoders">
+     Recurrent Neural Network Autoencoders
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#builds-the-autoencoder">
+       Builds the autoencoder
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualize-the-reconstruction">
+     Visualize the reconstruction
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-data-as-validation">
+     Generating Data as validation
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h3 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#loads-and-image-of-my-dog-nala">
+       Loads and image of my dog Nala
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#displays-the-image">
+     Displays the image
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#there-is-minimal-resemblance-to-the-true-features">
+     There is minimal resemblance to the true features
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#let-s-try-a-bigger-model">
+   Let’s try a bigger model
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   Visualize the reconstruction
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#now-there-are-just-more-features-but-still-no-resemblance-between-the-parameters">
+     Now there are just more features but still no resemblance between the parameters.
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#physics-constrained-neural-network">
+   Physics constrained neural network
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#try-with-a-better-optimizer-adahessian">
+   Try with a better optimizer AdaHessian
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="physics-constrain-autoencoders">
+<h1>Physics Constrain Autoencoders<a class="headerlink" href="#physics-constrain-autoencoders" title="Permalink to this headline">#</a></h1>
+<p>By Joshua C. Agar, Mary Ye</p>
+<ul class="simple">
+<li><p>There are many times where you want to fit spectroscopic data to a model</p></li>
+</ul>
+<ul class="simple">
+<li><p>Classical fitting methods can be used but break down:</p>
+<ul>
+<li><p>When data is noisy</p></li>
+<li><p>There are multiple candidate models</p></li>
+<li><p>Data is high velocity</p></li>
+<li><p>Data is noisy</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="imports-packages">
+<h1>Imports Packages<a class="headerlink" href="#imports-packages" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torch.autograd</span> <span class="k">as</span> <span class="nn">autograd</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">torchsummary</span> <span class="kn">import</span> <span class="n">summary</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+
+<span class="kn">from</span> <span class="nn">m3_learning.nn.time_series_nn.nn_util</span> <span class="kn">import</span> <span class="n">Train</span><span class="p">,</span> <span class="n">transform_nn</span>
+<span class="kn">from</span> <span class="nn">m3_learning.viz.layout</span> <span class="kn">import</span> <span class="n">layout_fig</span><span class="p">,</span> <span class="n">embedding_maps</span><span class="p">,</span> <span class="n">latent_generator</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUDA_DEVICE_ORDER&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;PCI_BUS_ID&quot;</span> 
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUDA_VISIBLE_DEVICES&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;0&quot;</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;xtick.direction&#39;</span><span class="p">:</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;ytick.direction&#39;</span><span class="p">:</span><span class="s1">&#39;in&#39;</span><span class="p">})</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># # Imports Custom packages</span>
+<span class="c1"># import AE_tutorial.viz as viz</span>
+<span class="c1"># import AE_tutorial.util as util</span>
+<span class="c1"># import AE_tutorial.nn_util as nn_util</span>
+
+<span class="c1"># import DeepMatter as dm</span>
+<span class="c1"># from DeepMatter.spectral_fitters.gaussian import Gaussian</span>
+<span class="c1"># from DeepMatter.spectral_fitters.voigt import PseudoVoigt</span>
+<span class="c1"># from DeepMatter.spectral_fitters import nn as dm_nn</span>
+<span class="c1"># from DeepMatter.rand_util.rand_gen import rand_tensor</span>
+
+<span class="c1"># </span>
+<span class="c1"># import torch</span>
+<span class="c1"># import numpy as np</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
+
+
+<span class="c1"># import time</span>
+<span class="c1"># import math</span>
+<span class="c1"># from DeepMatter.util.torch_util import Dataset_Generator</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="generating-some-data-based-on-the-image">
+<h2>Generating some data based on the image<a class="headerlink" href="#generating-some-data-based-on-the-image" title="Permalink to this headline">#</a></h2>
+<section id="define-a-non-linear-function">
+<h3>Define a non-linear function<a class="headerlink" href="#define-a-non-linear-function" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Sin_func</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that computes the Sin function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x_vector</span><span class="p">,</span>
+        <span class="n">amp</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">phase</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">frequency</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x_vector:</span>
+<span class="sd">            sd (array, float): range for the standard deviation</span>
+<span class="sd">            mean (array, float): range for the mean</span>
+<span class="sd">            amp (array, float): range for the amplitude</span>
+<span class="sd">            size (tuple): Size of the array first index is number of channels, second is number of functions</span>
+<span class="sd">            verbose (bool): shows outputs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_vector</span> <span class="o">=</span> <span class="n">x_vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="n">amp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">amp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">amp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_sd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">amp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                                 <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">amp</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">12</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="n">phase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase_mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">phase</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase_sd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                                   <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">12</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency_mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">frequency</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> \
+            <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency_sd</span> <span class="o">=</span> \
+            <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                       <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">12</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            self (object): Returns the instance itself.</span>
+<span class="sd">            device (string, optional) : Sets the device to do the computation. Default `cpu`, common option `cuda`</span>
+
+<span class="sd">        Returns: out (Tensor): spectra.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">params</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_vector</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+
+            <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">_amp</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">_phase</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">_frequency</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">_amp</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">_phase</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">_frequency</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+
+            <span class="n">x_vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                 <span class="o">*</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_vector</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">x_vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">x_vector</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># .to(device)</span>
+
+            <span class="n">_out</span> <span class="o">=</span> <span class="n">_amp</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                                    <span class="o">*</span> <span class="n">_frequency</span> <span class="o">*</span> <span class="n">x_vector</span> <span class="o">+</span> <span class="n">_phase</span><span class="p">)</span>
+
+            <span class="n">out</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">_out</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="n">out</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sampler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (str): device where computation happens</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            out (Tensor) : Generated spectra</span>
+<span class="sd">            params (Tensor) : parameters used for generation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">rand_tensor</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">frequency</span> <span class="o">=</span> <span class="n">rand_tensor</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">amp</span> <span class="o">=</span> <span class="n">rand_tensor</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">amp</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">frequency</span><span class="p">))</span>
+
+        <span class="n">_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">_params</span><span class="p">)</span>
+        <span class="n">_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">_params</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">_params</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">_params</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">),</span> <span class="n">_params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">constructor</span> <span class="o">=</span> <span class="n">Sin_func</span><span class="p">(</span><span class="n">amp</span> <span class="o">=</span> <span class="p">[</span><span class="mf">.2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>  <span class="c1"># Sets the amplitude</span>
+                      <span class="n">phase</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">],</span> <span class="c1"># Sets the phase</span>
+                      <span class="n">frequency</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">.5</span><span class="p">],</span> <span class="c1"># Sets the frequency</span>
+                      <span class="n">x_vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="c1"># Sets the x_vector</span>
+                      <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span> <span class="c1"># number of samples to generate</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># initializes the constructor</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">constructor</span><span class="o">.</span><span class="n">sampler</span><span class="p">()</span>
+
+<span class="c1"># grabs the parameters and the spectra</span>
+<span class="n">spectra</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">output</span>
+
+<span class="c1"># This grabs the sum of all spectral and the individual spectra if they exist</span>
+<span class="n">spectra_full</span><span class="p">,</span> <span class="n">spectras</span> <span class="o">=</span> <span class="n">spectra</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="visualize-and-example-generated-curve">
+<h2>Visualize and example generated curve<a class="headerlink" href="#visualize-and-example-generated-curve" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectras</span><span class="p">[</span><span class="n">rand</span><span class="p">,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f7832c1a050&gt;]
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_10_1.png" src="../../_images/Physics_Constrained_Autoencoder_10_1.png" />
+</div>
+</div>
+</section>
+<section id="recurrent-neural-network-autoencoders">
+<h2>Recurrent Neural Network Autoencoders<a class="headerlink" href="#recurrent-neural-network-autoencoders" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>It is important to consider the temporal domain</p></li>
+<li><p>This can be improved by using a recurrent neural network that processes each time step sequentially.</p></li>
+<li><p>To add an understanding about the short and long term information in the data you can add memory and forget logic as a learnable parameter.</p></li>
+</ul>
+<p><img alt="" src="https://github.com/jagar2/AI_For_Atoms_Autoencoder_Tutorial/blob/main/img/Autoencoder_Med.png?raw=true" /></p>
+<p><img alt="" src="https://github.com/jagar2/AI_For_Atoms_Autoencoder_Tutorial/blob/main/img/LSTM%20Node.png?raw=true" /></p>
+<section id="builds-the-autoencoder">
+<h3>Builds the autoencoder<a class="headerlink" href="#builds-the-autoencoder" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latent_dim</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim</span> <span class="o">=</span> <span class="n">latent_dim</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Encoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bidirectional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lstm2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">bidirectional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">))</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">))</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">class</span> <span class="nc">Decoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latent_dim</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim</span> <span class="o">=</span> <span class="n">latent_dim</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Decoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">bidirectional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lstm2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">bidirectional</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tdd</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">repeat</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">))</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">))</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lstm2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tdd</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Autoencoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">,</span> <span class="n">decoder</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">encoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">decoder</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># encode</span>
+
+        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># decode</span>
+
+        <span class="n">predicted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">predicted</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Since we know there are intrinsically 3 latent dimensions let’s try and train the model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
+<span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">latent_dim</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">decoder</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="n">latent_dim</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Autoencoder</span><span class="p">(</span><span class="n">encoder</span><span class="p">,</span> <span class="n">decoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># optimizer</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">3e-5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># views the model</span>
+
+<span class="n">model</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Autoencoder(
+  (encoder): Encoder(
+    (lstm): LSTM(1, 12, batch_first=True, bidirectional=True)
+    (lstm2): LSTM(24, 12, batch_first=True, bidirectional=True)
+    (embedding): Linear(in_features=24, out_features=3, bias=True)
+    (relu): ReLU()
+  )
+  (decoder): Decoder(
+    (lstm): LSTM(3, 12, batch_first=True, bidirectional=True)
+    (lstm2): LSTM(24, 12, batch_first=True, bidirectional=True)
+    (tdd): Conv1d(24, 1, kernel_size=(1,), stride=(1,))
+  )
+)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># constructs a dataloader for training</span>
+
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">spectra_full</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># trains the model</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">nn_util</span><span class="o">.</span><span class="n">Train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">encoder</span><span class="p">,</span>
+    <span class="n">decoder</span><span class="p">,</span>
+    <span class="n">dataloader</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="p">,</span>
+    <span class="mi">500</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># # functions used to grab embbedings and predictions</span>
+
+
+<span class="c1"># def transform_nn(data, encoder, decoder):</span>
+
+<span class="c1">#     encoded_spectra = encoder(torch.tensor(np.atleast_3d(data),</span>
+<span class="c1">#                               dtype=torch.float32).to(device))</span>
+
+<span class="c1">#     decoded_spectra = decoder(encoded_spectra)</span>
+
+<span class="c1">#     encoded_spectra = encoded_spectra.to(&#39;cpu&#39;)</span>
+<span class="c1">#     encoded_spectra = encoded_spectra.detach().numpy()</span>
+<span class="c1">#     decoded_spectra = decoded_spectra.to(&#39;cpu&#39;)</span>
+<span class="c1">#     decoded_spectra = decoded_spectra.detach().numpy()</span>
+<span class="c1">#     return (encoded_spectra, decoded_spectra)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="visualize-the-reconstruction">
+<h2>Visualize the reconstruction<a class="headerlink" href="#visualize-the-reconstruction" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># computes an example reconstruction for a mini batch</span>
+
+<span class="p">(</span><span class="n">encoded_</span><span class="p">,</span> <span class="n">decoded_</span><span class="p">)</span> <span class="o">=</span> <span class="n">transform_nn</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)),</span> <span class="n">encoder</span><span class="p">,</span>
+                                    <span class="n">decoder</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plots a random example of the original and predicted spectra</span>
+
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectras</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decoded_</span><span class="p">[</span><span class="n">rand</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Generated&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f7828a0e190&gt;
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_24_1.png" src="../../_images/Physics_Constrained_Autoencoder_24_1.png" />
+</div>
+</div>
+</section>
+<section id="generating-data-as-validation">
+<h2>Generating Data as validation<a class="headerlink" href="#generating-data-as-validation" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>We want to generate a hyperspectral image</p></li>
+<li><p>This can be done by taking the RGB values of an image and using them as parameters for a function</p></li>
+</ul>
+<section id="loads-and-image-of-my-dog-nala">
+<h3>Loads and image of my dog Nala<a class="headerlink" href="#loads-and-image-of-my-dog-nala" title="Permalink to this headline">#</a></h3>
+<ul class="simple">
+<li><p>Painting by <em>Irene Dogmatic</em></p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Loads dog image</span>
+
+<span class="n">image</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;./nala.jpg&#39;</span><span class="p">)</span>
+
+<span class="c1"># Crops dog image</span>
+
+<span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="mi">200</span><span class="p">:</span><span class="mi">1900</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span><span class="mi">1500</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span> <span class="o">/</span> <span class="mi">255</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="displays-the-image">
+<h2>Displays the image<a class="headerlink" href="#displays-the-image" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x7f7828969e50&gt;
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_29_1.png" src="../../_images/Physics_Constrained_Autoencoder_29_1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Converts the image into parameters withing the generated range</span>
+
+<span class="n">nala_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">nala_amp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">nala_params</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">.8</span> <span class="o">+</span> <span class="mf">.2</span><span class="p">)</span>
+<span class="n">nala_phase</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">nala_params</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="n">nala_frequency</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">nala_params</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">.5</span> <span class="o">+</span> <span class="mf">.1</span><span class="p">)</span>
+
+<span class="n">_nala_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">nala_amp</span><span class="p">,</span> <span class="n">nala_phase</span><span class="p">,</span> <span class="n">nala_frequency</span><span class="p">))</span>
+
+<span class="n">_nala_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">_nala_params</span><span class="p">)</span>
+<span class="n">_nala_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">_nala_params</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># builds the spectra from the parameters</span>
+
+<span class="p">(</span><span class="n">nala_spectra</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">constructor</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">_nala_params</span><span class="p">)</span>
+
+<span class="c1"># generated the encoded representation and decoded spectra</span>
+
+<span class="p">(</span><span class="n">nala_encoded_</span><span class="p">,</span> <span class="n">nala_decoded_</span><span class="p">)</span> <span class="o">=</span> <span class="n">transform_nn</span><span class="p">(</span><span class="n">nala_spectra</span><span class="p">,</span> <span class="n">encoder</span><span class="p">,</span>
+        <span class="n">decoder</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plots a random example of the origina and predicted spectra</span>
+
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nala_spectra</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_spectra</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_decoded_</span><span class="p">[</span><span class="n">rand</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Generated&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f78280eb310&gt;
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_32_1.png" src="../../_images/Physics_Constrained_Autoencoder_32_1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the learned embeddings</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">nala_encoded_</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/Physics_Constrained_Autoencoder_33_0.png" src="../../_images/Physics_Constrained_Autoencoder_33_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualize the actual RGB channels.</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">_nala_params</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/Physics_Constrained_Autoencoder_34_0.png" src="../../_images/Physics_Constrained_Autoencoder_34_0.png" />
+</div>
+</div>
+</section>
+<section id="there-is-minimal-resemblance-to-the-true-features">
+<h2>There is minimal resemblance to the true features<a class="headerlink" href="#there-is-minimal-resemblance-to-the-true-features" title="Permalink to this headline">#</a></h2>
+<ul class="simple">
+<li><p>This is unsurprising because there are no rules that define what the embedding should look like.</p></li>
+</ul>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="let-s-try-a-bigger-model">
+<h1>Let’s try a bigger model<a class="headerlink" href="#let-s-try-a-bigger-model" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span>
+<span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">latent_dim</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">decoder</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="n">latent_dim</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Autoencoder</span><span class="p">(</span><span class="n">encoder</span><span class="p">,</span> <span class="n">decoder</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># optimizer</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">3e-5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># views the model</span>
+
+<span class="n">model</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Autoencoder(
+  (encoder): Encoder(
+    (lstm): LSTM(1, 12, batch_first=True, bidirectional=True)
+    (lstm2): LSTM(24, 12, batch_first=True, bidirectional=True)
+    (embedding): Linear(in_features=24, out_features=12, bias=True)
+    (relu): ReLU()
+  )
+  (decoder): Decoder(
+    (lstm): LSTM(12, 12, batch_first=True, bidirectional=True)
+    (lstm2): LSTM(24, 12, batch_first=True, bidirectional=True)
+    (tdd): Conv1d(24, 1, kernel_size=(1,), stride=(1,))
+  )
+)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># trains the model</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">nn_util</span><span class="o">.</span><span class="n">Train</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">encoder</span><span class="p">,</span>
+    <span class="n">decoder</span><span class="p">,</span>
+    <span class="n">dataloader</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="p">,</span>
+    <span class="mi">500</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>Visualize the reconstruction<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># computes an example reconstruction for a minibatch</span>
+
+<span class="p">(</span><span class="n">encoded_</span><span class="p">,</span> <span class="n">decoded_</span><span class="p">)</span> <span class="o">=</span> <span class="n">transform_nn</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)),</span> <span class="n">encoder</span><span class="p">,</span>
+                                    <span class="n">decoder</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plots a random example of the origina and predicted spectra</span>
+
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectras</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decoded_</span><span class="p">[</span><span class="n">rand</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Generated&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f7820405ed0&gt;
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_42_1.png" src="../../_images/Physics_Constrained_Autoencoder_42_1.png" />
+</div>
+</div>
+<ul class="simple">
+<li><p>Reconstruction is slightly better but just more overfit</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># builds the spectra from the parameters</span>
+
+<span class="p">(</span><span class="n">nala_spectra</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">constructor</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">_nala_params</span><span class="p">)</span>
+
+<span class="c1"># generated the encoded representation and decoded spectra</span>
+
+<span class="p">(</span><span class="n">nala_encoded_</span><span class="p">,</span> <span class="n">nala_decoded_</span><span class="p">)</span> <span class="o">=</span> <span class="n">transform_nn</span><span class="p">(</span><span class="n">nala_spectra</span><span class="p">,</span> <span class="n">encoder</span><span class="p">,</span>
+        <span class="n">decoder</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plots a random example of the origina and predicted spectra</span>
+
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nala_spectra</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_spectra</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_decoded_</span><span class="p">[</span><span class="n">rand</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Generated&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f7820489150&gt;
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_45_1.png" src="../../_images/Physics_Constrained_Autoencoder_45_1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the learned embeddings</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">nala_encoded_</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/Physics_Constrained_Autoencoder_46_0.png" src="../../_images/Physics_Constrained_Autoencoder_46_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualize the actual RGB channels.</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">_nala_params</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/Physics_Constrained_Autoencoder_47_0.png" src="../../_images/Physics_Constrained_Autoencoder_47_0.png" />
+</div>
+</div>
+<section id="now-there-are-just-more-features-but-still-no-resemblance-between-the-parameters">
+<h2>Now there are just more features but still no resemblance between the parameters.<a class="headerlink" href="#now-there-are-just-more-features-but-still-no-resemblance-between-the-parameters" title="Permalink to this headline">#</a></h2>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="physics-constrained-neural-network">
+<h1>Physics constrained neural network<a class="headerlink" href="#physics-constrained-neural-network" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+
+<span class="k">class</span> <span class="nc">DensePhysLarger</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x_vector</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">dense_params</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">,</span>
+        <span class="n">num_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x_vector: The vector of values for x</span>
+<span class="sd">            model: the empirical function to fit</span>
+<span class="sd">            dense_params: number of output parameters to the model</span>
+<span class="sd">            verbose: sets if the model is verbose</span>
+<span class="sd">            device: device where the model will run</span>
+<span class="sd">            num_channels: number of channels in the input</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dense_params</span> <span class="o">=</span> <span class="n">dense_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_vector</span> <span class="o">=</span> <span class="n">x_vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_channels</span> <span class="o">=</span> <span class="n">num_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_params</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_params&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>  <span class="c1"># (self.x_vector, size=(num_channels, dense_params // self.model_params))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigmoid</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">4</span>
+
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+        <span class="c1"># Input block of 1d convolution</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">8</span>
+                      <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">8</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">6</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">6</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_vector</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># fully connected block</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_xfc</span> <span class="o">=</span> \
+            <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                          <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">20</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+                          <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">())</span>
+
+           <span class="c1"># out of size 20</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_xfc_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_xfc</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># 2nd block of 1d-conv layers</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                      <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool1d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x2_shape</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x2</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_xfc_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                           <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])))</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Flatten layer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">flatten_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()</span>
+
+        <span class="c1"># Final embedding block - Output 4 values - linear</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_embedding</span> <span class="o">=</span> \
+            <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_x2_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                          <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x2_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                          <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_xfc_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">16</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span>
+                          <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">SELU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">dense_params</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">xfc</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># batch size, features</span>
+        <span class="n">xfc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_xfc</span><span class="p">(</span><span class="n">xfc</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                          <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x1_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_x2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">cnn_flat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">cnn_flat</span><span class="p">,</span> <span class="n">xfc</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># merge dense and 1d conv.</span>
+
+        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_embedding</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>  <span class="c1"># output is 3 parameters</span>
+
+        <span class="n">embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span>
+                                  <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">embedding</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">embedding</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">amp_sd</span> \
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">amp_mean</span>
+        <span class="n">embedding</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">embedding</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">phase_sd</span> \
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">phase_mean</span>
+        <span class="n">embedding</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">embedding</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> \
+            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">frequency_sd</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">frequency_mean</span>
+
+        <span class="n">embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="p">(</span><span class="n">embedding</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">embedding</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed</span> <span class="o">=</span> <span class="n">embedding</span>
+
+        <span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">embedding</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x_vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">DensePhysLarger</span><span class="p">(</span><span class="n">x_vector</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">dense_params</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                        <span class="n">model_params</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># builds the dataloader</span>
+
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">spectra_full</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+                         <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">loss_func</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">3e-5</span><span class="p">)</span>
+
+
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">200</span>
+    
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+  <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+  <span class="n">train_loss</span> <span class="o">=</span> <span class="mf">0.</span>
+  <span class="n">total_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    
+  <span class="k">for</span> <span class="n">train_batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">pred</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">train_batch</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_func</span><span class="p">(</span><span class="n">train_batch</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">pred</span><span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">train_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="n">pred</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_num</span> <span class="o">+=</span> <span class="n">pred</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+  <span class="n">train_loss</span> <span class="o">/=</span> <span class="n">total_num</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;epoch : </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">, recon loss = </span><span class="si">{:.8f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">train_loss</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spectra_generated</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">train_batch</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">272</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectra_generated</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train_batch</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">rand</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([0.6210, 3.4364, 0.4780], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward&gt;)
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_54_1.png" src="../../_images/Physics_Constrained_Autoencoder_54_1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nala_spectra_generated</span><span class="p">,</span> <span class="n">nala_params</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">nala_spectra</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nala_spectra_generated</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_spectra_generated</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_spectra</span><span class="p">[</span><span class="n">rand</span><span class="p">,:,</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x7f77686fc090&gt;]
+</pre></div>
+</div>
+<img alt="../../_images/Physics_Constrained_Autoencoder_55_1.png" src="../../_images/Physics_Constrained_Autoencoder_55_1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nala_params</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nala_params</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the learned embeddings</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">nala_params</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/Physics_Constrained_Autoencoder_57_0.png" src="../../_images/Physics_Constrained_Autoencoder_57_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualize the actual RGB channels.</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">_nala_params</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/Physics_Constrained_Autoencoder_58_0.png" src="../../_images/Physics_Constrained_Autoencoder_58_0.png" />
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="try-with-a-better-optimizer-adahessian">
+<h1>Try with a better optimizer AdaHessian<a class="headerlink" href="#try-with-a-better-optimizer-adahessian" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Sun Feb 26 16:34:00 2021</span>
+<span class="sd">@author: Amir Gholami</span>
+<span class="sd">@coauthor: David Samuel</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="k">class</span> <span class="nc">AdaHessian</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements the AdaHessian algorithm from &quot;ADAHESSIAN: An Adaptive Second OrderOptimizer for Machine Learning&quot;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        params (iterable) -- iterable of parameters to optimize or dicts defining parameter groups</span>
+<span class="sd">        lr (float, optional) -- learning rate (default: 0.1)</span>
+<span class="sd">        betas ((float, float), optional) -- coefficients used for computing running averages of gradient and the squared hessian trace (default: (0.9, 0.999))</span>
+<span class="sd">        eps (float, optional) -- term added to the denominator to improve numerical stability (default: 1e-8)</span>
+<span class="sd">        weight_decay (float, optional) -- weight decay (L2 penalty) (default: 0.0)</span>
+<span class="sd">        hessian_power (float, optional) -- exponent of the hessian trace (default: 1.0)</span>
+<span class="sd">        update_each (int, optional) -- compute the hessian trace approximation only after *this* number of steps (to save time) (default: 1)</span>
+<span class="sd">        n_samples (int, optional) -- how many times to sample `z` for the approximation of the hessian trace (default: 1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">),</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> 
+                 <span class="n">hessian_power</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">update_each</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">average_conv_kernel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">lr</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid learning rate: </span><span class="si">{</span><span class="n">lr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid epsilon value: </span><span class="si">{</span><span class="n">eps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">betas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid beta parameter at index 0: </span><span class="si">{</span><span class="n">betas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid beta parameter at index 1: </span><span class="si">{</span><span class="n">betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">hessian_power</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Hessian power value: </span><span class="si">{</span><span class="n">hessian_power</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">=</span> <span class="n">n_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_each</span> <span class="o">=</span> <span class="n">update_each</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">average_conv_kernel</span> <span class="o">=</span> <span class="n">average_conv_kernel</span>
+
+        <span class="c1"># use a separate generator that deterministically generates the same `z`s across all GPUs in case of distributed training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">2147483647</span><span class="p">)</span>
+
+        <span class="n">defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="n">betas</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">eps</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="n">weight_decay</span><span class="p">,</span> <span class="n">hessian_power</span><span class="o">=</span><span class="n">hessian_power</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AdaHessian</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">():</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">hess</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;hessian step&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets all parameters in all param_groups with gradients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">zero_hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Zeros out the accumalated hessian traces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">hess</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;hessian step&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_each</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">hess</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+
+    <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">set_hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Hutchinson approximation of the hessian trace and accumulates it for each trainable parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;hessian step&quot;</span><span class="p">]</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_each</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># compute the trace only each `update_each` step</span>
+                <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;hessian step&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>  <span class="c1"># hackish way of casting the generator to the right device</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">2147483647</span><span class="p">)</span>
+
+        <span class="n">grads</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">grad</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span><span class="p">):</span>
+            <span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>  <span class="c1"># Rademacher distribution {-1.0, 1.0}</span>
+            <span class="n">h_zs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">grads</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">grad_outputs</span><span class="o">=</span><span class="n">zs</span><span class="p">,</span> <span class="n">only_inputs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">h_z</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">h_zs</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">hess</span> <span class="o">+=</span> <span class="n">h_z</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples</span>  <span class="c1"># approximate the expected values of z*(H@z)</span>
+
+    <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs a single optimization step.</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            closure (callable, optional) -- a closure that reevaluates the model and returns the loss (default: None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">closure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">closure</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero_hessian</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_hessian</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_groups</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">hess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_conv_kernel</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">hess</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">hess</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">hess</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+                <span class="c1"># Perform correct stepweight decay as in AdamW</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;weight_decay&#39;</span><span class="p">])</span>
+
+                <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+
+                <span class="c1"># State initialization</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;exp_avg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Exponential moving average of gradient values</span>
+                    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;exp_hessian_diag_sq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Exponential moving average of Hessian diagonal square values</span>
+
+                <span class="n">exp_avg</span><span class="p">,</span> <span class="n">exp_hessian_diag_sq</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;exp_avg&#39;</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;exp_hessian_diag_sq&#39;</span><span class="p">]</span>
+                <span class="n">beta1</span><span class="p">,</span> <span class="n">beta2</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;betas&#39;</span><span class="p">]</span>
+                <span class="n">state</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Decay the first and second moment running average coefficient</span>
+                <span class="n">exp_avg</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">beta1</span><span class="p">)</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">grad</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta1</span><span class="p">)</span>
+                <span class="n">exp_hessian_diag_sq</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">beta2</span><span class="p">)</span><span class="o">.</span><span class="n">addcmul_</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">hess</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">hess</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta2</span><span class="p">)</span>
+
+                <span class="n">bias_correction1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">beta1</span> <span class="o">**</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span>
+                <span class="n">bias_correction2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">beta2</span> <span class="o">**</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span>
+
+                <span class="n">k</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;hessian_power&#39;</span><span class="p">]</span>
+                <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">exp_hessian_diag_sq</span> <span class="o">/</span> <span class="n">bias_correction2</span><span class="p">)</span><span class="o">.</span><span class="n">pow_</span><span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;eps&#39;</span><span class="p">])</span>
+
+                <span class="c1"># make update</span>
+                <span class="n">step_size</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">bias_correction1</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">addcdiv_</span><span class="p">(</span><span class="n">exp_avg</span><span class="p">,</span> <span class="n">denom</span><span class="p">,</span> <span class="n">value</span><span class="o">=-</span><span class="n">step_size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">loss</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x_vector</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">DensePhysLarger</span><span class="p">(</span><span class="n">x_vector</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">dense_params</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                        <span class="n">model_params</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># builds the dataloader</span>
+
+<span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">spectra_full</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+                         <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">loss_func</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+
+<span class="c1"># Use AdaHessian</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">AdaHessian</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">200</span>
+    
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+  <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+  <span class="n">train_loss</span> <span class="o">=</span> <span class="mf">0.</span>
+  <span class="n">total_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    
+  <span class="k">for</span> <span class="n">train_batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+    <span class="n">pred</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">train_batch</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_func</span><span class="p">(</span><span class="n">train_batch</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">pred</span><span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">train_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="n">pred</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">total_num</span> <span class="o">+=</span> <span class="n">pred</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+  <span class="n">train_loss</span> <span class="o">/=</span> <span class="n">total_num</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;epoch : </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">, recon loss = </span><span class="si">{:.8f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">train_loss</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>epoch : 0/200, recon loss = 0.16502222
+--- 6.810148239135742 seconds ---
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spectra_generated</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">train_batch</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">272</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spectra_generated</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train_batch</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">rand</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nala_spectra_generated</span><span class="p">,</span> <span class="n">nala_params</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">nala_spectra</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">())</span>
+<span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nala_spectra_generated</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_spectra_generated</span><span class="p">[</span><span class="n">rand</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nala_spectra</span><span class="p">[</span><span class="n">rand</span><span class="p">,:,</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nala_params</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nala_params</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the learned embeddings</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">nala_params</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualize the actual RGB channels.</span>
+
+<span class="n">viz</span><span class="o">.</span><span class="n">embedding_maps</span><span class="p">(</span><span class="n">_nala_params</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./Tutorials\Physics_Informed_Autoencoders"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Joshua C. Agar, Assistant Professor Drexel University<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
