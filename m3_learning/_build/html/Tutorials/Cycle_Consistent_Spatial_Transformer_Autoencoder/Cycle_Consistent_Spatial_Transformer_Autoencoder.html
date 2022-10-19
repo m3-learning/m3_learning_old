@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Simple Tutorial Walking Through Cycle-Consistent Spatial Transforming Autoencoders &#8212; M3 Learning: Multifunctional Materials and Machine Learning</title>
+    <title>Tutorial: Cycle-Consistent Spatial Transforming Autoencoders &#8212; M3 Learning: Multifunctional Materials and Machine Learning</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -54,7 +54,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="API documentation" href="../../docs/api.html" />
-    <link rel="prev" title="Unsupervised Spectral Unmixing with Autoencoders" href="../Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders.html" />
+    <link rel="prev" title="Physics Constrained Autoencoders" href="../Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -123,6 +123,11 @@ const thebe_selector_output = ".output, .cell_output"
  <li class="toctree-l1">
   <a class="reference internal" href="../Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders.html">
    Unsupervised Spectral Unmixing with Autoencoders
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.html">
+   Physics Constrained Autoencoders
   </a>
  </li>
  <li class="toctree-l1 current active">
@@ -645,7 +650,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Simple Tutorial Walking Through Cycle-Consistent Spatial Transforming Autoencoders</h1>
+                <h1>Tutorial: Cycle-Consistent Spatial Transforming Autoencoders</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -842,168 +847,14 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="simple-tutorial-walking-through-cycle-consistent-spatial-transforming-autoencoders">
-<h1>Simple Tutorial Walking Through Cycle-Consistent Spatial Transforming Autoencoders<a class="headerlink" href="#simple-tutorial-walking-through-cycle-consistent-spatial-transforming-autoencoders" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-cycle-consistent-spatial-transforming-autoencoders">
+<h1>Tutorial: Cycle-Consistent Spatial Transforming Autoencoders<a class="headerlink" href="#tutorial-cycle-consistent-spatial-transforming-autoencoders" title="Permalink to this headline">#</a></h1>
 <p>By Shuyu Qin, Joshua C. Agar</p>
 <p>Department of Mechanical Engineering and Mechanics
 Drexel University</p>
 <div class="cell tag_hide-output docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip install m3_learning
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: m3_learning in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (0.0.4)
-Requirement already satisfied: tqdm==4.64.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (4.64.1)
-Requirement already satisfied: py-cpuinfo in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (8.0.0)
-Requirement already satisfied: scikit-image in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (0.19.3)
-Requirement already satisfied: torch in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (1.12.1)
-Requirement already satisfied: matplotlib==3.6.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (3.6.1)
-Requirement already satisfied: scikit-learn in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (1.1.2)
-Requirement already satisfied: setuptools==65.5.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (65.5.0)
-Requirement already satisfied: numpy==1.23.4 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (1.23.4)
-Requirement already satisfied: torchsummary in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (1.5.1)
-Requirement already satisfied: jupyter-book in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from m3_learning) (0.13.1)
-Requirement already satisfied: pillow&gt;=6.2.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (9.2.0)
-Requirement already satisfied: cycler&gt;=0.10 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (0.11.0)
-Requirement already satisfied: python-dateutil&gt;=2.7 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (2.8.2)
-Requirement already satisfied: kiwisolver&gt;=1.0.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (1.4.4)
-Requirement already satisfied: packaging&gt;=20.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (21.3)
-Requirement already satisfied: pyparsing&gt;=2.2.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (3.0.9)
-Requirement already satisfied: contourpy&gt;=1.0.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (1.0.5)
-Requirement already satisfied: fonttools&gt;=4.22.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from matplotlib==3.6.1-&gt;m3_learning) (4.37.4)
-Requirement already satisfied: click&lt;9,&gt;=7.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (8.1.3)
-Requirement already satisfied: sphinx_book_theme~=0.3.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.3.3)
-Requirement already satisfied: sphinxcontrib-bibtex&lt;=2.5.0,&gt;=2.2.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (2.5.0)
-Requirement already satisfied: docutils&lt;0.18,&gt;=0.15 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.17.1)
-Requirement already satisfied: sphinx-design~=0.1.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.1.0)
-Requirement already satisfied: sphinx_togglebutton in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.3.2)
-Requirement already satisfied: sphinx-multitoc-numbering~=0.1.3 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.1.3)
-Requirement already satisfied: myst-nb~=0.13.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.13.2)
-Requirement already satisfied: sphinx&lt;5,&gt;=4 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (4.5.0)
-Requirement already satisfied: sphinx-comments in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.0.3)
-Requirement already satisfied: pyyaml in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (6.0)
-Requirement already satisfied: sphinx-copybutton in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.5.0)
-Requirement already satisfied: sphinx-jupyterbook-latex~=0.4.6 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.4.7)
-Requirement already satisfied: sphinx-thebe~=0.1.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.1.2)
-Requirement already satisfied: sphinx-external-toc~=0.2.3 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (0.2.4)
-Requirement already satisfied: jsonschema&lt;4 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (3.2.0)
-Requirement already satisfied: linkify-it-py~=1.0.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (1.0.3)
-Requirement already satisfied: Jinja2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-book-&gt;m3_learning) (3.1.2)
-Requirement already satisfied: networkx&gt;=2.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from scikit-image-&gt;m3_learning) (2.8.7)
-Requirement already satisfied: PyWavelets&gt;=1.1.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from scikit-image-&gt;m3_learning) (1.4.1)
-Requirement already satisfied: tifffile&gt;=2019.7.26 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from scikit-image-&gt;m3_learning) (2022.10.10)
-Requirement already satisfied: imageio&gt;=2.4.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from scikit-image-&gt;m3_learning) (2.22.2)
-Requirement already satisfied: scipy&gt;=1.4.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from scikit-image-&gt;m3_learning) (1.9.2)
-Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from scikit-learn-&gt;m3_learning) (3.1.0)
-Requirement already satisfied: joblib&gt;=1.0.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from scikit-learn-&gt;m3_learning) (1.2.0)
-Requirement already satisfied: typing_extensions in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from torch-&gt;m3_learning) (4.4.0)
-Requirement already satisfied: attrs&gt;=17.4.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jsonschema&lt;4-&gt;jupyter-book-&gt;m3_learning) (21.4.0)
-Requirement already satisfied: six&gt;=1.11.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jsonschema&lt;4-&gt;jupyter-book-&gt;m3_learning) (1.16.0)
-Requirement already satisfied: pyrsistent&gt;=0.14.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jsonschema&lt;4-&gt;jupyter-book-&gt;m3_learning) (0.18.1)
-Requirement already satisfied: uc-micro-py in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from linkify-it-py~=1.0.1-&gt;jupyter-book-&gt;m3_learning) (1.0.1)
-Requirement already satisfied: importlib-metadata in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (5.0.0)
-Requirement already satisfied: myst-parser~=0.15.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.15.2)
-Requirement already satisfied: jupyter-sphinx~=0.3.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.3.2)
-Requirement already satisfied: jupyter-cache~=0.4.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.4.3)
-Requirement already satisfied: nbformat~=5.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (5.7.0)
-Requirement already satisfied: nbconvert&lt;7,&gt;=5.6 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (6.5.4)
-Requirement already satisfied: ipython in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (8.5.0)
-Requirement already satisfied: ipywidgets&lt;8,&gt;=7.0.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (7.7.2)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: babel&gt;=1.3 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2.10.3)
-Requirement already satisfied: sphinxcontrib-jsmath in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (1.0.1)
-Requirement already satisfied: sphinxcontrib-htmlhelp&gt;=2.0.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2.0.0)
-Requirement already satisfied: sphinxcontrib-devhelp in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (1.0.2)
-Requirement already satisfied: alabaster&lt;0.8,&gt;=0.7 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (0.7.12)
-Requirement already satisfied: sphinxcontrib-qthelp in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (1.0.3)
-Requirement already satisfied: imagesize in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (1.4.1)
-Requirement already satisfied: sphinxcontrib-serializinghtml&gt;=1.1.5 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (1.1.5)
-Requirement already satisfied: snowballstemmer&gt;=1.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2.2.0)
-Requirement already satisfied: sphinxcontrib-applehelp in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (1.0.2)
-Requirement already satisfied: requests&gt;=2.5.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2.28.1)
-Requirement already satisfied: Pygments&gt;=2.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2.13.0)
-Requirement already satisfied: MarkupSafe&gt;=2.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from Jinja2-&gt;jupyter-book-&gt;m3_learning) (2.1.1)
-Requirement already satisfied: pydata-sphinx-theme~=0.8.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx_book_theme~=0.3.2-&gt;jupyter-book-&gt;m3_learning) (0.8.1)
-Requirement already satisfied: wheel in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinx_togglebutton-&gt;jupyter-book-&gt;m3_learning) (0.37.1)
-Requirement already satisfied: pybtex&gt;=0.24 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinxcontrib-bibtex&lt;=2.5.0,&gt;=2.2.0-&gt;jupyter-book-&gt;m3_learning) (0.24.0)
-Requirement already satisfied: pybtex-docutils&gt;=1.0.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sphinxcontrib-bibtex&lt;=2.5.0,&gt;=2.2.0-&gt;jupyter-book-&gt;m3_learning) (1.0.2)
-Requirement already satisfied: pytz&gt;=2015.7 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from babel&gt;=1.3-&gt;sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2022.5)
-Requirement already satisfied: ipykernel&gt;=4.5.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (6.16.0)
-Requirement already satisfied: widgetsnbextension~=3.6.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (3.6.1)
-Requirement already satisfied: jupyterlab-widgets&lt;3,&gt;=1.0.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.1.1)
-Requirement already satisfied: traitlets&gt;=4.3.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (5.5.0)
-Requirement already satisfied: ipython-genutils~=0.2.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.0)
-Requirement already satisfied: decorator in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (5.1.1)
-Requirement already satisfied: backcall in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.0)
-Requirement already satisfied: pexpect&gt;4.3 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (4.8.0)
-Requirement already satisfied: prompt-toolkit&lt;3.1.0,&gt;3.0.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (3.0.31)
-Requirement already satisfied: jedi&gt;=0.16 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.18.1)
-Requirement already satisfied: pickleshare in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.7.5)
-Requirement already satisfied: stack-data in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.5.1)
-Requirement already satisfied: matplotlib-inline in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.1.6)
-Requirement already satisfied: nbdime in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (3.1.1)
-Requirement already satisfied: nbclient&lt;0.6,&gt;=0.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.5.13)
-Requirement already satisfied: sqlalchemy&lt;1.5,&gt;=1.3.12 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.4.42)
-Requirement already satisfied: mdit-py-plugins~=0.2.8 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-parser~=0.15.2-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.8)
-Requirement already satisfied: markdown-it-py&lt;2.0.0,&gt;=1.0.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from myst-parser~=0.15.2-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.1.0)
-Requirement already satisfied: lxml in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (4.9.1)
-Requirement already satisfied: pandocfilters&gt;=1.4.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.5.0)
-Requirement already satisfied: jupyterlab-pygments in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.2)
-Requirement already satisfied: mistune&lt;2,&gt;=0.8.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.8.4)
-Requirement already satisfied: beautifulsoup4 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (4.11.1)
-Requirement already satisfied: defusedxml in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.7.1)
-Requirement already satisfied: tinycss2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.2.1)
-Requirement already satisfied: entrypoints&gt;=0.2.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.4)
-Requirement already satisfied: jupyter-core&gt;=4.7 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (4.11.1)
-Requirement already satisfied: bleach in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (5.0.1)
-Requirement already satisfied: fastjsonschema in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbformat~=5.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (2.16.2)
-Requirement already satisfied: latexcodec&gt;=1.0.4 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from pybtex&gt;=0.24-&gt;sphinxcontrib-bibtex&lt;=2.5.0,&gt;=2.2.0-&gt;jupyter-book-&gt;m3_learning) (2.0.1)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: charset-normalizer&lt;3,&gt;=2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from requests&gt;=2.5.0-&gt;sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2.1.1)
-Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from requests&gt;=2.5.0-&gt;sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (1.26.11)
-Requirement already satisfied: certifi&gt;=2017.4.17 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from requests&gt;=2.5.0-&gt;sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (2022.9.24)
-Requirement already satisfied: idna&lt;4,&gt;=2.5 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from requests&gt;=2.5.0-&gt;sphinx&lt;5,&gt;=4-&gt;jupyter-book-&gt;m3_learning) (3.4)
-Requirement already satisfied: zipp&gt;=0.5 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from importlib-metadata-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (3.9.0)
-Requirement already satisfied: debugpy&gt;=1.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.6.3)
-Requirement already satisfied: nest-asyncio in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.5.6)
-Requirement already satisfied: psutil in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (5.9.2)
-Requirement already satisfied: tornado&gt;=6.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (6.2)
-Requirement already satisfied: jupyter-client&gt;=6.1.12 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (7.4.2)
-Requirement already satisfied: pyzmq&gt;=17 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (24.0.1)
-Requirement already satisfied: parso&lt;0.9.0,&gt;=0.8.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jedi&gt;=0.16-&gt;ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.8.3)
-Requirement already satisfied: ptyprocess&gt;=0.5 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from pexpect&gt;4.3-&gt;ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.7.0)
-Requirement already satisfied: wcwidth in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from prompt-toolkit&lt;3.1.0,&gt;3.0.1-&gt;ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.5)
-Requirement already satisfied: greenlet!=0.4.17 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from sqlalchemy&lt;1.5,&gt;=1.3.12-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.1.3.post0)
-Requirement already satisfied: notebook&gt;=4.4.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from widgetsnbextension~=3.6.0-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (6.5.1)
-Requirement already satisfied: soupsieve&gt;1.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from beautifulsoup4-&gt;nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (2.3.2.post1)
-Requirement already satisfied: webencodings in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from bleach-&gt;nbconvert&lt;7,&gt;=5.6-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.5.1)
-Requirement already satisfied: GitPython!=2.1.4,!=2.1.5,!=2.1.6 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (3.1.29)
-Requirement already satisfied: jupyter-server in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.21.0)
-Requirement already satisfied: jupyter-server-mathjax&gt;=0.2.2 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.6)
-Requirement already satisfied: colorama in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.4.5)
-Requirement already satisfied: executing in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from stack-data-&gt;ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.1.1)
-Requirement already satisfied: asttokens in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from stack-data-&gt;ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (2.0.8)
-Requirement already satisfied: pure-eval in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from stack-data-&gt;ipython-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.2)
-Requirement already satisfied: gitdb&lt;5,&gt;=4.0.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from GitPython!=2.1.4,!=2.1.5,!=2.1.6-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (4.0.9)
-Requirement already satisfied: websocket-client in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.4.1)
-Requirement already satisfied: Send2Trash in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.8.0)
-Requirement already satisfied: argon2-cffi in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (21.3.0)
-Requirement already satisfied: terminado&gt;=0.8.3 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.16.0)
-Requirement already satisfied: anyio&lt;4,&gt;=3.1.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (3.6.1)
-Requirement already satisfied: prometheus-client in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.15.0)
-Requirement already satisfied: nbclassic==0.4.5 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.6.0-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.4.5)
-Requirement already satisfied: notebook-shim&gt;=0.1.0 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from nbclassic==0.4.5-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.6.0-&gt;ipywidgets&lt;8,&gt;=7.0.0-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (0.2.0)
-Requirement already satisfied: sniffio&gt;=1.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from anyio&lt;4,&gt;=3.1.0-&gt;jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.3.0)
-Requirement already satisfied: smmap&lt;6,&gt;=3.0.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from gitdb&lt;5,&gt;=4.0.1-&gt;GitPython!=2.1.4,!=2.1.5,!=2.1.6-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (5.0.0)
-Requirement already satisfied: argon2-cffi-bindings in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from argon2-cffi-&gt;jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (21.2.0)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: cffi&gt;=1.0.1 in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from argon2-cffi-bindings-&gt;argon2-cffi-&gt;jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (1.15.1)
-Requirement already satisfied: pycparser in /home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages (from cffi&gt;=1.0.1-&gt;argon2-cffi-bindings-&gt;argon2-cffi-&gt;jupyter-server-&gt;nbdime-&gt;jupyter-cache~=0.4.1-&gt;myst-nb~=0.13.1-&gt;jupyter-book-&gt;m3_learning) (2.21)
 </pre></div>
 </div>
 </div>
@@ -1035,49 +886,6 @@ Requirement already satisfied: pycparser in /home/ferroelectric/anaconda3/envs/m
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>wget -O cards.tar.xz https://github.com/m3-learning/m3_learning/blob/main/m3_learning/Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/data/cards.tar.xz?raw<span class="o">=</span>true
 <span class="o">!</span>wget -O <span class="m">11</span>.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl https://github.com/m3-learning/Unsupervised-rotation-detection-and-label-learning/blob/main/11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl?raw<span class="o">=</span>true
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--2022-10-18 12:20:08--  https://github.com/m3-learning/m3_learning/blob/main/m3_learning/Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/data/cards.tar.xz?raw=true
-Resolving github.com (github.com)... 140.82.113.4
-Connecting to github.com (github.com)|140.82.113.4|:443... connected.
-HTTP request sent, awaiting response... 302 Found
-Location: https://github.com/m3-learning/m3_learning/raw/main/m3_learning/Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/data/cards.tar.xz [following]
---2022-10-18 12:20:08--  https://github.com/m3-learning/m3_learning/raw/main/m3_learning/Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/data/cards.tar.xz
-Reusing existing connection to github.com:443.
-HTTP request sent, awaiting response... 302 Found
-Location: https://raw.githubusercontent.com/m3-learning/m3_learning/main/m3_learning/Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/data/cards.tar.xz [following]
---2022-10-18 12:20:08--  https://raw.githubusercontent.com/m3-learning/m3_learning/main/m3_learning/Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/data/cards.tar.xz
-Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.110.133, 185.199.108.133, 185.199.111.133, ...
-Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.110.133|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 26016 (25K) [application/octet-stream]
-Saving to: ‘cards.tar.xz’
-
-cards.tar.xz        100%[===================&gt;]  25.41K  --.-KB/s    in 0.002s  
-
-2022-10-18 12:20:08 (14.5 MB/s) - ‘cards.tar.xz’ saved [26016/26016]
-
---2022-10-18 12:20:08--  https://github.com/m3-learning/Unsupervised-rotation-detection-and-label-learning/blob/main/11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl?raw=true
-Resolving github.com (github.com)... 140.82.113.4
-Connecting to github.com (github.com)|140.82.113.4|:443... connected.
-HTTP request sent, awaiting response... 302 Found
-Location: https://github.com/m3-learning/Unsupervised-rotation-detection-and-label-learning/raw/main/11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl [following]
---2022-10-18 12:20:09--  https://github.com/m3-learning/Unsupervised-rotation-detection-and-label-learning/raw/main/11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl
-Reusing existing connection to github.com:443.
-HTTP request sent, awaiting response... 302 Found
-Location: https://raw.githubusercontent.com/m3-learning/Unsupervised-rotation-detection-and-label-learning/main/11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl [following]
---2022-10-18 12:20:09--  https://raw.githubusercontent.com/m3-learning/Unsupervised-rotation-detection-and-label-learning/main/11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl
-Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.109.133, 185.199.111.133, 185.199.108.133, ...
-Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.109.133|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 50045917 (48M) [application/octet-stream]
-Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl’
-
-11.12_unsupervised_ 100%[===================&gt;]  47.73M   101MB/s    in 0.5s    
-
-2022-10-18 12:20:10 (101 MB/s) - ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008.pkl’ saved [50045917/50045917]
 </pre></div>
 </div>
 </div>
@@ -1137,12 +945,6 @@ Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">card_small_1</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x7f06ded51840&gt;
-</pre></div>
-</div>
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_11_1.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_11_1.png" />
 </div>
 </div>
 </section>
@@ -1213,14 +1015,6 @@ Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages/torch/nn/functional.py:4277: UserWarning: Default grid_sample and affine_grid behavior has changed to align_corners=False since 1.3.0. Please specify align_corners=True if the old behavior is desired. See the documentation of grid_sample for details.
-  warnings.warn(
-/home/ferroelectric/anaconda3/envs/m3_learning/lib/python3.10/site-packages/torch/nn/functional.py:4215: UserWarning: Default grid_sample and affine_grid behavior has changed to align_corners=False since 1.3.0. Please specify align_corners=True if the old behavior is desired. See the documentation of grid_sample for details.
-  warnings.warn(
-</pre></div>
-</div>
-</div>
 </div>
 <section id="visualize-example-rotated-images">
 <h3>Visualize example rotated images<a class="headerlink" href="#visualize-example-rotated-images" title="Permalink to this headline">#</a></h3>
@@ -1229,12 +1023,6 @@ Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">card_edge_1</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x7f06decfcc70&gt;
-</pre></div>
-</div>
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_17_1.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_17_1.png" />
 </div>
 </div>
 </section>
@@ -1258,18 +1046,6 @@ Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008
         <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">input_set_4</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_0.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_0.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_1.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_1.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_2.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_2.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_3.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_3.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_4.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_4.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_5.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_5.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_6.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_6.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_7.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_7.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_8.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_8.png" />
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_9.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_21_9.png" />
 </div>
 </div>
 </section>
@@ -1601,11 +1377,6 @@ Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 <section id="instantiates-the-model">
@@ -1856,12 +1627,6 @@ Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_4162/46853740.py:52: UserWarning: Implicit dimension choice for softmax has been deprecated. Change the call to include dim=X as an argument.
-  kout = self.softmax(kout)
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 <section id="visualize-the-results">
@@ -1893,17 +1658,6 @@ Saving to: ‘11.12_unsupervised_learn_label_epoch_17957_coef_0_trainloss_0.0008
     
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([0., 0., 1., 0.], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward0&gt;)
-tensor([0., 0., 0., 1.], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward0&gt;)
-tensor([0., 1., 0., 0.], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward0&gt;)
-tensor([1., 0., 0., 0.], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward0&gt;)
-tensor([0., 1., 0., 0.], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward0&gt;)
-tensor([0., 0., 0., 1.], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward0&gt;)
-</pre></div>
-</div>
-<img alt="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_59_1.png" src="../../_images/Cycle_Consistent_Spatial_Transformer_Autoencoder_59_1.png" />
 </div>
 </div>
 </section>
@@ -1937,11 +1691,11 @@ tensor([0., 0., 0., 1.], device=&#39;cuda:0&#39;, grad_fn=&lt;SelectBackward0&gt
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="../Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="../Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Unsupervised Spectral Unmixing with Autoencoders</p>
+            <p class="prev-next-title">Physics Constrained Autoencoders</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="../../docs/api.html" title="next page">

@@ -8,7 +8,7 @@ parts:
       - file: Tutorials/Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders
         title: Unsupervised Learning with Autoencoders
       - file: Tutorials/Physics_Informed_Autoencoders/Physics_Constrained_Autoencoder
-        title: Physics_Constrained_Autoencoders
+        title: Physics Constrained Autoencoders
       - file: Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/Cycle_Consistent_Spatial_Transformer_Autoencoder
         title: Cycle Consistent Spatial Transforming Autoencoder
   - caption: "Documentation"

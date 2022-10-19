@@ -1,24 +1,32 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Physics Constrain Autoencoders
+# # Physics Constrained Autoencoders
 # 
-# By Joshua C. Agar, Mary Ye
-# 
-# * There are many times where you want to fit spectroscopic data to a model
+# By Mary Ye$^1$, Joshua C. Agar$^2$
 # 
 
-# * Classical fitting methods can be used but break down:
-#   * When data is noisy
-#   * There are multiple candidate models
-#   * Data is high velocity
-#   * Data is noisy
+# $^1$ Department of Computer science and Engineering, Lehigh University
+# $^2$ Department of Mechanical Engineering and Mechanics, Drexel University
 # 
-# 
-# 
+# - There are many times where you want to fit spectroscopic data to a model
 # 
 
-# # Imports Packages
+# - Classical fitting methods can be used but break down:
+#   - When data is noisy
+#   - There are multiple candidate models
+#   - Data is high velocity
+#   - Data is noisy
+# 
+
+# ## Imports Packages
+# 
+
+# In[1]:
+
+
+get_ipython().system('pip install m3_learning')
+
 
 # In[2]:
 
@@ -36,45 +44,26 @@ from tqdm import tqdm
 import os
 from torchsummary import summary
 from torch.utils.data import Dataset, DataLoader
+import time
+import math
 
 from m3_learning.nn.time_series_nn.nn_util import Train, transform_nn
 from m3_learning.viz.layout import layout_fig, embedding_maps, latent_generator
+from m3_learning.util.rand_util import rand_tensor, set_seeds
 
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID" 
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-plt.rcParams.update({'xtick.direction': 'in', 'ytick.direction':'in'})
-
-import os
-
-
-# In[5]:
-
-
-# # Imports Custom packages
-# import AE_tutorial.viz as viz
-# import AE_tutorial.util as util
-# import AE_tutorial.nn_util as nn_util
-
-# import DeepMatter as dm
-# from DeepMatter.spectral_fitters.gaussian import Gaussian
-# from DeepMatter.spectral_fitters.voigt import PseudoVoigt
-# from DeepMatter.spectral_fitters import nn as dm_nn
-# from DeepMatter.rand_util.rand_gen import rand_tensor
-
-# 
-# import torch
-# import numpy as np
-# import matplotlib.pyplot as plt
-
-
-# import time
-# import math
-# from DeepMatter.util.torch_util import Dataset_Generator
+plt.rcParams.update({"xtick.direction": "in", "ytick.direction": "in"})
 
 
 # ## Generating some data based on the image
+# 
+
 # ### Define a non-linear function
+# 
+# <center> $$ y = A sin(2\theta f+ \phi)$$ </center>
+# 
 
 # In[3]:
 
@@ -94,7 +83,7 @@ class Sin_func:
         size=(1, 1),
         batch_size=1000,
         verbose=False,
-        ):
+    ):
         """
 
         Args:
@@ -111,25 +100,26 @@ class Sin_func:
 
         self.amp = amp
         self.amp_mean = torch.tensor(amp[0] + amp[1]) / 2
-        self.amp_sd = torch.sqrt(torch.pow(torch.tensor(amp[1])
-                                 - torch.tensor(amp[0]), 2) / 12)
+        self.amp_sd = torch.sqrt(
+            torch.pow(torch.tensor(amp[1]) - torch.tensor(amp[0]), 2) / 12
+        )
 
         self.phase = phase
         self.phase_mean = torch.tensor(phase[0] + phase[1]) / 2
-        self.phase_sd = torch.sqrt(torch.pow(torch.tensor(phase[1])
-                                   - torch.tensor(phase[0]), 2) / 12)
+        self.phase_sd = torch.sqrt(
+            torch.pow(torch.tensor(phase[1]) - torch.tensor(phase[0]), 2) / 12
+        )
 
         self.frequency = frequency
-        self.frequency_mean = torch.tensor(frequency[0] + frequency[1]) \
-            / 2
-        self.frequency_sd = \
-            torch.sqrt(torch.pow(torch.tensor(frequency[1])
-                       - torch.tensor(frequency[0]), 2) / 12)
+        self.frequency_mean = torch.tensor(frequency[0] + frequency[1]) / 2
+        self.frequency_sd = torch.sqrt(
+            torch.pow(torch.tensor(frequency[1]) - torch.tensor(frequency[0]), 2) / 12
+        )
 
         self.size = size
         self.verbose = verbose
 
-    def compute(self, params, device='cpu'):
+    def compute(self, params, device="cpu"):
         """
 
         Args:
@@ -143,8 +133,9 @@ class Sin_func:
         if len(params.size()) == 2:
             params = torch.reshape(params, (params.shape[0], 3, -1))
 
-        out = torch.zeros((params.shape[0], self.x_vector.shape[0],
-                          self.size[0], self.size[1]))
+        out = torch.zeros(
+            (params.shape[0], self.x_vector.shape[0], self.size[0], self.size[1])
+        )
 
         params = params.to(device)
 
@@ -160,19 +151,22 @@ class Sin_func:
                 _phase = params[:, 1, i]
                 _frequency = params[:, 2, i]
 
-            x_vector = torch.cat(params.shape[0]
-                                 * [self.x_vector]).reshape(params.shape[0],
-                    -1).to(device)
+            x_vector = (
+                torch.cat(params.shape[0] * [self.x_vector])
+                .reshape(params.shape[0], -1)
+                .to(device)
+            )
             x_vector = torch.transpose(x_vector, 0, 1)  # .to(device)
 
-            _out = _amp * torch.sin(2 * torch.tensor(np.pi)
-                                    * _frequency * x_vector + _phase)
+            _out = _amp * torch.sin(
+                2 * torch.tensor(np.pi) * _frequency * x_vector + _phase
+            )
 
             out[:, :, 0, i] = torch.transpose(_out, 0, 1)
 
         return (torch.sum(out, dim=3), out)
 
-    def sampler(self, device='cpu'):
+    def sampler(self, device="cpu"):
         """
 
         Args:
@@ -184,16 +178,21 @@ class Sin_func:
 
         """
 
-        phase = rand_tensor(min=self.phase[0], max=self.phase[1],
-                            size=(self.batch_size, self.size[0],
-                            self.size[1]))
-        frequency = rand_tensor(min=self.frequency[0],
-                                max=self.frequency[1],
-                                size=(self.batch_size, self.size[0],
-                                self.size[1]))
-        amp = rand_tensor(min=self.amp[0], max=self.amp[1],
-                          size=(self.batch_size, self.size[0],
-                          self.size[1]))
+        phase = rand_tensor(
+            min=self.phase[0],
+            max=self.phase[1],
+            size=(self.batch_size, self.size[0], self.size[1]),
+        )
+        frequency = rand_tensor(
+            min=self.frequency[0],
+            max=self.frequency[1],
+            size=(self.batch_size, self.size[0], self.size[1]),
+        )
+        amp = rand_tensor(
+            min=self.amp[0],
+            max=self.amp[1],
+            size=(self.batch_size, self.size[0], self.size[1]),
+        )
         _params = torch.torch.stack((amp, phase, frequency))
 
         _params = torch.atleast_2d(_params)
@@ -203,17 +202,19 @@ class Sin_func:
         return (self.compute(_params, device=device), _params)
 
 
-# In[7]:
+# In[4]:
 
 
-constructor = Sin_func(amp = [.2, 1],  # Sets the amplitude
-                      phase = [0, 2*np.pi], # Sets the phase
-                      frequency = [0.1, .5], # Sets the frequency
-                      x_vector = torch.linspace(0, np.pi, 100), # Sets the x_vector
-                      batch_size = 10000) # number of samples to generate
+constructor = Sin_func(
+    amp=[0.2, 1],  # Sets the amplitude
+    phase=[0, 2 * np.pi],  # Sets the phase
+    frequency=[0.1, 0.5],  # Sets the frequency
+    x_vector=torch.linspace(0, np.pi, 100),  # Sets the x_vector
+    batch_size=10000,
+)  # number of samples to generate
 
 
-# In[8]:
+# In[5]:
 
 
 # initializes the constructor
@@ -226,37 +227,41 @@ spectra, params = output
 spectra_full, spectras = spectra
 
 
-# ## Visualize and example generated curve
+# ## Visualize examples
+# 
 
-# In[9]:
+# In[6]:
 
 
-rand = np.random.randint(0,10000)
-plt.plot(spectras[rand,:,0].cpu(),'b')
+rand = np.random.randint(0, 10000)
+plt.plot(spectras[rand, :, 0].cpu(), "b")
 
 
 # ## Recurrent Neural Network Autoencoders
-# * It is important to consider the temporal domain 
-# * This can be improved by using a recurrent neural network that processes each time step sequentially.
-# * To add an understanding about the short and long term information in the data you can add memory and forget logic as a learnable parameter.
 # 
+# - It is important to consider the temporal domain
+# - This can be improved by using a recurrent neural network that processes each time step sequentially.
+# - To add an understanding about the short and long term information in the data you can add memory and forget logic as a learnable parameter.
+# 
+
 # ![](https://github.com/jagar2/AI_For_Atoms_Autoencoder_Tutorial/blob/main/img/Autoencoder_Med.png?raw=true)
+# 
 
 # ![](https://github.com/jagar2/AI_For_Atoms_Autoencoder_Tutorial/blob/main/img/LSTM%20Node.png?raw=true)
+# 
 
 # ### Builds the autoencoder
+# 
 
-# In[10]:
+# In[7]:
 
 
 class Encoder(nn.Module):
-
     def __init__(self, latent_dim=12):
         self.latent_dim = latent_dim
         super(Encoder, self).__init__()
         self.lstm = nn.LSTM(1, 12, batch_first=True, bidirectional=True)
-        self.lstm2 = nn.LSTM(24, 12, batch_first=True,
-                             bidirectional=True)
+        self.lstm2 = nn.LSTM(24, 12, batch_first=True, bidirectional=True)
         self.embedding = nn.Linear(24, self.latent_dim)
         self.relu = nn.ReLU()
 
@@ -269,14 +274,11 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-
     def __init__(self, latent_dim=12):
         self.latent_dim = latent_dim
         super(Decoder, self).__init__()
-        self.lstm = nn.LSTM(self.latent_dim, 12, batch_first=True,
-                            bidirectional=True)
-        self.lstm2 = nn.LSTM(24, 12, batch_first=True,
-                             bidirectional=True)
+        self.lstm = nn.LSTM(self.latent_dim, 12, batch_first=True, bidirectional=True)
+        self.lstm2 = nn.LSTM(24, 12, batch_first=True, bidirectional=True)
         self.tdd = nn.Conv1d(24, 1, 1)
 
     def forward(self, x):
@@ -291,11 +293,10 @@ class Decoder(nn.Module):
         return x
 
 
-# In[11]:
+# In[8]:
 
 
 class Autoencoder(nn.Module):
-
     def __init__(self, encoder, decoder):
         super().__init__()
         self.encoder = encoder
@@ -315,11 +316,12 @@ class Autoencoder(nn.Module):
 
 
 # Since we know there are intrinsically 3 latent dimensions let's try and train the model.
+# 
 
-# In[12]:
+# In[9]:
 
 
-device = 'cuda'
+device = "cuda"
 latent_dim = 3
 
 encoder = Encoder(latent_dim=latent_dim).to(device)
@@ -331,7 +333,7 @@ model = Autoencoder(encoder, decoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=3e-5)
 
 
-# In[13]:
+# In[10]:
 
 
 # views the model
@@ -339,32 +341,29 @@ optimizer = optim.Adam(model.parameters(), lr=3e-5)
 model
 
 
-# In[14]:
+# ### Builds the dataloader
+# 
+
+# In[11]:
 
 
 # constructs a dataloader for training
 
-dataloader = DataLoader(spectra_full, batch_size=512, shuffle=True,
-                        num_workers=0)
+dataloader = DataLoader(spectra_full, batch_size=512, shuffle=True, num_workers=0)
 
 
-# In[ ]:
+# In[12]:
 
 
 # trains the model
 
 torch.manual_seed(0)
-nn_util.Train(
-    model,
-    encoder,
-    decoder,
-    dataloader,
-    optimizer,
-    500,
-    )
+Train(
+    model, encoder, decoder, dataloader, optimizer, 500,
+)
 
 
-# In[16]:
+# In[13]:
 
 
 # # functions used to grab embbedings and predictions
@@ -385,64 +384,74 @@ nn_util.Train(
 
 
 # ## Visualize the reconstruction
+# 
 
-# In[17]:
+# In[14]:
 
 
 # computes an example reconstruction for a mini batch
 
-(encoded_, decoded_) = transform_nn(next(iter(dataloader)), encoder,
-                                    decoder)
+(encoded_, decoded_) = transform_nn(next(iter(dataloader)), encoder, decoder)
 
 
-# In[18]:
+# In[15]:
 
 
 # plots a random example of the original and predicted spectra
 
 rand = np.random.randint(0, 512)
-plt.plot(spectras[rand, :, 0].cpu(), 'b', label='Original')
-plt.plot(decoded_[rand].squeeze(), 'r', label='Generated')
+plt.plot(spectras[rand, :, 0].cpu(), "b", label="Original")
+plt.plot(decoded_[rand].squeeze(), "r", label="Generated")
 plt.legend()
 
 
-# ## Generating Data as validation
-# * We want to generate a hyperspectral image
-# * This can be done by taking the RGB values of an image and using them as parameters for a function
+# ## Generating Validation Data
+# 
+# - We want to generate a hyperspectral image
+# - This can be done by taking the RGB values of an image and using them as parameters for a function
+# 
 
 # ### Loads and image of my dog Nala
-# * Painting by *Irene Dogmatic*
+# 
+# - Painting by _Irene Dogmatic_
+# 
 
-# In[19]:
+# In[16]:
 
 
 # Loads dog image
 
-image = io.imread('./nala.jpg')
+image = io.imread(
+    "https://github.com/jagar2/m3_learning/blob/main/m3_learning/Tutorials/Unsupervised_Learning_with_AEs/figs/nala.jpg?raw=true"
+)
 
 # Crops dog image
 
 image = image[200:1900:20, 100:1500:20] / 255
 
 
-# ## Displays the image
+# ### Displays the image
+# 
 
-# In[20]:
+# In[17]:
 
 
 plt.imshow(image)
 
 
-# In[21]:
+# ### Generates the data from RGB sampling
+# 
+
+# In[18]:
 
 
-# Converts the image into parameters withing the generated range
+# Converts the image into parameters within the generated range
 
 nala_params = np.atleast_3d(image.reshape(-1, 3))
 
-nala_amp = torch.tensor(nala_params[:, 0, 0] * .8 + .2)
+nala_amp = torch.tensor(nala_params[:, 0, 0] * 0.8 + 0.2)
 nala_phase = torch.tensor(nala_params[:, 1, 0] * 2 * np.pi)
-nala_frequency = torch.tensor(nala_params[:, 2, 0] * .5 + .1)
+nala_frequency = torch.tensor(nala_params[:, 2, 0] * 0.5 + 0.1)
 
 _nala_params = torch.torch.stack((nala_amp, nala_phase, nala_frequency))
 
@@ -450,7 +459,7 @@ _nala_params = torch.atleast_3d(_nala_params)
 _nala_params = torch.transpose(_nala_params, 0, 1)
 
 
-# In[22]:
+# In[19]:
 
 
 # builds the spectra from the parameters
@@ -459,47 +468,53 @@ _nala_params = torch.transpose(_nala_params, 0, 1)
 
 # generated the encoded representation and decoded spectra
 
-(nala_encoded_, nala_decoded_) = transform_nn(nala_spectra, encoder,
-        decoder)
+(nala_encoded_, nala_decoded_) = transform_nn(nala_spectra, encoder, decoder)
 
 
-# In[23]:
+# In[20]:
 
 
-# plots a random example of the origina and predicted spectra
+# plots a random example of the original and predicted spectra
 
 rand = np.random.randint(0, nala_spectra.shape[0])
-plt.plot(nala_spectra[rand, :, 0].cpu(), 'b', label='Original')
-plt.plot(nala_decoded_[rand].squeeze(), 'r', label='Generated')
+plt.plot(nala_spectra[rand, :, 0].cpu(), "b", label="Original")
+plt.plot(nala_decoded_[rand].squeeze(), "r", label="Generated")
 plt.legend()
 
 
-# In[24]:
+# ### Visualize the learned results
+# 
+
+# In[21]:
 
 
 # Visualize the learned embeddings
 
-viz.embedding_maps(nala_encoded_, image)
+embedding_maps(nala_encoded_, image)
 
 
-# In[25]:
+# In[22]:
 
 
 # visualize the actual RGB channels.
 
-viz.embedding_maps(_nala_params.reshape(-1,3), image)
+embedding_maps(_nala_params.reshape(-1, 3), image)
 
 
-# ## There is minimal resemblance to the true features
+# - **There is minimal resemblance to the true features**
 # 
-# * This is unsurprising because there are no rules that define what the embedding should look like.
+# - This is unsurprising because there are no rules that define what the embedding should look like.
+# 
 
-# # Let's try a bigger model
+# ## Let's try a bigger model
+# 
+# ### Builds the model
+# 
 
-# In[26]:
+# In[23]:
 
 
-device = 'cuda'
+device = "cuda"
 latent_dim = 12
 
 encoder = Encoder(latent_dim=latent_dim).to(device)
@@ -511,7 +526,7 @@ model = Autoencoder(encoder, decoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=3e-5)
 
 
-# In[27]:
+# In[24]:
 
 
 # views the model
@@ -519,47 +534,49 @@ optimizer = optim.Adam(model.parameters(), lr=3e-5)
 model
 
 
-# In[ ]:
+# ## Training
+# 
+
+# In[25]:
 
 
 # trains the model
 
 torch.manual_seed(0)
-nn_util.Train(
-    model,
-    encoder,
-    decoder,
-    dataloader,
-    optimizer,
-    500,
-    )
+Train(
+    model, encoder, decoder, dataloader, optimizer, 500,
+)
 
 
-# # Visualize the reconstruction
+# ### Visualize the reconstruction
+# 
 
-# In[29]:
+# In[26]:
 
 
 # computes an example reconstruction for a minibatch
 
-(encoded_, decoded_) = transform_nn(next(iter(dataloader)), encoder,
-                                    decoder)
+(encoded_, decoded_) = transform_nn(next(iter(dataloader)), encoder, decoder)
 
 
-# In[30]:
+# In[27]:
 
 
-# plots a random example of the origina and predicted spectra
+# plots a random example of the original and predicted spectra
 
 rand = np.random.randint(0, 512)
-plt.plot(spectras[rand, :, 0].cpu(), 'b', label='Original')
-plt.plot(decoded_[rand].squeeze(), 'r', label='Generated')
+plt.plot(spectras[rand, :, 0].cpu(), "b", label="Original")
+plt.plot(decoded_[rand].squeeze(), "r", label="Generated")
 plt.legend()
 
 
-# * Reconstruction is slightly better but just more overfit
+# - Reconstruction is slightly better but just more overfit
+# 
 
-# In[31]:
+# ### Visualize the learned results
+# 
+
+# In[28]:
 
 
 # builds the spectra from the parameters
@@ -568,60 +585,59 @@ plt.legend()
 
 # generated the encoded representation and decoded spectra
 
-(nala_encoded_, nala_decoded_) = transform_nn(nala_spectra, encoder,
-        decoder)
+(nala_encoded_, nala_decoded_) = transform_nn(nala_spectra, encoder, decoder)
 
 
-# In[32]:
+# In[29]:
 
 
-# plots a random example of the origina and predicted spectra
+# plots a random example of the original and predicted spectra
 
 rand = np.random.randint(0, nala_spectra.shape[0])
-plt.plot(nala_spectra[rand, :, 0].cpu(), 'b', label='Original')
-plt.plot(nala_decoded_[rand].squeeze(), 'r', label='Generated')
+plt.plot(nala_spectra[rand, :, 0].cpu(), "b", label="Original")
+plt.plot(nala_decoded_[rand].squeeze(), "r", label="Generated")
 plt.legend()
 
 
-# In[33]:
+# In[30]:
 
 
 # Visualize the learned embeddings
 
-viz.embedding_maps(nala_encoded_, image)
+embedding_maps(nala_encoded_, image)
 
 
-# In[34]:
+# In[31]:
 
 
 # visualize the actual RGB channels.
 
-viz.embedding_maps(_nala_params.reshape(-1,3), image)
+embedding_maps(_nala_params.reshape(-1, 3), image)
 
 
-# ## Now there are just more features but still no resemblance between the parameters.
+# - **Now there are just more features but no resemblance between the parameters.**
+# - It would be impossible to have any resemblance to the features since it is overcomplete.
+# 
 
-# # Physics constrained neural network
+# ## Physics constrained neural network
+# 
+# ### Building the model
+# 
 
-# In[35]:
-
-
-import torch.nn as nn
-import torch
+# In[32]:
 
 
 class DensePhysLarger(nn.Module):
-
     def __init__(
         self,
         x_vector,
         model,
         dense_params=3,
         verbose=False,
-        device='cuda',
+        device="cuda",
         num_channels=1,
         **kwargs
-        ):
+    ):
         """
 
         Args:
@@ -639,7 +655,7 @@ class DensePhysLarger(nn.Module):
         self.verbose = verbose
         self.num_channels = num_channels
         self.device = device
-        self.model_params = kwargs.get('model_params')
+        self.model_params = kwargs.get("model_params")
         self.model = model  # (self.x_vector, size=(num_channels, dense_params // self.model_params))
         self.sigmoid = nn.Sigmoid()
         n = 4
@@ -650,70 +666,67 @@ class DensePhysLarger(nn.Module):
         # Input block of 1d convolution
 
         self.hidden_x1 = nn.Sequential(
-            nn.Conv1d(in_channels=self.num_channels, out_channels=8
-                      * n, kernel_size=7),
+            nn.Conv1d(in_channels=self.num_channels, out_channels=8 * n, kernel_size=7),
             nn.SELU(),
-            nn.Conv1d(in_channels=8 * n, out_channels=6 * n,
-                      kernel_size=7),
+            nn.Conv1d(in_channels=8 * n, out_channels=6 * n, kernel_size=7),
             nn.SELU(),
-            nn.Conv1d(in_channels=6 * n, out_channels=4,
-                      kernel_size=5),
+            nn.Conv1d(in_channels=6 * n, out_channels=4, kernel_size=5),
             nn.SELU(),
-            )
+        )
 
-        self.hidden_x1_shape = self.hidden_x1(torch.zeros(1,
-                self.num_channels, self.x_vector.shape[0])).shape
+        self.hidden_x1_shape = self.hidden_x1(
+            torch.zeros(1, self.num_channels, self.x_vector.shape[0])
+        ).shape
 
         # fully connected block
 
-        self.hidden_xfc = \
-            nn.Sequential(nn.Linear(self.hidden_x1_shape[1]
-                          * self.hidden_x1_shape[2], 20), nn.SELU(),
-                          nn.Linear(20, 20), nn.SELU())
+        self.hidden_xfc = nn.Sequential(
+            nn.Linear(self.hidden_x1_shape[1] * self.hidden_x1_shape[2], 20),
+            nn.SELU(),
+            nn.Linear(20, 20),
+            nn.SELU(),
+        )
 
-           # out of size 20
+        # out of size 20
 
-        self.hidden_xfc_shape = self.hidden_xfc(torch.zeros(1,
-                self.hidden_x1_shape[1]
-                * self.hidden_x1_shape[2])).shape
+        self.hidden_xfc_shape = self.hidden_xfc(
+            torch.zeros(1, self.hidden_x1_shape[1] * self.hidden_x1_shape[2])
+        ).shape
 
         # 2nd block of 1d-conv layers
 
         self.hidden_x2 = nn.Sequential(
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=1, out_channels=4 * n,
-                      kernel_size=5),
+            nn.Conv1d(in_channels=1, out_channels=4 * n, kernel_size=5),
             nn.SELU(),
-            nn.Conv1d(in_channels=4 * n, out_channels=4 * n,
-                      kernel_size=5),
+            nn.Conv1d(in_channels=4 * n, out_channels=4 * n, kernel_size=5),
             nn.SELU(),
-            nn.Conv1d(in_channels=4 * n, out_channels=4 * n,
-                      kernel_size=5),
+            nn.Conv1d(in_channels=4 * n, out_channels=4 * n, kernel_size=5),
             nn.SELU(),
-            nn.Conv1d(in_channels=4 * n, out_channels=4 * n,
-                      kernel_size=5),
+            nn.Conv1d(in_channels=4 * n, out_channels=4 * n, kernel_size=5),
             nn.SELU(),
-            nn.Conv1d(in_channels=4 * n, out_channels=4 * n,
-                      kernel_size=5),
+            nn.Conv1d(in_channels=4 * n, out_channels=4 * n, kernel_size=5),
             nn.SELU(),
-            nn.Conv1d(in_channels=4 * n, out_channels=4 * n,
-                      kernel_size=5),
+            nn.Conv1d(in_channels=4 * n, out_channels=4 * n, kernel_size=5),
             nn.SELU(),
             nn.AvgPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=4 * n, out_channels=2 * n,
-                      kernel_size=3),
+            nn.Conv1d(in_channels=4 * n, out_channels=2 * n, kernel_size=3),
             nn.SELU(),
             nn.AvgPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=2 * n, out_channels=2,
-                      kernel_size=3),
+            nn.Conv1d(in_channels=2 * n, out_channels=2, kernel_size=3),
             nn.SELU(),
             nn.AvgPool1d(kernel_size=2),
-            )
+        )
 
-        self.hidden_x2_shape = \
-            self.hidden_x2(torch.zeros((self.hidden_xfc_shape[0], 1,
-                           self.hidden_x1_shape[1]
-                           * self.hidden_x1_shape[2]))).shape
+        self.hidden_x2_shape = self.hidden_x2(
+            torch.zeros(
+                (
+                    self.hidden_xfc_shape[0],
+                    1,
+                    self.hidden_x1_shape[1] * self.hidden_x1_shape[2],
+                )
+            )
+        ).shape
 
         # Flatten layer
 
@@ -721,35 +734,43 @@ class DensePhysLarger(nn.Module):
 
         # Final embedding block - Output 4 values - linear
 
-        self.hidden_embedding = \
-            nn.Sequential(nn.Linear(self.hidden_x2_shape[1]
-                          * self.hidden_x2_shape[2]
-                          + self.hidden_xfc_shape[1], 16), nn.SELU(),
-                          nn.Linear(16, 8), nn.SELU(), nn.Linear(8,
-                          self.dense_params))
+        self.hidden_embedding = nn.Sequential(
+            nn.Linear(
+                self.hidden_x2_shape[1] * self.hidden_x2_shape[2]
+                + self.hidden_xfc_shape[1],
+                16,
+            ),
+            nn.SELU(),
+            nn.Linear(16, 8),
+            nn.SELU(),
+            nn.Linear(8, self.dense_params),
+        )
 
     def forward(self, x, n=-1):
 
         x = self.hidden_x1(x)
         xfc = torch.reshape(x, (x.shape[0], -1))  # batch size, features
         xfc = self.hidden_xfc(xfc)
-        x = torch.reshape(x, (x.shape[0], 1, self.hidden_x1_shape[1]
-                          * self.hidden_x1_shape[2]))
+        x = torch.reshape(
+            x, (x.shape[0], 1, self.hidden_x1_shape[1] * self.hidden_x1_shape[2])
+        )
         x = self.hidden_x2(x)
         cnn_flat = self.flatten_layer(x)
         encoded = torch.cat((cnn_flat, xfc), 1)  # merge dense and 1d conv.
 
         embedding = self.hidden_embedding(encoded)  # output is 3 parameters
 
-        embedding = torch.reshape(embedding, (embedding.shape[0], 3,
-                                  -1))
+        embedding = torch.reshape(embedding, (embedding.shape[0], 3, -1))
 
-        embedding[:, 0, :] = embedding[:, 0, :] * self.model.amp_sd \
-            + self.model.amp_mean
-        embedding[:, 1, :] = embedding[:, 1, :] * self.model.phase_sd \
-            + self.model.phase_mean
-        embedding[:, 2, :] = embedding[:, 2, :] \
-            * self.model.frequency_sd + self.model.frequency_mean
+        embedding[:, 0, :] = (
+            embedding[:, 0, :] * self.model.amp_sd + self.model.amp_mean
+        )
+        embedding[:, 1, :] = (
+            embedding[:, 1, :] * self.model.phase_sd + self.model.phase_mean
+        )
+        embedding[:, 2, :] = (
+            embedding[:, 2, :] * self.model.frequency_sd + self.model.frequency_mean
+        )
 
         embedding = torch.reshape(embedding, (embedding.shape[0], -1))
 
@@ -764,31 +785,39 @@ class DensePhysLarger(nn.Module):
         return (out.to(self.device), embedding.to(self.device))
 
 
-# In[36]:
+# In[33]:
 
 
 x_vector = torch.linspace(0, 10, 100)
 
-model = DensePhysLarger(x_vector, constructor, dense_params=3,
-                        model_params=3, verbose=False)
+model = DensePhysLarger(
+    x_vector, constructor, dense_params=3, model_params=3, verbose=False
+)
 
 if torch.cuda.is_available():
     model.cuda()
 
 
-# In[37]:
+# ### Dataloader
+# 
+
+# In[34]:
 
 
 # builds the dataloader
 
-dataloader = DataLoader(torch.transpose(spectra_full,1,2), batch_size=512,
-                         shuffle=True, num_workers=0)
+dataloader = DataLoader(
+    torch.transpose(spectra_full, 1, 2), batch_size=512, shuffle=True, num_workers=0
+)
 
 
-# In[ ]:
+# ### Training
+# 
+
+# In[35]:
 
 
-torch.manual_seed(0)
+set_seeds(42)
 
 loss_func = torch.nn.MSELoss()
 
@@ -796,77 +825,88 @@ optimizer = torch.optim.Adam(model.parameters(), lr=3e-5)
 
 
 epochs = 200
-    
+
 for epoch in range(epochs):
-  start_time = time.time()
+    start_time = time.time()
 
-  train_loss = 0.
-  total_num = 0
+    train_loss = 0.0
+    total_num = 0
 
-  model.train()
-    
-  for train_batch in dataloader:
-    pred, _ = model(train_batch.cuda())
+    model.train()
 
-    optimizer.zero_grad()
-    
-    loss = loss_func(train_batch.cuda(), pred)
-    loss.backward(create_graph=True)
-    train_loss += loss.item() * pred.shape[0]
-    total_num += pred.shape[0]
+    for train_batch in dataloader:
+        pred, _ = model(train_batch.cuda())
 
-    optimizer.step()
+        optimizer.zero_grad()
 
-  train_loss /= total_num
+        loss = loss_func(train_batch.cuda(), pred)
+        loss.backward(create_graph=True)
+        train_loss += loss.item() * pred.shape[0]
+        total_num += pred.shape[0]
 
-  print("epoch : {}/{}, recon loss = {:.8f}".format(epoch, epochs, train_loss))
-  print("--- %s seconds ---" % (time.time() - start_time))
+        optimizer.step()
+
+    train_loss /= total_num
+
+    print("epoch : {}/{}, recon loss = {:.8f}".format(epoch, epochs, train_loss))
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
-# In[45]:
+# ### Validation
+# 
+
+# In[36]:
 
 
 spectra_generated, params = model(train_batch.cuda())
-rand = np.random.randint(0,272)
-plt.plot(spectra_generated[rand,0,:].detach().cpu().numpy(),'r')
-plt.plot(train_batch[rand,0,:],'b')
+rand = np.random.randint(0, 272)
+plt.plot(spectra_generated[rand, 0, :].detach().cpu().numpy(), "r")
+plt.plot(train_batch[rand, 0, :], "b")
 print(params[rand])
 
 
-# In[63]:
+# In[37]:
 
 
-nala_spectra_generated, nala_params = model(nala_spectra.transpose(2,1).cuda())
-rand = np.random.randint(0,nala_spectra_generated.shape[0])
-plt.plot(nala_spectra_generated[rand,0,:].detach().cpu().numpy(),'r')
-plt.plot(nala_spectra[rand,:,0],'b')
+nala_spectra_generated, nala_params = model(nala_spectra.transpose(2, 1).cuda())
+rand = np.random.randint(0, nala_spectra_generated.shape[0])
+plt.plot(nala_spectra_generated[rand, 0, :].detach().cpu().numpy(), "r")
+plt.plot(nala_spectra[rand, :, 0], "b")
 
 
-# In[71]:
+# In[38]:
 
 
-nala_params[:,1] = nala_params[:,1] % 2*np.pi
+# removes 2pi shifts
+nala_params[:, 1] = nala_params[:, 1] % 2 * np.pi
 
 
-# In[72]:
+# In[39]:
 
 
 # Visualize the learned embeddings
 
-viz.embedding_maps(nala_params.detach().cpu().numpy(), image)
+embedding_maps(nala_params.detach().cpu().numpy(), image)
 
 
-# In[67]:
+# In[40]:
 
 
 # visualize the actual RGB channels.
 
-viz.embedding_maps(_nala_params.reshape(-1,3), image)
+embedding_maps(_nala_params.reshape(-1, 3), image)
 
 
-# # Try with a better optimizer AdaHessian
+# - **results are much closer to the underlying physics since we enforced them**
+# - The middle parameter is the phase. This is the hardest to learn $\rightarrow$ this makes sense
+# 
 
-# In[73]:
+# ## Try with a better optimizer AdaHessian
+# 
+# - There are better optimizers than ADAM that use second-order information
+# 
+
+# In[41]:
 
 
 """
@@ -877,6 +917,7 @@ Created on Sun Feb 26 16:34:00 2021
 
 import numpy as np
 import torch
+
 
 class AdaHessian(torch.optim.Optimizer):
     """
@@ -892,8 +933,18 @@ class AdaHessian(torch.optim.Optimizer):
         n_samples (int, optional) -- how many times to sample `z` for the approximation of the hessian trace (default: 1)
     """
 
-    def __init__(self, params, lr=0.1, betas=(0.9, 0.999), eps=1e-8, weight_decay=0.0, 
-                 hessian_power=1.0, update_each=1, n_samples=1, average_conv_kernel=False):
+    def __init__(
+        self,
+        params,
+        lr=0.1,
+        betas=(0.9, 0.999),
+        eps=1e-8,
+        weight_decay=0.0,
+        hessian_power=1.0,
+        update_each=1,
+        n_samples=1,
+        average_conv_kernel=False,
+    ):
         if not 0.0 <= lr:
             raise ValueError(f"Invalid learning rate: {lr}")
         if not 0.0 <= eps:
@@ -912,7 +963,13 @@ class AdaHessian(torch.optim.Optimizer):
         # use a separate generator that deterministically generates the same `z`s across all GPUs in case of distributed training
         self.generator = torch.Generator().manual_seed(2147483647)
 
-        defaults = dict(lr=lr, betas=betas, eps=eps, weight_decay=weight_decay, hessian_power=hessian_power)
+        defaults = dict(
+            lr=lr,
+            betas=betas,
+            eps=eps,
+            weight_decay=weight_decay,
+            hessian_power=hessian_power,
+        )
         super(AdaHessian, self).__init__(params, defaults)
 
         for p in self.get_params():
@@ -924,15 +981,20 @@ class AdaHessian(torch.optim.Optimizer):
         Gets all parameters in all param_groups with gradients
         """
 
-        return (p for group in self.param_groups for p in group['params'] if p.requires_grad)
+        return (
+            p for group in self.param_groups for p in group["params"] if p.requires_grad
+        )
 
     def zero_hessian(self):
         """
-        Zeros out the accumalated hessian traces.
+        Zeros out the accumulated hessian traces.
         """
 
         for p in self.get_params():
-            if not isinstance(p.hess, float) and self.state[p]["hessian step"] % self.update_each == 0:
+            if (
+                not isinstance(p.hess, float)
+                and self.state[p]["hessian step"] % self.update_each == 0
+            ):
                 p.hess.zero_()
 
     @torch.no_grad()
@@ -943,23 +1005,40 @@ class AdaHessian(torch.optim.Optimizer):
 
         params = []
         for p in filter(lambda p: p.grad is not None, self.get_params()):
-            if self.state[p]["hessian step"] % self.update_each == 0:  # compute the trace only each `update_each` step
+            if (
+                self.state[p]["hessian step"] % self.update_each == 0
+            ):  # compute the trace only for each `update_each` step
                 params.append(p)
             self.state[p]["hessian step"] += 1
 
         if len(params) == 0:
             return
 
-        if self.generator.device != params[0].device:  # hackish way of casting the generator to the right device
+        if (
+            self.generator.device != params[0].device
+        ):  # hackish way of casting the generator to the right device
             self.generator = torch.Generator(params[0].device).manual_seed(2147483647)
 
         grads = [p.grad for p in params]
 
         for i in range(self.n_samples):
-            zs = [torch.randint(0, 2, p.size(), generator=self.generator, device=p.device) * 2.0 - 1.0 for p in params]  # Rademacher distribution {-1.0, 1.0}
-            h_zs = torch.autograd.grad(grads, params, grad_outputs=zs, only_inputs=True, retain_graph=i < self.n_samples - 1)
+            zs = [
+                torch.randint(0, 2, p.size(), generator=self.generator, device=p.device)
+                * 2.0
+                - 1.0
+                for p in params
+            ]  # Rademacher distribution {-1.0, 1.0}
+            h_zs = torch.autograd.grad(
+                grads,
+                params,
+                grad_outputs=zs,
+                only_inputs=True,
+                retain_graph=i < self.n_samples - 1,
+            )
             for h_z, z, p in zip(h_zs, zs, params):
-                p.hess += h_z * z / self.n_samples  # approximate the expected values of z*(H@z)
+                p.hess += (
+                    h_z * z / self.n_samples
+                )  # approximate the expected values of z*(H@z)
 
     @torch.no_grad()
     def step(self, closure=None):
@@ -977,70 +1056,99 @@ class AdaHessian(torch.optim.Optimizer):
         self.set_hessian()
 
         for group in self.param_groups:
-            for p in group['params']:
+            for p in group["params"]:
                 if p.grad is None or p.hess is None:
                     continue
 
                 if self.average_conv_kernel and p.dim() == 4:
-                    p.hess = torch.abs(p.hess).mean(dim=[2, 3], keepdim=True).expand_as(p.hess).clone()
+                    p.hess = (
+                        torch.abs(p.hess)
+                        .mean(dim=[2, 3], keepdim=True)
+                        .expand_as(p.hess)
+                        .clone()
+                    )
 
                 # Perform correct stepweight decay as in AdamW
-                p.mul_(1 - group['lr'] * group['weight_decay'])
+                p.mul_(1 - group["lr"] * group["weight_decay"])
 
                 state = self.state[p]
 
                 # State initialization
                 if len(state) == 1:
-                    state['step'] = 0
-                    state['exp_avg'] = torch.zeros_like(p.data)  # Exponential moving average of gradient values
-                    state['exp_hessian_diag_sq'] = torch.zeros_like(p.data)  # Exponential moving average of Hessian diagonal square values
+                    state["step"] = 0
+                    state["exp_avg"] = torch.zeros_like(
+                        p.data
+                    )  # Exponential moving average of gradient values
+                    state["exp_hessian_diag_sq"] = torch.zeros_like(
+                        p.data
+                    )  # Exponential moving average of Hessian diagonal square values
 
-                exp_avg, exp_hessian_diag_sq = state['exp_avg'], state['exp_hessian_diag_sq']
-                beta1, beta2 = group['betas']
-                state['step'] += 1
+                exp_avg, exp_hessian_diag_sq = (
+                    state["exp_avg"],
+                    state["exp_hessian_diag_sq"],
+                )
+                beta1, beta2 = group["betas"]
+                state["step"] += 1
 
                 # Decay the first and second moment running average coefficient
                 exp_avg.mul_(beta1).add_(p.grad, alpha=1 - beta1)
-                exp_hessian_diag_sq.mul_(beta2).addcmul_(p.hess, p.hess, value=1 - beta2)
+                exp_hessian_diag_sq.mul_(beta2).addcmul_(
+                    p.hess, p.hess, value=1 - beta2
+                )
 
-                bias_correction1 = 1 - beta1 ** state['step']
-                bias_correction2 = 1 - beta2 ** state['step']
+                bias_correction1 = 1 - beta1 ** state["step"]
+                bias_correction2 = 1 - beta2 ** state["step"]
 
-                k = group['hessian_power']
-                denom = (exp_hessian_diag_sq / bias_correction2).pow_(k / 2).add_(group['eps'])
+                k = group["hessian_power"]
+                denom = (
+                    (exp_hessian_diag_sq / bias_correction2)
+                    .pow_(k / 2)
+                    .add_(group["eps"])
+                )
 
                 # make update
-                step_size = group['lr'] / bias_correction1
+                step_size = group["lr"] / bias_correction1
                 p.addcdiv_(exp_avg, denom, value=-step_size)
 
         return loss
 
 
-# In[74]:
+# ### Builds the model
+# 
+
+# In[42]:
 
 
 x_vector = torch.linspace(0, 10, 100)
 
-model = DensePhysLarger(x_vector, constructor, dense_params=3,
-                        model_params=3, verbose=False)
+model = DensePhysLarger(
+    x_vector, constructor, dense_params=3, model_params=3, verbose=False
+)
 
 if torch.cuda.is_available():
     model.cuda()
 
 
-# In[75]:
+# ### Dataloader
+# 
+
+# In[43]:
 
 
 # builds the dataloader
 
-dataloader = DataLoader(torch.transpose(spectra_full,1,2), batch_size=512,
-                         shuffle=True, num_workers=0)
+dataloader = DataLoader(
+    torch.transpose(spectra_full, 1, 2), batch_size=512, shuffle=True, num_workers=0
+)
 
 
-# In[ ]:
+# ### Training
+# 
+
+# In[44]:
 
 
-torch.manual_seed(0)
+set_seeds(42)
 
 loss_func = torch.nn.MSELoss()
 
@@ -1049,73 +1157,82 @@ loss_func = torch.nn.MSELoss()
 optimizer = AdaHessian(model.parameters(), lr=0.1)
 
 epochs = 200
-    
+
 for epoch in range(epochs):
-  start_time = time.time()
+    start_time = time.time()
 
-  train_loss = 0.
-  total_num = 0
+    train_loss = 0.0
+    total_num = 0
 
-  model.train()
-    
-  for train_batch in dataloader:
-    pred, _ = model(train_batch.cuda())
+    model.train()
 
-    optimizer.zero_grad()
-    
-    loss = loss_func(train_batch.cuda(), pred)
-    loss.backward(create_graph=True)
-    train_loss += loss.item() * pred.shape[0]
-    total_num += pred.shape[0]
+    for train_batch in dataloader:
+        pred, _ = model(train_batch.cuda())
 
-    optimizer.step()
+        optimizer.zero_grad()
 
-  train_loss /= total_num
+        loss = loss_func(train_batch.cuda(), pred)
+        loss.backward(create_graph=True)
+        train_loss += loss.item() * pred.shape[0]
+        total_num += pred.shape[0]
 
-  print("epoch : {}/{}, recon loss = {:.8f}".format(epoch, epochs, train_loss))
-  print("--- %s seconds ---" % (time.time() - start_time))
+        optimizer.step()
+
+    train_loss /= total_num
+
+    print("epoch : {}/{}, recon loss = {:.8f}".format(epoch, epochs, train_loss))
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
-# In[ ]:
+# ### Visualization
+# 
+
+# In[45]:
 
 
 spectra_generated, params = model(train_batch.cuda())
-rand = np.random.randint(0,272)
-plt.plot(spectra_generated[rand,0,:].detach().cpu().numpy(),'r')
-plt.plot(train_batch[rand,0,:],'b')
+rand = np.random.randint(0, 272)
+plt.plot(spectra_generated[rand, 0, :].detach().cpu().numpy(), "r")
+plt.plot(train_batch[rand, 0, :], "b")
 print(params[rand])
 
 
-# In[ ]:
+# In[46]:
 
 
-nala_spectra_generated, nala_params = model(nala_spectra.transpose(2,1).cuda())
-rand = np.random.randint(0,nala_spectra_generated.shape[0])
-plt.plot(nala_spectra_generated[rand,0,:].detach().cpu().numpy(),'r')
-plt.plot(nala_spectra[rand,:,0],'b')
+nala_spectra_generated, nala_params = model(nala_spectra.transpose(2, 1).cuda())
+rand = np.random.randint(0, nala_spectra_generated.shape[0])
+plt.plot(nala_spectra_generated[rand, 0, :].detach().cpu().numpy(), "r")
+plt.plot(nala_spectra[rand, :, 0], "b")
 
 
-# In[ ]:
+# In[47]:
 
 
-nala_params[:,1] = nala_params[:,1] % 2*np.pi
+nala_params[:, 1] = nala_params[:, 1] % 2 * np.pi
 
 
-# In[ ]:
+# In[48]:
 
 
 # Visualize the learned embeddings
 
-viz.embedding_maps(nala_params.detach().cpu().numpy(), image)
+embedding_maps(nala_params.detach().cpu().numpy(), image)
 
 
-# In[ ]:
+# In[49]:
 
 
 # visualize the actual RGB channels.
 
-viz.embedding_maps(_nala_params.reshape(-1,3), image)
+embedding_maps(_nala_params.reshape(-1, 3), image)
 
+
+# This is clearly the best result
+# 
+# - It is quite impressive that we can build a feed forward model to fit data to complex functions
+# - This is actually a very hard task for a neural network as frequency and phase are something that cannot be learned easily in convolutions
+# 
 
 # In[ ]:
 

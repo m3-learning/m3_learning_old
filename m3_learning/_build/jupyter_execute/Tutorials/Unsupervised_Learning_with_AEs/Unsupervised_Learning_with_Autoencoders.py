@@ -73,14 +73,14 @@
 # # Imports Packages
 # 
 
-# In[1]:
+# In[ ]:
 
 
 # installs the tutorial package
 get_ipython().system('pip install m3_learning')
 
 
-# In[2]:
+# In[ ]:
 
 
 from skimage import io
@@ -121,7 +121,7 @@ from m3_learning.nn.time_series_nn.nn_util import Train, transform_nn, loss_func
 # - Painting by _Irene Dogmatic_
 # 
 
-# In[3]:
+# In[ ]:
 
 
 # Loads dog image
@@ -136,7 +136,7 @@ image = image[200:1900:20, 100:1500:20] / 255
 # ## Displays the image
 # 
 
-# In[4]:
+# In[ ]:
 
 
 plt.imshow(image)
@@ -150,7 +150,7 @@ plt.imshow(image)
 # ![](https://github.com/jagar2/m3_learning/blob/main/m3_learning/Tutorials/Unsupervised_Learning_with_AEs/figs/generated.png?raw=true)
 # 
 
-# In[5]:
+# In[ ]:
 
 
 def non_linear_fn(t, x, y, z):
@@ -166,14 +166,14 @@ def non_linear_fn(t, x, y, z):
     )
 
 
-# In[6]:
+# In[ ]:
 
 
 # generates a hyperspectral image
 dog_data = generate_data(image.reshape(-1, 3), length=10, function=non_linear_fn)
 
 
-# In[7]:
+# In[ ]:
 
 
 # Conducts a test train split.
@@ -186,7 +186,7 @@ X_train, X_test, _, _ = train_test_split(
 # ## Plots the generated data
 # 
 
-# In[8]:
+# In[ ]:
 
 
 fig, ax = layout_fig(6, mod=3)
@@ -215,7 +215,7 @@ for i, ax in enumerate(ax):
 # ### Defines the encoder and the decoder
 # 
 
-# In[9]:
+# In[ ]:
 
 
 latent_dim = 12
@@ -248,7 +248,7 @@ class Decoder(nn.Module):
 # ### Builds the autoencoder
 # 
 
-# In[10]:
+# In[ ]:
 
 
 class Autoencoder(nn.Module):
@@ -269,7 +269,7 @@ class Autoencoder(nn.Module):
 # ### Instantiates the model
 # 
 
-# In[11]:
+# In[ ]:
 
 
 import cpuinfo
@@ -294,7 +294,7 @@ model = Autoencoder(encoder, decoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=3e-4)
 
 
-# In[12]:
+# In[ ]:
 
 
 try:
@@ -312,7 +312,7 @@ except:
 # ### Builds the dataloader
 # 
 
-# In[13]:
+# In[ ]:
 
 
 train_iterator = torch.utils.data.DataLoader(X_train, batch_size=256, shuffle=True)
@@ -321,7 +321,7 @@ train_iterator = torch.utils.data.DataLoader(X_train, batch_size=256, shuffle=Tr
 # ### Trains the model
 # 
 
-# In[14]:
+# In[ ]:
 
 
 torch.manual_seed(0)
@@ -331,13 +331,13 @@ Train(model, encoder, decoder, train_iterator, optimizer, 500, device=device)
 # ### Evaluates the model after training
 # 
 
-# In[15]:
+# In[ ]:
 
 
 encode, decode = transform_nn(dog_data, encoder, decoder, device=device)
 
 
-# In[16]:
+# In[ ]:
 
 
 embedding_maps(encode, image)
@@ -354,7 +354,7 @@ embedding_maps(encode, image)
 # ### Instantiates the model (3 latent variables)
 # 
 
-# In[17]:
+# In[ ]:
 
 
 encoder = Encoder(latent_dim=3).to(device)
@@ -365,7 +365,7 @@ model = Autoencoder(encoder, decoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=3e-4)
 
 
-# In[18]:
+# In[ ]:
 
 
 summary(model, ((X_train.shape[1:])))
@@ -376,7 +376,7 @@ summary(model, ((X_train.shape[1:])))
 # - Autoencoder considers time by saying each timestep is its own fully-uncorrelated sample
 # 
 
-# In[19]:
+# In[ ]:
 
 
 train_iterator = torch.utils.data.DataLoader(X_train, batch_size=256, shuffle=True)
@@ -385,20 +385,20 @@ train_iterator = torch.utils.data.DataLoader(X_train, batch_size=256, shuffle=Tr
 # ### Trains the model
 # 
 
-# In[20]:
+# In[ ]:
 
 
 torch.manual_seed(0)
 Train(model, encoder, decoder, train_iterator, optimizer, 500, device=device)
 
 
-# In[21]:
+# In[ ]:
 
 
 encode, decode = transform_nn(dog_data, encoder, decoder, device=device)
 
 
-# In[22]:
+# In[ ]:
 
 
 embedding_maps(encode, image)
@@ -412,7 +412,7 @@ embedding_maps(encode, image)
 # - Now we want to see how the spectra changes as we traverse the latent space
 # 
 
-# In[23]:
+# In[ ]:
 
 
 latent_generator(decoder, encode, image, 5, 10, device=device)
@@ -439,7 +439,7 @@ latent_generator(decoder, encode, image, 5, 10, device=device)
 # ### Builds the model
 # 
 
-# In[24]:
+# In[ ]:
 
 
 latent_dim = 12
@@ -478,7 +478,7 @@ class Decoder(nn.Module):
         return x
 
 
-# In[25]:
+# In[ ]:
 
 
 encoder = Encoder().to(device)
@@ -492,7 +492,7 @@ optimizer = optim.Adam(model.parameters(), lr=3e-5)
 # ### Dataloader
 # 
 
-# In[26]:
+# In[ ]:
 
 
 train_iterator = torch.utils.data.DataLoader(
@@ -503,7 +503,7 @@ train_iterator = torch.utils.data.DataLoader(
 # ### Training
 # 
 
-# In[27]:
+# In[ ]:
 
 
 torch.manual_seed(0)
@@ -513,13 +513,13 @@ Train(model, encoder, decoder, train_iterator, optimizer, 500, device=device)
 # ### Validation
 # 
 
-# In[28]:
+# In[ ]:
 
 
 encode, decode = transform_nn(dog_data, encoder, decoder, device=device)
 
 
-# In[29]:
+# In[ ]:
 
 
 embedding_maps(encode, image)
@@ -531,7 +531,7 @@ embedding_maps(encode, image)
 # ## LSTM Autoencoder with 3 Latent Variables
 # 
 
-# In[30]:
+# In[ ]:
 
 
 encoder = Encoder(latent_dim=3).to(device)
@@ -542,7 +542,7 @@ model = Autoencoder(encoder, decoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=3e-5)
 
 
-# In[31]:
+# In[ ]:
 
 
 model
@@ -551,7 +551,7 @@ model
 # ### Dataloader
 # 
 
-# In[32]:
+# In[ ]:
 
 
 train_iterator = torch.utils.data.DataLoader(
@@ -562,7 +562,7 @@ train_iterator = torch.utils.data.DataLoader(
 # ### Training
 # 
 
-# In[33]:
+# In[ ]:
 
 
 torch.manual_seed(0)
@@ -572,19 +572,19 @@ Train(model, encoder, decoder, train_iterator, optimizer, 500, device=device)
 # ### Validation
 # 
 
-# In[34]:
+# In[ ]:
 
 
 encode, decode = transform_nn(dog_data, encoder, decoder, device=device)
 
 
-# In[35]:
+# In[ ]:
 
 
 embedding_maps(encode, image)
 
 
-# In[36]:
+# In[ ]:
 
 
 latent_generator(decoder, encode, image, 5, 10, device=device)
@@ -603,7 +603,7 @@ latent_generator(decoder, encode, image, 5, 10, device=device)
 # ### Builds the Model
 # 
 
-# In[37]:
+# In[ ]:
 
 
 latent_dim = 12
@@ -643,7 +643,7 @@ class Decoder(nn.Module):
         return x
 
 
-# In[38]:
+# In[ ]:
 
 
 encoder = Encoder().to(device)
@@ -654,7 +654,7 @@ model = Autoencoder(encoder, decoder).to(device)
 optimizer = optim.Adam(model.parameters(), lr=3e-5)
 
 
-# In[39]:
+# In[ ]:
 
 
 model
@@ -663,7 +663,7 @@ model
 # ### Dataloader
 # 
 
-# In[40]:
+# In[ ]:
 
 
 train_iterator = torch.utils.data.DataLoader(
@@ -674,7 +674,7 @@ train_iterator = torch.utils.data.DataLoader(
 # ### Training
 # 
 
-# In[41]:
+# In[ ]:
 
 
 torch.manual_seed(0)
@@ -694,25 +694,25 @@ Train(
 # ### Validation
 # 
 
-# In[42]:
+# In[ ]:
 
 
 encode, decode = transform_nn(dog_data, encoder, decoder, device=device)
 
 
-# In[43]:
+# In[ ]:
 
 
 embedding_maps(encode, image)
 
 
-# In[44]:
+# In[ ]:
 
 
 latent_generator(decoder, encode, image, 5, 10, indx=[4, 3, 10], device=device)
 
 
-# In[45]:
+# In[ ]:
 
 
 fig, ax = layout_fig(6, mod=3)
@@ -735,7 +735,7 @@ for i, ax in enumerate(ax):
             ax.plot(y_data[j], c=color)
 
 
-# In[46]:
+# In[ ]:
 
 
 from IPython.display import HTML
@@ -771,7 +771,7 @@ HTML(
 # ### Builds the Model
 # 
 
-# In[47]:
+# In[ ]:
 
 
 latent_dim = 12
@@ -819,7 +819,7 @@ class Decoder(nn.Module):
         return x
 
 
-# In[48]:
+# In[ ]:
 
 
 encoder = Encoder().to(device)
@@ -833,7 +833,7 @@ optimizer = optim.Adam(model.parameters(), lr=3e-4)
 # ### Training
 # 
 
-# In[49]:
+# In[ ]:
 
 
 def Train(
@@ -904,7 +904,7 @@ def Train(
                 )
 
 
-# In[50]:
+# In[ ]:
 
 
 torch.manual_seed(0)
@@ -925,7 +925,7 @@ Train(
 # ### Validation
 # 
 
-# In[51]:
+# In[ ]:
 
 
 encoded_spectra, mn, sd = encoder(
@@ -934,7 +934,7 @@ encoded_spectra, mn, sd = encoder(
 decoded_spectra = decoder(encoded_spectra)
 
 
-# In[52]:
+# In[ ]:
 
 
 encoded_spectra = encoded_spectra.to("cpu")
@@ -943,13 +943,13 @@ decoded_spectra = decoded_spectra.to("cpu")
 decoded_spectra = decoded_spectra.detach().numpy()
 
 
-# In[53]:
+# In[ ]:
 
 
 embedding_maps(encoded_spectra, image)
 
 
-# In[54]:
+# In[ ]:
 
 
 latent_generator(decoder, encoded_spectra, image, 5, 10, indx=[0, 5, 10], device=device)
@@ -958,7 +958,7 @@ latent_generator(decoder, encoded_spectra, image, 5, 10, indx=[0, 5, 10], device
 # - disentanglement with $\beta$ VAE requires careful control of optimiztion.
 # 
 
-# In[58]:
+# In[ ]:
 
 
 

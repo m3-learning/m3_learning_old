@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Simple Tutorial Walking Through Cycle-Consistent Spatial Transforming Autoencoders
+# # Tutorial: Cycle-Consistent Spatial Transforming Autoencoders
 # 
 # By Shuyu Qin, Joshua C. Agar
 # 
 # Department of Mechanical Engineering and Mechanics
 # Drexel University
 
-# In[6]:
+# In[ ]:
 
 
 get_ipython().system('pip install m3_learning')
@@ -19,7 +19,7 @@ get_ipython().system('pip install m3_learning')
 # ### Imports packages
 # 
 
-# In[7]:
+# In[ ]:
 
 
 import matplotlib.pyplot as plt
@@ -36,7 +36,7 @@ import tarfile
 
 # ### Downloads Files
 
-# In[8]:
+# In[ ]:
 
 
 get_ipython().system('wget -O cards.tar.xz https://github.com/m3-learning/m3_learning/blob/main/m3_learning/Tutorials/Cycle_Consistent_Spatial_Transformer_Autoencoder/data/cards.tar.xz?raw=true')
@@ -45,7 +45,7 @@ get_ipython().system('wget -O 11.12_unsupervised_learn_label_epoch_17957_coef_0_
 
 # ### Extracts Files
 
-# In[9]:
+# In[ ]:
 
 
 file = tarfile.open('./cards.tar.xz') 
@@ -57,7 +57,7 @@ file.close()
 # 
 # ### Conversion
 
-# In[10]:
+# In[ ]:
 
 
 # Converts images to grayscale
@@ -87,7 +87,7 @@ card_small_4 = F.interpolate(card4.unsqueeze(0).unsqueeze(1), size=(48,48)).clon
 
 # ### Raw Data Visulalization
 
-# In[11]:
+# In[ ]:
 
 
 plt.imshow(card_small_1.squeeze())
@@ -95,7 +95,7 @@ plt.imshow(card_small_1.squeeze())
 
 # ### Edge detection
 
-# In[12]:
+# In[ ]:
 
 
 # Sobel edge detection
@@ -115,7 +115,7 @@ card_edge_4 = torch.tensor(card_edge_4,dtype=torch.float).unsqueeze(0).unsqueeze
 # 
 # This will generate a bunch of images that are rotated from the initial position
 
-# In[13]:
+# In[ ]:
 
 
 # sets the range and the number of steps to generate images
@@ -160,7 +160,7 @@ input_set_4 = torch.stack(input_data_set_4).squeeze(1)
 
 # ### Visualize example rotated images
 
-# In[14]:
+# In[ ]:
 
 
 plt.imshow(card_edge_1.squeeze())
@@ -168,7 +168,7 @@ plt.imshow(card_edge_1.squeeze())
 
 # ### Formulate a single dataset
 
-# In[15]:
+# In[ ]:
 
 
 input_set = torch.cat((input_set_1,input_set_2,input_set_3,input_set_4),axis=0)
@@ -176,7 +176,7 @@ input_set = torch.cat((input_set_1,input_set_2,input_set_3,input_set_4),axis=0)
 
 # ### Visualize example images in training data
 
-# In[16]:
+# In[ ]:
 
 
 for i in range(2000): 
@@ -191,7 +191,7 @@ for i in range(2000):
 # 
 # This is a standard convolutional block with ReLu. Each block has 4 layers. There is a layer normalization, and ResNet-like message passing.
 
-# In[17]:
+# In[ ]:
 
 
 class conv_block(nn.Module):
@@ -222,7 +222,7 @@ class conv_block(nn.Module):
 # ### Idenity Block
 # This is a single convolutional layer with a layer norm and ReLu activation function
 
-# In[18]:
+# In[ ]:
 
 
 class identity_block(nn.Module):
@@ -244,7 +244,7 @@ class identity_block(nn.Module):
 # 
 # This constructs the encoder using the convolutional and identity blocks. 
 
-# In[19]:
+# In[ ]:
 
 
 class Encoder(nn.Module):
@@ -333,7 +333,7 @@ class Encoder(nn.Module):
 
 # ### Decoder
 
-# In[20]:
+# In[ ]:
 
 
 class Decoder(nn.Module):
@@ -427,7 +427,7 @@ class Decoder(nn.Module):
 
 # ### Builds the autoencoder
 
-# In[21]:
+# In[ ]:
 
 
 class Joint(nn.Module):
@@ -468,7 +468,7 @@ class Joint(nn.Module):
 
 # ### Sets optional parameters for autoencoder
 
-# In[22]:
+# In[ ]:
 
 
 # Size of the original image
@@ -492,7 +492,7 @@ conv_size =128
 
 # ### Checks operations
 
-# In[23]:
+# In[ ]:
 
 
 # checks if cuda is available
@@ -504,7 +504,7 @@ device = torch.device('cuda')
 
 # ### Instantiates the model
 
-# In[24]:
+# In[ ]:
 
 
 # instantiates the encoder
@@ -525,7 +525,7 @@ join = Joint(encoder,decoder).to(device)
 
 # ### Instantiate the optimizer
 
-# In[25]:
+# In[ ]:
 
 
 optimizer = optim.Adam(join.parameters(), lr=3e-5)
@@ -533,7 +533,7 @@ optimizer = optim.Adam(join.parameters(), lr=3e-5)
 
 # ### Loads pretrained weights
 
-# In[26]:
+# In[ ]:
 
 
 # if you would like to train this model from scratch set equal to false.
@@ -554,7 +554,7 @@ if pretrained:
 
 # ### Loss Function
 
-# In[27]:
+# In[ ]:
 
 
 def loss_function(join,
@@ -585,8 +585,7 @@ def loss_function(join,
         predicted_x,predicted_base,predicted_input,kout,theta = join(x)
 
         # combines the loss from the affine and inverse affine transform
-        loss = F.mse_loss(predicted_base.squeeze(), predicted_x.squeeze(), reduction='mean')\
-                + F.mse_loss(predicted_input.squeeze(), x.squeeze(), reduction='mean')
+        loss = F.mse_loss(predicted_base.squeeze(), predicted_x.squeeze(), reduction='mean')                + F.mse_loss(predicted_input.squeeze(), x.squeeze(), reduction='mean')
 
         # backward pass
         train_loss += loss.item()
@@ -602,7 +601,7 @@ def loss_function(join,
 
 # ## Model Training
 
-# In[31]:
+# In[ ]:
 
 
 def Train(join,encoder,decoder,train_iterator,optimizer,
@@ -650,7 +649,7 @@ def Train(join,encoder,decoder,train_iterator,optimizer,
 # 
 # Defines an iterator that serves as the data loader
 
-# In[32]:
+# In[ ]:
 
 
 train_iterator = torch.utils.data.DataLoader(input_set, batch_size = 300,shuffle = True)
@@ -658,7 +657,7 @@ train_iterator = torch.utils.data.DataLoader(input_set, batch_size = 300,shuffle
 
 # ### Trains the model
 
-# In[36]:
+# In[ ]:
 
 
 if not pretrained:
@@ -670,7 +669,7 @@ if not pretrained:
 # 
 # ### Generates a small dataset for 
 
-# In[37]:
+# In[ ]:
 
 
 # generate the test data set for validation
@@ -708,7 +707,7 @@ input_set_small = torch.cat((input_set_1,input_set_2,input_set_3,input_set_4),ax
 
 # ### Builds a validation iterator
 
-# In[40]:
+# In[ ]:
 
 
 train_iterator = torch.utils.data.DataLoader(input_set_small, batch_size = 100,shuffle = False)
@@ -716,7 +715,7 @@ train_iterator = torch.utils.data.DataLoader(input_set_small, batch_size = 100,s
 
 # ### Random sample visualization
 
-# In[41]:
+# In[ ]:
 
 
 sample = next(iter(train_iterator))
@@ -724,7 +723,7 @@ sample = next(iter(train_iterator))
 
 # ### Evaluation
 
-# In[42]:
+# In[ ]:
 
 
 out,base,inp,kout,theta= join(sample.to(device, dtype=torch.float))
@@ -732,7 +731,7 @@ out,base,inp,kout,theta= join(sample.to(device, dtype=torch.float))
 
 # ### Visualize the results
 
-# In[43]:
+# In[ ]:
 
 
 label_ = [card_edge_1,card_edge_2,card_edge_3,card_edge_4]
