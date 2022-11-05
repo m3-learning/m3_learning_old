@@ -5,7 +5,7 @@ import os
 import torch
 
 
-def layout_fig(graph, mod=None):
+def layout_fig(graph, mod=None, figsize = None):
 
     # """Utility function that helps lay out many figures
 
@@ -18,6 +18,8 @@ def layout_fig(graph, mod=None):
     # """
 
     # Sets the layout of graphs in matplotlib in a pretty way based on the number of plots
+    
+    
     if mod is None:
         # Select the number of columns to have in the graph
         if graph < 3:
@@ -32,12 +34,15 @@ def layout_fig(graph, mod=None):
             mod = 6
         elif graph < 37:
             mod = 7
+            
+    if figsize is None: 
+        figsize = (3 * mod, 3 * (graph // mod + (graph % mod > 0)))
 
     # builds the figure based on the number of graphs and a selected number of columns
     fig, axes = plt.subplots(
         graph // mod + (graph % mod > 0),
         mod,
-        figsize=(3 * mod, 3 * (graph // mod + (graph % mod > 0))),
+        figsize= figsize,
     )
 
     # deletes extra unneeded axes

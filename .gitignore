@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 m3_learning/Datasets/Mixed_phase_pzt_BEPFM/data_file_sho_fit.h5
 m3_learning/Datasets/Mixed_phase_pzt_BEPFM/data_file.h5
+m3_learning/papers/2023_Rapid_Fitting/data/
