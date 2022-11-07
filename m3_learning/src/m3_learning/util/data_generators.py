@@ -7,12 +7,22 @@ selu = nn.SELU()
 sigmoid = nn.Sigmoid()
 
 def default_nl_function(t, x, y, z):
-  
+  """defines a default non-linear function
+
+  Args:
+      t (np.array): time steps to calculate
+      x (np.array): parameter `x`
+      y (np.array): parameter `y`
+      z (np.array): parameter `z`
+
+  Returns:
+      np.array: Output spectra
+  """
   # returns a function from variables
   return tanh(torch.tensor(20*(t - 2*(x-.5)))) + selu(torch.tensor((t-2*(y-0.5)))) + sigmoid(torch.tensor(-20*(t-(z-0.5))))
 
 def generate_data(values, function=default_nl_function, length=25, range_=[-1, 1]):
-  """_summary_
+  """function to generate data based on an arbitrary function
 
   Args:
       values (array): Input values to use

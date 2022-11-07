@@ -5,10 +5,15 @@ import time
 import os
 from BGlib import be as belib
 import sidpy
-
+import numpy as np
 
 
 def print_be_tree(path):
+    """Utility file to print the Tree of a BE Dataset
+
+    Args:
+        path (str): path to the h5 file
+    """
     # Opens the translated file
     h5_f = h5py.File(path, "r+")
 
@@ -32,6 +37,15 @@ def print_be_tree(path):
         print("{} : {}".format(key, h5_f.file["/Measurement_000"].attrs[key]))
         
 def SHO_Fitter(input_file_path, force = False, max_cores = -1, max_mem=1024*8):
+    """Function that computes the SHO fit results
+
+    Args:
+        input_file_path (str): path to the h5 file
+        force (bool, optional): forces the SHO results to be computed from scratch. Defaults to False.
+        max_cores (int, optional): number of processor cores to use. Defaults to -1.
+        max_mem (_type_, optional): maximum ram to use. Defaults to 1024*8.
+    """
+    
     start_time_lsqf = time.time()
 
     (data_dir, filename) = os.path.split(input_file_path)
@@ -112,3 +126,26 @@ def SHO_Fitter(input_file_path, force = False, max_cores = -1, max_mem=1024*8):
     parms_dict = parms_dict = sidpy.hdf_utils.get_attributes(h5_main.parent.parent)
 
     print(f"LSQF method took {time.time() - start_time_lsqf} seconds to compute parameters")
+    
+def SHO_fit_to_array(fit_results):
+    """Utility function to convert the SHO fit results to an array
+
+    Args:
+        fit_results (h5 Dataset): Location of the fit results in an h5 file
+
+    Returns:
+        np.array: SHO fit results
+    """
+    # create a list for parameters
+    fit_results_list = []
+    for sublist in np.array(
+        fit_results
+    ):
+        for item in sublist:
+            for i in item:
+                fit_results_list.append(i)
+
+    # flatten parameters list into numpy array
+    fit_results_list = np.array(fit_results_list).reshape(fit_results.shape[0], fit_results.shape[1], 5)
+
+    return fit_results_list

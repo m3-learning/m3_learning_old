@@ -1,4 +1,9 @@
 def style(name = "default"):
+    """Function to implement custom default style for graphs
+
+    Args:
+        name (str, optional): style name. Defaults to "default".
+    """
     if name == "default":
         try:
             import seaborn as sns

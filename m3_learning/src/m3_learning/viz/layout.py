@@ -7,15 +7,15 @@ import torch
 
 def layout_fig(graph, mod=None, figsize = None):
 
-    # """Utility function that helps lay out many figures
+    """Utility function that helps lay out many figures
 
-    # Args:
-    #     graph (int): number of graphs
-    #     mod (int, optional): value that assists in determining the number of rows and columns. Defaults to None.
+    Args:
+        graph (int): number of graphs
+        mod (int, optional): value that assists in determining the number of rows and columns. Defaults to None.
 
-    # Returns:
-    #     tuple: figure and axis
-    # """
+    Returns:
+        tuple: figure and axis
+    """
 
     # Sets the layout of graphs in matplotlib in a pretty way based on the number of plots
     
