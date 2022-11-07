@@ -6,6 +6,7 @@ import zipfile
 import shutil
 import os.path
 import numpy as np
+from os.path import exists
 
 
 def make_folder(folder, **kwargs):
@@ -126,7 +127,7 @@ def get_size(start_path='.'):
             total_size += os.path.getsize(fp)
     return total_size
 
-def download_and_unzip(filename, url, save_path, download_data = True):
+def download_and_unzip(filename, url, save_path, force = False):
     """Function that computes the size of a folder
 
     Args:
@@ -136,16 +137,13 @@ def download_and_unzip(filename, url, save_path, download_data = True):
         download_data (bool, optional): sets if to download the data. Defaults to True.
     """    
     # if np.int(get_size(save_path) / 1e9) < 1:
-    if np.int(get_size(save_path) / 1e9) > 1:
+    if exists(save_path + filename) and not force:
         print('Using files already downloaded')
-    elif download_data:
+    else:
         print('downloading data')
         download_file(url, filename)
-    elif os.path.isfile(filename):
-        print('Using zip file already available')
-    else:
-        pass
 
-    if os.path.isfile(filename):
-        print(f'extracting {filename} to {save_path}')
-        unzip(filename, save_path)
+    if '.zip' in filename:
+        if os.path.isfile(filename):
+            print(f'extracting {filename} to {save_path}')
+            unzip(filename, save_path)
