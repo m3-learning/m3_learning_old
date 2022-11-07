@@ -8,4 +8,4 @@ pip install .
 conda run -n m3_learning jupyter-book build "C:\Users\Joshua Agar\Documents\codes\m3_learning\m3_learning"
 
 # Upload to pypi
-python3 -m twine upload --repository pypi dist/*
+python -m twine upload --repository pypi dist/*
