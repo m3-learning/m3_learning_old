@@ -27,5 +27,6 @@ m3\_learning.nn
    :toctree:
    :recursive:
 
+   m3_learning.nn.random
    m3_learning.nn.time_series_nn
 

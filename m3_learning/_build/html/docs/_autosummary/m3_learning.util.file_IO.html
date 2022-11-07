@@ -53,7 +53,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../../_static/m3_logo.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="m3_learning.util.rand_util" href="m3_learning.util.rand_util.html" />
+    <link rel="next" title="m3_learning.util.h5_util" href="m3_learning.util.h5_util.html" />
     <link rel="prev" title="m3_learning.util.data_generators" href="m3_learning.util.data_generators.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -116,6 +116,21 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
+  Data Sets
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../Datasets/Mixed_phase_pzt_BEPFM/1_SHO_Fitting.html">
+   Band Excitation Piezoresponse Force Microscopy of
+   <span class="math notranslate nohighlight">
+    \(PbZr_{0.2}Ti_{0.8}O_3\)
+   </span>
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
   Tutorials
  </span>
 </p>
@@ -163,8 +178,8 @@ const thebe_selector_output = ".output, .cell_output"
     </label>
     <ul class="current">
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="m3_learning.nn.html">
-       m3_learning.nn
+      <a class="reference internal" href="m3_learning.be.html">
+       m3_learning.be
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
@@ -172,6 +187,33 @@ const thebe_selector_output = ".output, .cell_output"
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.be.processing.html">
+         m3_learning.be.processing
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.be.util.html">
+         m3_learning.be.util
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="m3_learning.nn.html">
+       m3_learning.nn
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.nn.random.html">
+         m3_learning.nn.random
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="m3_learning.nn.time_series_nn.html">
          m3_learning.nn.time_series_nn
@@ -183,8 +225,8 @@ const thebe_selector_output = ".output, .cell_output"
       <a class="reference internal" href="m3_learning.util.html">
        m3_learning.util
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -200,6 +242,16 @@ const thebe_selector_output = ".output, .cell_output"
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.util.h5_util.html">
+         m3_learning.util.h5_util
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.util.preprocessing.html">
+         m3_learning.util.preprocessing
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="m3_learning.util.rand_util.html">
          m3_learning.util.rand_util
         </a>
@@ -210,8 +262,8 @@ const thebe_selector_output = ".output, .cell_output"
       <a class="reference internal" href="m3_learning.viz.html">
        m3_learning.viz
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -219,6 +271,11 @@ const thebe_selector_output = ".output, .cell_output"
        <li class="toctree-l4">
         <a class="reference internal" href="m3_learning.viz.layout.html">
          m3_learning.viz.layout
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.viz.style.html">
+         m3_learning.viz.style
         </a>
        </li>
       </ul>
@@ -409,14 +466,32 @@ title="Print to PDF"
   <section id="module-m3_learning.util.file_IO">
 <span id="m3-learning-util-file-io"></span><h1>m3_learning.util.file_IO<a class="headerlink" href="#module-m3_learning.util.file_IO" title="Permalink to this headline">#</a></h1>
 <p class="rubric">Functions</p>
-<table class="longtable table autosummary">
+<table class="autosummary longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compress_folder</span></code>(base_name, format[, root_dir])</p></td>
+<td><p>Function that zips a folder can save zip and tar</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_and_unzip</span></code>(filename, url, save_path)</p></td>
+<td><p>Function that computes the size of a folder</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_file</span></code>(url, filename)</p></td>
+<td><p>A function that downloads the data file from a URL</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_size</span></code>([start_path])</p></td>
+<td><p>A function that computes the size of a folder</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_folder</span></code>(folder, **kwargs)</p></td>
 <td><p>Utility to make folders</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reporthook</span></code>(count, block_size, total_size)</p></td>
+<td><p>A function that displays the status and speed of the download</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unzip</span></code>(filename, path)</p></td>
+<td><p>Function that unzips the files</p></td>
 </tr>
 </tbody>
 </table>
@@ -456,10 +531,10 @@ title="Print to PDF"
             <p class="prev-next-title">m3_learning.util.data_generators</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="m3_learning.util.rand_util.html" title="next page">
+    <a class='right-next' id="next-link" href="m3_learning.util.h5_util.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">m3_learning.util.rand_util</p>
+        <p class="prev-next-title">m3_learning.util.h5_util</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

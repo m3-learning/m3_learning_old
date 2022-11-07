@@ -27,6 +27,7 @@
    :toctree:
    :recursive:
 
+   m3_learning.be
    m3_learning.nn
    m3_learning.util
    m3_learning.viz

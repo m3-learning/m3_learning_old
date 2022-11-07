@@ -13,7 +13,13 @@ m3\_learning.util.file\_IO
 
    .. autosummary::
    
+      compress_folder
+      download_and_unzip
+      download_file
+      get_size
       make_folder
+      reporthook
+      unzip
    
    
 

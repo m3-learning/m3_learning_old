@@ -28,4 +28,5 @@ m3\_learning.viz
    :recursive:
 
    m3_learning.viz.layout
+   m3_learning.viz.style
 

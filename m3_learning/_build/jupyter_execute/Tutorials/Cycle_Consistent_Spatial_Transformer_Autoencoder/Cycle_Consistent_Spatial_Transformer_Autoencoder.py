@@ -585,7 +585,8 @@ def loss_function(join,
         predicted_x,predicted_base,predicted_input,kout,theta = join(x)
 
         # combines the loss from the affine and inverse affine transform
-        loss = F.mse_loss(predicted_base.squeeze(), predicted_x.squeeze(), reduction='mean')                + F.mse_loss(predicted_input.squeeze(), x.squeeze(), reduction='mean')
+        loss = F.mse_loss(predicted_base.squeeze(), predicted_x.squeeze(), reduction='mean')\
+                + F.mse_loss(predicted_input.squeeze(), x.squeeze(), reduction='mean')
 
         # backward pass
         train_loss += loss.item()
