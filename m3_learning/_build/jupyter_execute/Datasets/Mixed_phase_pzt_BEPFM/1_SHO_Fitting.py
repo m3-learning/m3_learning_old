@@ -14,7 +14,7 @@
 
 # ## Import Packages
 
-# In[3]:
+# In[1]:
 
 
 import h5py
@@ -45,13 +45,13 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # ## Loading data for SHO fitting
 # 
 
-# In[4]:
+# In[2]:
 
 
 path = r"./"
 
 
-# In[5]:
+# In[3]:
 
 
 url = 'https://zenodo.org/record/7297755/files/data_file.h5?download=1'
@@ -63,7 +63,7 @@ download_and_unzip(filename, url, save_path)
 
 # Prints the Tree to show the Data Structure
 
-# In[6]:
+# In[4]:
 
 
 print_be_tree(path + "data_file.h5")
@@ -72,7 +72,7 @@ print_be_tree(path + "data_file.h5")
 # ## SHO Fitting
 # **Note**: this code takes around 15 minutes to execute
 
-# In[7]:
+# In[5]:
 
 
 SHO_Fitter(path + "data_file.h5")
@@ -80,7 +80,7 @@ SHO_Fitter(path + "data_file.h5")
 
 # ### Extract Data
 
-# In[8]:
+# In[6]:
 
 
 # Opens the data file
@@ -125,7 +125,7 @@ raw_data = h5_f["Measurement_000"]["Channel_000"]["Raw_Data"]
 
 # ### Saves the Data
 
-# In[9]:
+# In[7]:
 
 
 shape = h5_f["Measurement_000"]["Channel_000"]["Raw_Data"].shape
@@ -144,14 +144,14 @@ make_dataset(h5_f["Measurement_000"]["Channel_000"]['magn_spec'], 'phase', phase
 
 # ### Plots the SHO Fit Results
 
-# In[11]:
+# In[8]:
 
 
 dc_voltage = h5_f["Measurement_000"]["Channel_000"]['Raw_Data-SHO_Fit_000']['Spectroscopic_Values'][0,1::2]
 SHO_fit_results = SHO_fit_to_array(h5_f["Measurement_000"]["Channel_000"]["Raw_Data-SHO_Fit_000"]["Fit"])
 
 
-# In[12]:
+# In[9]:
 
 
 pix = np.random.randint(0,3600)
@@ -175,7 +175,7 @@ for i, ax in enumerate(ax):
 
 # ### Visualize Raw Data
 
-# In[13]:
+# In[10]:
 
 
 # Selects a random point and timestep to plot
@@ -265,7 +265,7 @@ ax3.set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)");
 
 # ### Visualize the SHO Fit Results
 
-# In[14]:
+# In[11]:
 
 
 # create a list for parameters
@@ -281,7 +281,7 @@ for sublist in np.array(
 fit_results_list = np.array(fit_results_list).reshape(num_pix, voltage_steps, 5)
 
 
-# In[15]:
+# In[12]:
 
 
 # check distributions of each parameter before and after scaling
@@ -305,14 +305,14 @@ for i, ax in enumerate(axs.flat):
 
 # # Piezoelectric Hysteresis Loops
 
-# In[16]:
+# In[13]:
 
 
 h5_main = h5_f["Measurement_000"]["Channel_000"]["Raw_Data-SHO_Fit_000"]["Guess"]
 h5_loop_fit, h5_loop_group = fit_loop_function(h5_f, h5_main)
 
 
-# In[17]:
+# In[14]:
 
 
 # Formats the data for viewing
@@ -320,7 +320,7 @@ proj_nd_shifted = loop_lsqf(h5_f)
 proj_nd_shifted_transposed = np.transpose(proj_nd_shifted, (1, 0, 2, 3))
 
 
-# In[18]:
+# In[15]:
 
 
 fig, axs = plt.subplots(figsize=(18, 6), nrows=1, ncols=2)
@@ -369,7 +369,7 @@ axs[1].axhline(y=0, xmin=-16, xmax=16, linestyle="--", color="black")
 axs[1].axvline(x=0, linestyle="--", color="black")
 
 
-# In[19]:
+# In[16]:
 
 
 # Closes the h5_file

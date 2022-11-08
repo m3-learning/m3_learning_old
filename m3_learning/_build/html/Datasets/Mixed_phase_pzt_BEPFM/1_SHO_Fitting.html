@@ -50,6 +50,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="shortcut icon" href="../../_static/m3_logo.png"/>
@@ -716,7 +718,9 @@ title="Print to PDF"
 default set for matplotlib
 Pytorch seed was set to 42
 Numpy seed was set to 42
-tensorflow seed was set to 42
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensorflow seed was set to 42
 </pre></div>
 </div>
 </div>
@@ -769,8 +773,12 @@ tensorflow seed was set to 42
     ├ Noise_Floor
     ├ Position_Indices
     ├ Position_Values
-    ├ Raw_Data
-    ├ Raw_Data-SHO_Fit_000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    ├ Raw_Data
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    ├ Raw_Data-SHO_Fit_000
       --------------------
       ├ Fit
       ├ Guess
@@ -786,6 +794,7 @@ tensorflow seed was set to 42
         ├ Projected_Loops
         ├ completed_fit_positions
         ├ completed_guess_positions
+        ├ completed_positions
       ├ Spectroscopic_Indices
       ├ Spectroscopic_Values
       ├ completed_fit_positions
@@ -826,6 +835,7 @@ tensorflow seed was set to 42
   ├ Spectroscopic_Values
   ├ completed_fit_positions
   ├ completed_guess_positions
+  ├ completed_positions
 Datasets and datagroups within the file:
 ------------------------------------
 /
@@ -855,6 +865,7 @@ Datasets and datagroups within the file:
 /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000/Projected_Loops
 /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000/completed_fit_positions
 /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000/completed_guess_positions
+/Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000/completed_positions
 /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Spectroscopic_Indices
 /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Spectroscopic_Values
 /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/completed_fit_positions
@@ -890,6 +901,7 @@ Datasets and datagroups within the file:
 /Raw_Data-SHO_Fit_000/Spectroscopic_Values
 /Raw_Data-SHO_Fit_000/completed_fit_positions
 /Raw_Data-SHO_Fit_000/completed_guess_positions
+/Raw_Data-SHO_Fit_000/completed_positions
 
 The main dataset:
 ------------------------------------
@@ -981,27 +993,30 @@ num_udvs_steps : 384
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>File is already Pycroscopy ready.
+Working on:
+./data_file.h5
+</pre></div>
+</div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\jca92\AppData\Roaming\Python\Python310\site-packages\sidpy\sid\translator.py:42: FutureWarning: Consider using sidpy.Reader instead of sidpy.Translator if possible and contribute your reader to ScopeReaders
   warn(&#39;Consider using sidpy.Reader instead of sidpy.Translator if &#39;
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>File is already Pycroscopy ready.
-Working on:
-./data_file.h5
-[&#39;Y&#39;, &#39;X&#39;] [60, 60]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;Y&#39;, &#39;X&#39;] [60, 60]
 
 
 SHO Fits will be written to:
 .\data_file.h5
-
-
-Consider calling test() to check results before calling compute() which computes on the entire dataset and writes results to the HDF5 file
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Consider calling test() to check results before calling compute() which computes on the entire dataset and writes results to the HDF5 file
 
 Note: SHO_Fit has already been performed with the same parameters before. These results will be returned by compute() by default. Set override to True to force fresh computation
 
 [&lt;HDF5 group &quot;/Raw_Data-SHO_Fit_000&quot; (7 members)&gt;]
-
-Note: SHO_Fit has already been performed with the same parameters before. These results will be returned by compute() by default. Set override to True to force fresh computation
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Note: SHO_Fit has already been performed with the same parameters before. These results will be returned by compute() by default. Set override to True to force fresh computation
 
 [&lt;HDF5 group &quot;/Raw_Data-SHO_Fit_000&quot; (7 members)&gt;]
 Returned previously computed results at /Raw_Data-SHO_Fit_000
@@ -1009,15 +1024,18 @@ Returned previously computed results at /Raw_Data-SHO_Fit_000
 Note: SHO_Fit has already been performed PARTIALLY with the same parameters. compute() will resuming computation in the last group below. To choose a different group call use_patial_computation()Set override to True to force fresh computation or resume from a data group besides the last in the list.
 
 [&lt;HDF5 group &quot;/Raw_Data-SHO_Fit_000&quot; (7 members)&gt;]
-Resuming computation. 0% completed already
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Resuming computation. 0% completed already
 	This class (likely) supports interruption and resuming of computations!
 	If you are operating in a python console, press Ctrl+C or Cmd+C to abort
 	If you are in a Jupyter notebook, click on &quot;Kernel&quot;&gt;&gt;&quot;Interrupt&quot;
 	If you are operating on a cluster and your job gets killed, re-run the job to resume
-
-Rank 0 - 100% complete. Time remaining: 0.0 msec
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Rank 0 - 100% complete. Time remaining: 0.0 msec
 Finished processing the entire dataset!
-LSQF method took 183.35598731040955 seconds to compute parameters
+LSQF method took 1149.288510799408 seconds to compute parameters
 </pre></div>
 </div>
 </div>
@@ -1224,11 +1242,11 @@ could not add group - it might already exist
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>860 14
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3507 14
 Number of time steps: 4096.0
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\jca92\.conda\envs\rapid_fitting\lib\site-packages\matplotlib\cbook\__init__.py:1369: ComplexWarning: Casting complex values to real discards the imaginary part
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\jca92\.conda\envs\m3_learning\lib\site-packages\matplotlib\cbook\__init__.py:1369: ComplexWarning: Casting complex values to real discards the imaginary part
   return np.asarray(x, float)
 </pre></div>
 </div>
@@ -1308,7 +1326,9 @@ Returned previously computed results at /Measurement_000/Channel_000/Raw_Data-SH
 Note: Loop_Fit has already been performed with the same parameters before. These results will be returned by compute() by default. Set override to True to force fresh computation
 
 [&lt;HDF5 group &quot;/Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000&quot; (11 members)&gt;]
-Returned previously computed results at /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Returned previously computed results at /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\jca92\AppData\Roaming\Python\Python310\site-packages\pyUSID\io\hdf_utils\simple.py:888: UserWarning: A dataset named: Guess_Loop_Parameters already exists in group: /Measurement_000/Channel_000/Raw_Data-SHO_Fit_000/Guess-Loop_Fit_000
@@ -1384,7 +1404,7 @@ No position datasets found as attributes of /Measurement_000/Channel_000/Raw_Dat
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.lines.Line2D at 0x1c279bcd510&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.lines.Line2D at 0x1d0546cc400&gt;
 </pre></div>
 </div>
 <img alt="../../_images/1_SHO_Fitting_25_1.png" src="../../_images/1_SHO_Fitting_25_1.png" />
@@ -1399,6 +1419,12 @@ No position datasets found as attributes of /Measurement_000/Channel_000/Raw_Dat
 </div>
 </div>
 </section>
+
+
+<script type="application/vnd.jupyter.widget-state+json">
+{"state": {"e038ecdc29544b02b1f7e0d75d7b876d": {"model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": "500px"}}}, "version_major": 2, "version_minor": 0}
+</script>
+
 
     <script type="text/x-thebe-config">
     {
