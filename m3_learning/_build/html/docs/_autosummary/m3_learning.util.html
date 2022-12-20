@@ -50,6 +50,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <link rel="shortcut icon" href="../../_static/m3_logo.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -116,6 +118,21 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
+  Data Sets
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../Datasets/Mixed_phase_pzt_BEPFM/1_SHO_Fitting.html">
+   Band Excitation Piezoresponse Force Microscopy of
+   <span class="math notranslate nohighlight">
+    \(PbZr_{0.2}Ti_{0.8}O_3\)
+   </span>
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
   Tutorials
  </span>
 </p>
@@ -163,8 +180,8 @@ const thebe_selector_output = ".output, .cell_output"
     </label>
     <ul class="current">
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="m3_learning.nn.html">
-       m3_learning.nn
+      <a class="reference internal" href="m3_learning.be.html">
+       m3_learning.be
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
       <label for="toctree-checkbox-3">
@@ -172,6 +189,33 @@ const thebe_selector_output = ".output, .cell_output"
        </i>
       </label>
       <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.be.processing.html">
+         m3_learning.be.processing
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.be.util.html">
+         m3_learning.be.util
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="m3_learning.nn.html">
+       m3_learning.nn
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+      <label for="toctree-checkbox-4">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.nn.random.html">
+         m3_learning.nn.random
+        </a>
+       </li>
        <li class="toctree-l4">
         <a class="reference internal" href="m3_learning.nn.time_series_nn.html">
          m3_learning.nn.time_series_nn
@@ -183,8 +227,8 @@ const thebe_selector_output = ".output, .cell_output"
       <a class="current reference internal" href="#">
        m3_learning.util
       </a>
-      <input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-      <label for="toctree-checkbox-4">
+      <input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+      <label for="toctree-checkbox-5">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -200,6 +244,16 @@ const thebe_selector_output = ".output, .cell_output"
         </a>
        </li>
        <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.util.h5_util.html">
+         m3_learning.util.h5_util
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.util.preprocessing.html">
+         m3_learning.util.preprocessing
+        </a>
+       </li>
+       <li class="toctree-l4">
         <a class="reference internal" href="m3_learning.util.rand_util.html">
          m3_learning.util.rand_util
         </a>
@@ -210,8 +264,8 @@ const thebe_selector_output = ".output, .cell_output"
       <a class="reference internal" href="m3_learning.viz.html">
        m3_learning.viz
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-      <label for="toctree-checkbox-5">
+      <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+      <label for="toctree-checkbox-6">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -219,6 +273,11 @@ const thebe_selector_output = ".output, .cell_output"
        <li class="toctree-l4">
         <a class="reference internal" href="m3_learning.viz.layout.html">
          m3_learning.viz.layout
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="m3_learning.viz.style.html">
+         m3_learning.viz.style
         </a>
        </li>
       </ul>
@@ -409,7 +468,7 @@ title="Print to PDF"
   <section id="module-m3_learning.util">
 <span id="m3-learning-util"></span><h1>m3_learning.util<a class="headerlink" href="#module-m3_learning.util" title="Permalink to this headline">#</a></h1>
 <p class="rubric">Modules</p>
-<table class="longtable table autosummary">
+<table class="autosummary longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -420,6 +479,12 @@ title="Print to PDF"
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="m3_learning.util.file_IO.html#module-m3_learning.util.file_IO" title="m3_learning.util.file_IO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">m3_learning.util.file_IO</span></code></a></p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="m3_learning.util.h5_util.html#module-m3_learning.util.h5_util" title="m3_learning.util.h5_util"><code class="xref py py-obj docutils literal notranslate"><span class="pre">m3_learning.util.h5_util</span></code></a></p></td>
+<td><p>Created on Sun Jan 24 16:34:00 2021 &#64;author: Alibek Kaliyev</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="m3_learning.util.preprocessing.html#module-m3_learning.util.preprocessing" title="m3_learning.util.preprocessing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">m3_learning.util.preprocessing</span></code></a></p></td>
+<td><p>Created on Sun Jan 24 16:34:00 2021 &#64;author: Alibek Kaliyev</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="m3_learning.util.rand_util.html#module-m3_learning.util.rand_util" title="m3_learning.util.rand_util"><code class="xref py py-obj docutils literal notranslate"><span class="pre">m3_learning.util.rand_util</span></code></a></p></td>
 <td><p></p></td>

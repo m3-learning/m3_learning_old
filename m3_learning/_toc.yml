@@ -3,6 +3,10 @@ root: jupyterbook/Introduction
 options:
   numbered: true
 parts:
+  - caption: "Data Sets"
+    chapters:
+      - file: Datasets/Mixed_phase_pzt_BEPFM/1_SHO_Fitting
+        title: "Band Excitation Piezoresponse Force Microscopy of $PbZr_{0.2}Ti_{0.8}O_3$"
   - caption: "Tutorials"
     chapters:
       - file: Tutorials/Unsupervised_Learning_with_AEs/Unsupervised_Learning_with_Autoencoders
