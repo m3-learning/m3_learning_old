@@ -15,6 +15,44 @@ from pyUSID.io.hdf_utils import  reshape_to_n_dims, get_auxiliary_datasets
 from sidpy.hdf.hdf_utils import get_attr
 
 
+def transform_params(params_real, params_pred):
+    """Utility function to transform the parameters to the correct distribution
+
+    Args:
+        params_real (np.array): real parameters
+        params_pred (np.array): predicted parameters
+
+    Returns:
+        tuple(np.array, np.array): returns the tuple of updated real and predicted parameters
+    """
+    params_pred[:, 3] = params_pred[:, 3] + 1/2 * np.pi
+    params_real[:, 3] = params_real[:, 3] + 1/2 * np.pi
+
+    params_pred[:, 3] = np.where(
+        params_pred[:, 3] < np.pi, params_pred[:, 3], params_pred[:, 3] - 2 * np.pi)
+    params_real[:, 3] = np.where(
+        params_real[:, 3] < np.pi, params_real[:, 3], params_real[:, 3] - 2 * np.pi)
+
+    params_pred[:, 3] = np.where(
+        params_pred[:, 2] > 0, params_pred[:, 3], params_pred[:, 3] + np.pi)
+    params_real[:, 3] = np.where(
+        params_real[:, 2] > 0, params_real[:, 3], params_real[:, 3] + np.pi)
+
+    params_pred[:, 2] = np.where(
+        params_pred[:, 2] > 0, params_pred[:, 2], params_pred[:, 2]*-1)
+    params_real[:, 2] = np.where(
+        params_real[:, 2] > 0, params_real[:, 2], params_real[:, 2]*-1)
+
+    params_pred[:, 3] = np.where(
+        params_pred[:, 3] < np.pi, params_pred[:, 3], params_pred[:, 3] - 2 * np.pi)
+    params_real[:, 3] = np.where(
+        params_real[:, 3] < np.pi, params_real[:, 3], params_real[:, 3] - 2 * np.pi)
+    
+    params_pred[:, 0] = np.abs(params_pred[:, 0])
+
+    return params_real, params_pred
+
+
 def convert_amp_phase(data):
   """Utility function to extract the magnitude and phase from complex data
 
