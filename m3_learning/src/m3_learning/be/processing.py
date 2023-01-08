@@ -129,7 +129,7 @@ def SHO_Fitter(input_file_path, force = False, max_cores = -1, max_mem=1024*8):
             vs_cycle_frac = "full"
 
     sho_fit_points = 5  # The number of data points at each step to use when fitting
-    sho_override = False  # Force recompute if True
+    sho_override = force  # Force recompute if True
 
     
 
