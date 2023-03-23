@@ -162,3 +162,5 @@ xlrd==2.0.1
 zenodopy==0.3.0
 zict==2.2.0
 zipfile38==0.0.3
+
+gdown==4.5.3
