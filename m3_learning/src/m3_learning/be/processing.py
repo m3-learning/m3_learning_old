@@ -159,7 +159,7 @@ def SHO_Fitter(input_file_path, force = False, max_cores = -1, max_mem=1024*8):
 
     print(f"LSQF method took {time.time() - start_time_lsqf} seconds to compute parameters")
     
-def SHO_fit_to_array(fit_results):
+def SHO_fit_to_array(fit_results, channels = 5):
     """Utility function to convert the SHO fit results to an array
 
     Args:
@@ -178,7 +178,7 @@ def SHO_fit_to_array(fit_results):
                 fit_results_list.append(i)
 
     # flatten parameters list into numpy array
-    fit_results_list = np.array(fit_results_list).reshape(fit_results.shape[0], fit_results.shape[1], 5)
+    fit_results_list = np.array(fit_results_list).reshape(fit_results.shape[0], fit_results.shape[1], channels)
 
     return fit_results_list
 
