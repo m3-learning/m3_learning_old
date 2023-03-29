@@ -17,11 +17,17 @@ from scipy import fftpack
 
 class BE_Dataset:
 
-    def __init__(self, dataset, state='on', basepath='./figures/'):
+    def __init__(self, dataset, state='on', basepath='./figures/', testing=False):
 
         self.dataset = dataset
         self.state = state
         self.printing = printer(basepath=basepath)
+
+        def pass_(*args, **kwargs):
+            pass
+
+        if testing:
+            self.printing.savefig = pass_
 
         with h5py.File(self.dataset, "r+") as h5_f:
             try:
@@ -424,10 +430,13 @@ class BE_Dataset:
 
     class Viz:
 
-        def __init__(self, dataset, state='lsqf'):
+        def __init__(self, dataset, state='lsqf', shift=None):
+
+            self.shift = shift
 
             self.dataset = dataset
             self.state = state
+            self.printing = self.dataset.printing
 
             self.labels = [{'title': "Amplitude",
                             'y_label': "Amplitude (Arb. U.)",
@@ -557,7 +566,11 @@ class BE_Dataset:
             fig, axs = layout_fig(4, 4, figsize=(20, 4))
 
             for ax, label in zip(axs.flat, self.labels):
-                ax.hist(getattr(self.dataset, label['attr']).flatten(), 100)
+                data = getattr(self.dataset, label['attr'])
+                if label['attr'] == "SHO_fit_phase" and self.shift is not None:
+                    data = self.shift_phase(data)
+
+                ax.hist(data.flatten(), 100)
                 ax.set(xlabel=label['y_label'], ylabel="counts")
                 ax.ticklabel_format(axis="x", style="sci", scilimits=(0, 0))
 
@@ -572,13 +585,40 @@ class BE_Dataset:
             fig, ax = layout_fig(4, 4, figsize=(30, 6))
 
             for ax, label in zip(ax, self.labels):
-                ax.plot(self.dataset.dc_voltage, getattr(
-                    self.dataset, label['attr'])[pix, :])
+
+                data = getattr(
+                    self.dataset, label['attr'])[pix, :]
+
+                if label['attr'] == "SHO_fit_phase" and self.shift is not None:
+                    data = self.shift_phase(data)
+
+                ax.plot(self.dataset.dc_voltage, data)
                 ax.set_title(label['title'])
                 ax.set_ylabel(label['y_label'])
 
             fig.tight_layout()
             self.printing.savefig(fig, filename)
+
+        def shift_phase(self, phase):
+            """
+            Shifts an array of phases in radians such that they go around the unit circle with a specified phase shift.
+
+            Args:
+            phases (numpy.ndarray): The array of phase values.
+            phase_shift (float): The desired phase shift in radians (default=0).
+
+            Returns:
+            numpy.ndarray: The shifted phase values.
+            """
+            phases_shifted = np.mod(
+                phase + self.shift, 2*np.pi)  # wrap phase values to [0, 2*pi) with phase shift
+            phases_shifted[phases_shifted > np.pi] -= 2 * \
+                np.pi  # shift phase values greater than pi
+            return phases_shifted
+
+    # def shift_phase(self, phase):
+    #     # Shift the phase angle and wrap it to the range [0, 2π)
+    #     return (phase + self.shift + np.pi) % (2 * np.pi) - np.pi
 
     def lsqf_viz(self):
         self.lsqf_viz = self.Viz(self, state='lsqf')
