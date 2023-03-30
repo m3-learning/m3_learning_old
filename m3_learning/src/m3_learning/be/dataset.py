@@ -13,6 +13,7 @@ from matplotlib.patches import ConnectionPatch
 from ..viz.layout import layout_fig
 from scipy.signal import resample
 from scipy import fftpack
+from sklearn.preprocessing import StandardScaler
 
 
 class BE_Dataset:
@@ -470,15 +471,6 @@ class BE_Dataset:
             return h5_f["/Raw_Data-SHO_Fit_000/Spectroscopic_Values"][0, 1::2]
 
     @property
-    def SHO_fit(self):
-        with h5py.File(self.dataset, "r") as h5_f:
-            try:
-                return self._SHO_fit
-            except:
-                self.SHO_fit = 5
-                return self._SHO_fit
-
-    @property
     def SHO_fit_on(self):
         with h5py.File(self.dataset, "r") as h5_f:
             return self._SHO_fit[:, 1::2, :]
@@ -518,6 +510,15 @@ class BE_Dataset:
             return self.SHO_fit_on
         elif self.state == "off":
             return self.SHO_fit_off
+
+    @property
+    def SHO_fit(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            try:
+                return self._SHO_fit
+            except:
+                self.SHO_fit = 5
+                return self._SHO_fit
 
     @SHO_fit.setter
     def SHO_fit(self, channels=5):
@@ -676,14 +677,19 @@ class BE_Dataset:
             self.printing.savefig(
                 fig, filename, tight_layout=False)
 
-        def SHO_hist(self, filename="Figure_3_SHO_fit_results_before_scaling"):
+        def SHO_hist(self, filename="Figure_3_SHO_fit_results_before_scaling", data_type=None):
+
+            if data_type == 'scaled':
+                postfix = '_scaled'
+            else:
+                postfix = ''
 
             # check distributions of each parameter before and after scaling
             fig, axs = layout_fig(4, 4, figsize=(20, 4))
 
             for ax, label in zip(axs.flat, self.labels):
-                data = getattr(self.dataset, label['attr'])
-                if label['attr'] == "SHO_fit_phase" and self.shift is not None:
+                data = getattr(self.dataset, label['attr'] + postfix)
+                if label['attr'] == "SHO_fit_phase" and self.shift is not None and postfix == "":
                     data = self.shift_phase(data)
 
                 ax.hist(data.flatten(), 100)
@@ -732,7 +738,7 @@ class BE_Dataset:
             timestep = np.random.randint(self.dataset.voltage_steps)
 
             # plot real and imaginary components of resampled data
-            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
 
             def plot_curve(axs, x, y, label, color, key=''):
                 axs.plot(
@@ -800,3 +806,70 @@ class BE_Dataset:
     def delete(self, name):
         with h5py.File(self.dataset, "r+") as h5_f:
             del h5_f[name]
+
+    def SHO_Scaler(self, shifter=None,
+                   save_loc='SHO_fit_scaled',
+                   basepath="Raw_Data-SHO_Fit_000"):
+        self.SHO_scaler = StandardScaler()
+        data = self._SHO_fit.reshape(-1, 5).copy()
+        try:
+            if shifter.shift is not None:
+                data[:, 3] = shifter.shift_phase(data[:, 3])
+        except:
+            pass
+        fit_results_scaled = self.SHO_scaler.fit_transform(
+            data).reshape(self.num_pix, -1, 5)
+
+        try:
+            with h5py.File(self.dataset, "r+") as h5_f:
+                # saves the scaled data to the h5 file
+                make_dataset(h5_f[basepath],
+                             save_loc, fit_results_scaled)
+        except:
+            pass
+
+    @property
+    def SHO_fit_on_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return self._SHO_fit_scaled[:, 1::2, :]
+
+    @property
+    def SHO_fit_off_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return self._SHO_fit_scaled[:, ::2, :]
+
+    @property
+    def SHO_fit_amp_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return self.SHO_state_scaled()[:, :, 0]
+
+    @property
+    def SHO_fit_resonance_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return self.SHO_state_scaled()[:, :, 1]
+
+    @property
+    def SHO_fit_q_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return self.SHO_state_scaled()[:, :, 2]
+
+    @property
+    def SHO_fit_phase_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return self.SHO_state_scaled()[:, :, 3]
+
+    @property
+    def SHO_fit_r2_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return self.SHO_state_scaled()[:, :, 4]
+
+    def SHO_state_scaled(self):
+        if self.state == "on":
+            return self.SHO_fit_on_scaled
+        elif self.state == "off":
+            return self.SHO_fit_off_scaled
+
+    @property
+    def _SHO_fit_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            return h5_f["/Raw_Data-SHO_Fit_000/SHO_fit_scaled"][:]
