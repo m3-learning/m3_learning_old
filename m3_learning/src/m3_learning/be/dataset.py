@@ -17,11 +17,17 @@ from scipy import fftpack
 
 class BE_Dataset:
 
-    def __init__(self, dataset, state='on', basepath='./figures/', testing=False):
+    def __init__(self,
+                 dataset,
+                 state='on',
+                 basepath='./figures/',
+                 testing=False,
+                 resampling_bins=80):
 
         self.dataset = dataset
         self.state = state
         self.printing = printer(basepath=basepath)
+        self.resample_bins = 80
 
         def pass_(*args, **kwargs):
             pass
@@ -229,13 +235,13 @@ class BE_Dataset:
             return h5_f["Measurement_000"]["Channel_000"]["Bin_Frequencies"][:]
 
     @property
-    def wvec_freq(self, bins=80):
+    def wvec_freq(self):
         """Resampled frequency vector in Hz"""
         with h5py.File(self.dataset, "r") as h5_f:
             try:
                 return self._wvec_freq
             except:
-                self.wvec_freq = bins
+                self.wvec_freq = self.resample_bins
                 return self._wvec_freq
 
     @wvec_freq.setter
@@ -274,7 +280,7 @@ class BE_Dataset:
     def raw_data_resampled(self, a=None):
         with h5py.File(self.dataset, "r+") as h5_f:
             resampled_ = self.resampler(
-                self.raw_data.reshape(-1, self.num_bins), axis=1)
+                self.raw_data.reshape(-1, self.num_bins), axis=2)
             make_dataset(h5_f["Measurement_000"]["Channel_000"],
                          'raw_data_resampled', resampled_)
             self._raw_data_resampled = h5_f[
@@ -313,13 +319,13 @@ class BE_Dataset:
     def complex_spectrum_real(self):
         """Real part of the complex data"""
         with h5py.File(self.dataset, "r+") as h5_f:
-            return h5_f["Measurement_000"]["Channel_000"]['complex']['real'][:]
+            return h5_f["Measurement_000"]["Channel_000"]['complex']['real'][:].reshape(self.num_pix, -1, self.num_bins)
 
     @property
     def complex_spectrum_imag(self):
         """Imaginary part of the complex data"""
         with h5py.File(self.dataset, "r+") as h5_f:
-            return h5_f["Measurement_000"]["Channel_000"]['complex']['imag'][:]
+            return h5_f["Measurement_000"]["Channel_000"]['complex']['imag'][:].reshape(self.num_pix, -1, self.num_bins)
 
     @property
     def complex_spectrum_real_resampled(self):
@@ -403,24 +409,36 @@ class BE_Dataset:
     @magnitude_spectrum_resampled.setter
     def magnitude_spectrum_resampled(self, a=None):
         with h5py.File(self.dataset, "r+") as h5_f:
-            make_group(h5_f["Measurement_000"]
-                       ["Channel_000"], 'magnitude_spectrum_resampled')
-            make_dataset(h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled'], 'amplitude', np.abs(
-                self._raw_data_resampled))
-            make_dataset(h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled'], 'phase', np.angle(
-                self._raw_data_resampled))
+            try:
+                make_group(h5_f["Measurement_000"]
+                           ["Channel_000"], 'magnitude_spectrum_resampled')
+            except:
+                pass
+
+            try:
+                make_dataset(h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled'], 'amplitude', np.abs(
+                    self._raw_data_resampled))
+            except:
+                pass
+
+            try:
+                make_dataset(h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled'], 'phase', np.angle(
+                    self._raw_data_resampled))
+            except:
+                pass
+
             self._magnitude_spectrum_resampled = h5_f["Measurement_000"][
                 "Channel_000"]['magnitude_spectrum_resampled']
 
     @property
     def magnitude_spectrum_amplitude(self):
         with h5py.File(self.dataset, "r+") as h5_f:
-            return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum']['amplitude'][:]
+            return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum']['amplitude'][:].reshape(self.num_pix, -1, self.num_bins)
 
     @property
     def magnitude_spectrum_phase(self):
         with h5py.File(self.dataset, "r+") as h5_f:
-            return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum']['phase'][:]
+            return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum']['phase'][:].reshape(self.num_pix, -1, self.num_bins)
 
     @property
     def magnitude_spectrum_amplitude_resampled(self):
@@ -707,5 +725,78 @@ class BE_Dataset:
                 np.pi  # shift phase values greater than pi
             return phase_ - self.shift - np.pi
 
+        def raw_resampled_data(self, filename="Figure_4_raw_and_resampled_raw_data"):
+
+            # Select a random point and time step to plot
+            pixel = np.random.randint(0, self.dataset.num_pix)
+            timestep = np.random.randint(self.dataset.voltage_steps)
+
+            # plot real and imaginary components of resampled data
+            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+
+            def plot_curve(axs, x, y, label, color, key=''):
+                axs.plot(
+                    x,
+                    y[pixel, timestep],
+                    key,
+                    label=label,
+                    color=color,
+                )
+            plot_curve(axs[0], self.dataset.frequency_bin,
+                       self.dataset.magnitude_spectrum_amplitude,
+                       "amplitude", 'b')
+
+            plot_curve(axs[0], self.dataset.wvec_freq,
+                       self.dataset.magnitude_spectrum_amplitude_resampled,
+                       "amplitude resampled", 'b', key='o')
+
+            axs[0].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+
+            ax2 = axs[0].twinx()
+
+            plot_curve(ax2, self.dataset.frequency_bin,
+                       self.dataset.magnitude_spectrum_phase, label="phase", color='r')
+
+            plot_curve(ax2, self.dataset.wvec_freq,
+                       self.dataset.magnitude_spectrum_phase_resampled,
+                       label="phase resampled", color='r',
+                       key='s')
+
+            ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
+
+            plot_curve(axs[1], self.dataset.frequency_bin,
+                       self.dataset.complex_spectrum_real,
+                       "real", 'b')
+
+            plot_curve(axs[1], self.dataset.wvec_freq,
+                       self.dataset.complex_spectrum_real_resampled,
+                       "real resampled", 'b', key='o')
+
+            axs[1].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+
+            ax3 = axs[1].twinx()
+
+            plot_curve(ax3, self.dataset.frequency_bin,
+                       self.dataset.complex_spectrum_imag, label="imaginary", color='r')
+
+            plot_curve(ax3, self.dataset.wvec_freq,
+                       self.dataset.complex_spectrum_imag_resampled,
+                       label="imaginary resampled", color='r',
+                       key='s')
+
+            ax3.set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+
+            plt.tight_layout()
+
+            self.dataset.printing.savefig(fig, filename)
+
+            fig.legend(bbox_to_anchor=(1.16, 0.93),
+                       loc="upper right", borderaxespad=0.0)
+
     def lsqf_viz(self):
         self.lsqf_viz = self.Viz(self, state='lsqf')
+
+    # delete a dataset
+    def delete(self, name):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            del h5_f[name]
