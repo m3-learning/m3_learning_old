@@ -261,6 +261,26 @@ class BE_Dataset:
             return h5_f["Measurement_000"]["Channel_000"]["Raw_Data"][:]
 
     @property
+    def raw_data_resampled(self):
+        """Resampled real part of the complex data resampled"""
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                return self._raw_data_resampled
+            except:
+                self.raw_data_resampled = None
+                return self._raw_data_resampled
+
+    @raw_data_resampled.setter
+    def raw_data_resampled(self, a=None):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            resampled_ = self.resampler(
+                self.raw_data.reshape(-1, self.num_bins), axis=1)
+            make_dataset(h5_f["Measurement_000"]["Channel_000"],
+                         'raw_data_resampled', resampled_)
+            self._raw_data_resampled = h5_f[
+                "Measurement_000/Channel_000/raw_data_resampled"][:]
+
+    @property
     def shape(self):
         """Shape of the raw data"""
         with h5py.File(self.dataset, "r") as h5_f:
@@ -302,6 +322,53 @@ class BE_Dataset:
             return h5_f["Measurement_000"]["Channel_000"]['complex']['imag'][:]
 
     @property
+    def complex_spectrum_real_resampled(self):
+        """Resampled real part of the complex data resampled"""
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                return self._complex_spectrum_real_resampled
+            except:
+                self.complex_spectrum_real_resampled = None
+                return self._complex_spectrum_real_resampled
+
+    @complex_spectrum_real_resampled.setter
+    def complex_spectrum_real_resampled(self, a=None):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            resampled_ = self.resampler(self.complex_spectrum_real)
+            make_dataset(h5_f["Measurement_000"]["Channel_000"]
+                         ['complex'], 'real_resampled', resampled_)
+            self._complex_spectrum_real_resampled = h5_f[
+                "Measurement_000/Channel_000/complex/real_resampled"][:]
+
+    @property
+    def complex_spectrum_imag_resampled(self):
+        """Resampled imag part of the complex data resampled"""
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                return self._complex_spectrum_imag_resampled
+            except:
+                self.complex_spectrum_imag_resampled = None
+                return self._complex_spectrum_imag_resampled
+
+    @complex_spectrum_imag_resampled.setter
+    def complex_spectrum_imag_resampled(self, a=None):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            resampled_ = self.resampler(self.complex_spectrum_imag)
+            make_dataset(h5_f["Measurement_000"]["Channel_000"]
+                         ['complex'], 'imag_resampled', resampled_)
+            self._complex_spectrum_imag_resampled = h5_f[
+                "Measurement_000/Channel_000/complex/imag_resampled"][:]
+
+    def resampler(self, data, axis=2):
+        """Resample the data to a given number of bins"""
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                return resample(data.reshape(self.num_pix, -1, self.num_bins),
+                                self.resample_bins, axis=axis)
+            except ValueError:
+                print("Resampling failed, check that the number of bins is defined")
+
+    @property
     def magnitude_spectrum(self):
         with h5py.File(self.dataset, "r+") as h5_f:
             try:
@@ -325,6 +392,27 @@ class BE_Dataset:
                 self._magnitude_spectrum = h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum']
 
     @property
+    def magnitude_spectrum_resampled(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                return self._magnitude_spectrum_resampled
+            except:
+                self.magnitude_spectrum_resampled = None
+                return self._magnitude_spectrum_resampled
+
+    @magnitude_spectrum_resampled.setter
+    def magnitude_spectrum_resampled(self, a=None):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            make_group(h5_f["Measurement_000"]
+                       ["Channel_000"], 'magnitude_spectrum_resampled')
+            make_dataset(h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled'], 'amplitude', np.abs(
+                self._raw_data_resampled))
+            make_dataset(h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled'], 'phase', np.angle(
+                self._raw_data_resampled))
+            self._magnitude_spectrum_resampled = h5_f["Measurement_000"][
+                "Channel_000"]['magnitude_spectrum_resampled']
+
+    @property
     def magnitude_spectrum_amplitude(self):
         with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum']['amplitude'][:]
@@ -333,6 +421,16 @@ class BE_Dataset:
     def magnitude_spectrum_phase(self):
         with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum']['phase'][:]
+
+    @property
+    def magnitude_spectrum_amplitude_resampled(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled']['amplitude'][:]
+
+    @property
+    def magnitude_spectrum_phase_resampled(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return h5_f["Measurement_000"]["Channel_000"]['magnitude_spectrum_resampled']['phase'][:]
 
     def get_spectra(self, data, pixel, timestep):
         """Spectra"""
@@ -574,6 +672,8 @@ class BE_Dataset:
                 ax.set(xlabel=label['y_label'], ylabel="counts")
                 ax.ticklabel_format(axis="x", style="sci", scilimits=(0, 0))
 
+            plt.tight_layout()
+
             self.printing.savefig(fig, filename)
 
         def SHO_loops(self, pix=None, filename="Figure_2_random_SHO_fit_results"):
@@ -600,25 +700,12 @@ class BE_Dataset:
             self.printing.savefig(fig, filename)
 
         def shift_phase(self, phase):
-            """
-            Shifts an array of phases in radians such that they go around the unit circle with a specified phase shift.
 
-            Args:
-            phases (numpy.ndarray): The array of phase values.
-            phase_shift (float): The desired phase shift in radians (default=0).
-
-            Returns:
-            numpy.ndarray: The shifted phase values.
-            """
-            phases_shifted = np.mod(
-                phase + self.shift, 2*np.pi)  # wrap phase values to [0, 2*pi) with phase shift
-            phases_shifted[phases_shifted > np.pi] -= 2 * \
+            phase_ = phase.copy()
+            phase_ += np.pi
+            phase_[phase_ <= self.shift] += 2 *\
                 np.pi  # shift phase values greater than pi
-            return phases_shifted
-
-    # def shift_phase(self, phase):
-    #     # Shift the phase angle and wrap it to the range [0, 2π)
-    #     return (phase + self.shift + np.pi) % (2 * np.pi) - np.pi
+            return phase_ - self.shift - np.pi
 
     def lsqf_viz(self):
         self.lsqf_viz = self.Viz(self, state='lsqf')
