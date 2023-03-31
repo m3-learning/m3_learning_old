@@ -14,6 +14,12 @@ from ..viz.layout import layout_fig
 from scipy.signal import resample
 from scipy import fftpack
 from sklearn.preprocessing import StandardScaler
+from ..util.preprocessing import global_scaler
+from ..nn.SHO_fitter.SHO import SHO_fit_func_torch
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from ..be.processing import convert_amp_phase
 
 
 class BE_Dataset:
@@ -873,3 +879,112 @@ class BE_Dataset:
     def _SHO_fit_scaled(self):
         with h5py.File(self.dataset, "r") as h5_f:
             return h5_f["/Raw_Data-SHO_Fit_000/SHO_fit_scaled"][:]
+
+    @property
+    def complex_spectrum_real_resampled_scaled(self):
+        """Resampled real part of the complex data resampled"""
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                return self._complex_spectrum_real_resampled_scaled
+            except:
+                self.complex_spectrum_real_resampled_scaled = None
+                return self._complex_spectrum_real_resampled_scaled
+
+    @complex_spectrum_real_resampled_scaled.setter
+    def complex_spectrum_real_resampled_scaled(self, a=None):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            self.real_scaler = global_scaler()
+            real_data_scaled = self.real_scaler.fit_transform(
+                self.complex_spectrum_real_resampled)
+            try:
+                make_dataset(h5_f["Measurement_000/Channel_000/complex/"],
+                             'real_resampled_scaled',
+                             real_data_scaled)
+            except:
+                pass
+
+            self._complex_spectrum_real_resampled_scaled = h5_f[
+                'Measurement_000/Channel_000/complex/real_resampled_scaled'][:]
+
+    @property
+    def complex_spectrum_imag_resampled_scaled(self):
+        """Resampled imag part of the complex data resampled"""
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                return self._complex_spectrum_imag_resampled_scaled
+            except:
+                self.complex_spectrum_imag_resampled_scaled = None
+                return self._complex_spectrum_imag_resampled_scaled
+
+    @complex_spectrum_imag_resampled_scaled.setter
+    def complex_spectrum_imag_resampled_scaled(self, a=None):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            self.imag_scaler = global_scaler()
+            imag_data_scaled = self.imag_scaler.fit_transform(
+                self.complex_spectrum_imag_resampled)
+            try:
+                make_dataset(h5_f["Measurement_000/Channel_000/complex/"],
+                             'imag_resampled_scaled',
+                             imag_data_scaled)
+            except:
+                pass
+
+            self._complex_spectrum_imag_resampled_scaled = h5_f[
+                'Measurement_000/Channel_000/complex/imag_resampled_scaled'][:]
+
+    def LSQF_torch_function_comparison(self, filename="Figure_6_pytorch_raw_fits"):
+
+        # plot the initial and reconstructed by SHO Fitting Function data
+        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+
+        # Select a random point and time step to plot
+        pixel = np.random.randint(0, self.num_pix)
+        timestep = np.random.randint(self.voltage_steps)
+
+        # computes the fit using the torch model
+        out = SHO_fit_func_torch(torch.tensor(np.atleast_2d(
+            self.SHO_fit[pixel, timestep, 0:4])), self.wvec_freq)
+
+        # converts to amplitude and phase
+        amp_pred, phase_pred = convert_amp_phase(out)
+
+        print(f"spectra number {pixel}")
+
+        axs[0].plot(
+            self.wvec_freq, self.magnitude_spectrum_amplitude_resampled[pixel, timestep], "o", label="Raw Amplitude", color="b"
+        )
+        axs[0].plot(
+            self.wvec_freq, amp_pred[0, :], label="Amplitude Torch", color="b"
+        )
+        axs[0].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+        ax2 = axs[0].twinx()
+
+        ax2.plot(self.wvec_freq, self.magnitude_spectrum_phase_resampled[pixel, timestep],
+                 "o", label="Raw Phase", color="r")
+        ax2.plot(self.wvec_freq, phase_pred[0, :],
+                 label="Phase Torch", color="r")
+        ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
+
+        axs[1].scatter(self.wvec_freq, self.complex_spectrum_real_resampled_scaled[pixel, timestep],
+                       label="Raw Real", marker="s")
+        axs[1].scatter(self.wvec_freq, self.complex_spectrum_imag_resampled_scaled[pixel, timestep],
+                       label="Raw Imag", marker="o")
+        axs[1].plot(
+            self.wvec_freq, self.real_scaler.transform(torch.real(out[0])), label="Real Torch"
+        )
+        axs[1].plot(
+            self.wvec_freq, self.imag_scaler.transform(torch.imag(out[0])), label="Imag Torch"
+        )
+        axs[1].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+
+        fig.tight_layout()
+        fig.legend(bbox_to_anchor=(1.15, 0.97),
+                   loc="upper right", borderaxespad=0.0)
+
+        self.printing.savefig(fig, filename)
+
+    def NN_Params_Scaler(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            self.nn_parms_scalar = StandardScaler()
+            self.nn_parms_scalar.fit(
+                self.SHO_fit.reshape(-1, 5)[:, 0:4])
