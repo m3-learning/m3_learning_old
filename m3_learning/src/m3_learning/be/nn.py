@@ -4,10 +4,12 @@ from ..nn.SHO_fitter.SHO import SHO_fit_func_torch
 
 
 class SHO_Model(nn.Module):
-    def __init__(self, dataset):
+    def __init__(self, dataset, seed=42):
         super().__init__()
         self.dataset = dataset
+        self.seed = seed
 
+    def neural_net(self):
         # Input block of 1d convolution
         self.hidden_x1 = nn.Sequential(
             nn.Conv1d(in_channels=2, out_channels=8, kernel_size=7),
@@ -77,12 +79,14 @@ class SHO_Model(nn.Module):
 
         # corrects the scaling of the parameters
         unscaled_param = (
-            embedding * torch.tensor(self.dataset.SHO_scaler.var_[0:4] ** 0.5).cuda()
+            embedding *
+            torch.tensor(self.dataset.SHO_scaler.var_[0:4] ** 0.5).cuda()
             + torch.tensor(self.dataset.SHO_scaler.mean_[0:4]).cuda()
         )
 
         # passes to the pytorch fitting function
-        fits = SHO_fit_func_torch(unscaled_param, self.dataset.wvec_freq, device="cuda")
+        fits = SHO_fit_func_torch(
+            unscaled_param, self.dataset.wvec_freq, device="cuda")
 
         # extract and return real and imaginary
         real = torch.real(fits)
@@ -95,3 +99,9 @@ class SHO_Model(nn.Module):
         ).cuda()
         out = torch.stack((real_scaled, imag_scaled), 2)
         return out
+
+    def train(self,
+              batch_size,
+              loss_func=torch.nn.MSELoss(),
+              **kwargs):
+        pass
