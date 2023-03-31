@@ -988,3 +988,20 @@ class BE_Dataset:
             self.nn_parms_scalar = StandardScaler()
             self.nn_parms_scalar.fit(
                 self.SHO_fit.reshape(-1, 5)[:, 0:4])
+
+    @property
+    def nn_raw_input(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            real = self._complex_spectrum_real_resampled_scaled.reshape(
+                -1, self.resample_bins)
+            imag = self._complex_spectrum_imag_resampled_scaled.reshape(
+                -1, self.resample_bins)
+
+            return np.stack((real, imag), axis=2)
+
+    @property
+    def SHO_params_scaled(self):
+        with h5py.File(self.dataset, "r") as h5_f:
+            if hasattr(self, "nn_parms_scalar") == False:
+                self.NN_Params_Scaler()
+            return self.nn_parms_scalar.transform(self.SHO_fit.reshape(-1, 5)[:, 0:4])
