@@ -3,6 +3,7 @@ import torch
 from ..nn.SHO_fitter.SHO import SHO_fit_func_torch
 from ..optimizers.AdaHessian import AdaHessian
 from ..nn.random import random_seed
+from ..nn.benchmarks.inference import computeTime
 from torch.utils.data import DataLoader
 import time
 
@@ -169,3 +170,13 @@ class SHO_NN_Model:
 
             torch.save(self.model.state_dict(),
                        'Trained Models/SHO Fitter/model.pth')
+
+    def inference_calculator(self, data, batch_size=.5e4):
+        torch.cuda.empty_cache()
+
+        batch_size = int(batch_size)
+
+        dataloader = DataLoader(data, batch_size)
+
+        # Computes the inference time
+        computeTime(self.model, next(iter(dataloader)).double(), batch_size)
