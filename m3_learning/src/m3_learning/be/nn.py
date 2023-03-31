@@ -1,15 +1,19 @@
 import torch.nn as nn
 import torch
 from ..nn.SHO_fitter.SHO import SHO_fit_func_torch
+from ..optimizers.AdaHessian import AdaHessian
+from ..nn.random import random_seed
+from torch.utils.data import DataLoader
+import time
 
 
 class SHO_Model(nn.Module):
-    def __init__(self, dataset, seed=42):
+    def __init__(self, dataset):
         super().__init__()
         self.dataset = dataset
-        self.seed = seed
+        if ~hasattr(self.dataset, "SHO_scaler"):
+            self.dataset.SHO_Scaler()
 
-    def neural_net(self):
         # Input block of 1d convolution
         self.hidden_x1 = nn.Sequential(
             nn.Conv1d(in_channels=2, out_channels=8, kernel_size=7),
@@ -100,8 +104,68 @@ class SHO_Model(nn.Module):
         out = torch.stack((real_scaled, imag_scaled), 2)
         return out
 
+
+class SHO_NN_Model:
+
+    def __init__(self,
+                 model,
+                 seed=42,
+                 lr=0.1,
+                 **kwargs):
+        super().__init__()
+        self.model = model
+        self.seed = seed
+        self.lr = lr
+        self.__dict__.update(kwargs)
+
     def train(self,
+              data_train,
               batch_size,
+              epochs=5,
               loss_func=torch.nn.MSELoss(),
+              optimizer='Adam',
               **kwargs):
-        pass
+
+        # Note that the seed will behave differently on different hardware targets (GPUs)
+        random_seed(seed=self.seed)
+
+        torch.cuda.empty_cache()
+
+        # selects the optimizer
+        if optimizer == 'Adam':
+            optimizer = torch.optim.Adam(self.model.parameters())
+        elif optimizer == "AdaHessian":
+            optimizer = AdaHessian(self.model.parameters(), lr=0.1)
+
+        # instantiate the dataloader
+        train_dataloader = DataLoader(data_train, batch_size=batch_size)
+
+        for epoch in range(epochs):
+            start_time = time.time()
+
+            train_loss = 0.0
+            total_num = 0
+
+            self.model.train()
+
+            for train_batch in train_dataloader:
+
+                pred = self.model(train_batch.double().cuda())
+
+                optimizer.zero_grad()
+
+                loss = loss_func(train_batch.double().cuda(), pred)
+                loss.backward(create_graph=True)
+                train_loss += loss.item() * pred.shape[0]
+                total_num += pred.shape[0]
+
+                optimizer.step()
+
+            train_loss /= total_num
+
+            print("epoch : {}/{}, recon loss = {:.8f}".format(epoch +
+                  1, epochs, train_loss))
+            print("--- %s seconds ---" % (time.time() - start_time))
+
+            torch.save(self.model.state_dict(),
+                       'Trained Models/SHO Fitter/model.pth')
