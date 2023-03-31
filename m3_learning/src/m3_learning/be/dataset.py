@@ -1005,3 +1005,45 @@ class BE_Dataset:
             if hasattr(self, "nn_parms_scalar") == False:
                 self.NN_Params_Scaler()
             return self.nn_parms_scalar.transform(self.SHO_fit.reshape(-1, 5)[:, 0:4])
+
+    @property
+    def nn_predictions(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_predictions
+
+    @nn_predictions.setter
+    def nn_predictions(self, data):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
+                             'NN_Fit',
+                             data)
+            except:
+                self.delete("Raw_Data-SHO_Fit_000/NN_Fit")
+                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
+                             'NN_Fit',
+                             data)
+
+            self._nn_predictions = h5_f[
+                'Raw_Data-SHO_Fit_000/NN_Fit'][:]
+
+    @property
+    def nn_validation(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_validation
+
+    @nn_validation.setter
+    def nn_validation(self, data):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            try:
+                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
+                             'NN_Fit_validation',
+                             data)
+            except:
+                self.delete("Raw_Data-SHO_Fit_000/NN_Fit_validation")
+                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
+                             'NN_Fit_validation',
+                             data)
+
+            self._nn_validation = h5_f[
+                'Raw_Data-SHO_Fit_000/NN_Fit_validation'][:]

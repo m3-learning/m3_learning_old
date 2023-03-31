@@ -139,7 +139,8 @@ class SHO_NN_Model:
             optimizer = AdaHessian(self.model.parameters(), lr=0.1)
 
         # instantiate the dataloader
-        train_dataloader = DataLoader(data_train, batch_size=batch_size)
+        train_dataloader = DataLoader(
+            data_train, batch_size=batch_size, shuffle=True)
 
         for epoch in range(epochs):
             start_time = time.time()
@@ -177,6 +178,31 @@ class SHO_NN_Model:
         batch_size = int(batch_size)
 
         dataloader = DataLoader(data, batch_size)
-
         # Computes the inference time
         computeTime(self.model, next(iter(dataloader)).double(), batch_size)
+
+    def predict(self, data, validation, batch_size=10000):
+        dataloader = DataLoader(data, batch_size=batch_size)
+
+        # preallocate the predictions
+        num_elements = len(dataloader.dataset)
+        num_batches = len(dataloader)
+        predictions = torch.zeros_like(torch.tensor(data))
+
+        # compute the predictions
+        for i, train_batch in enumerate(dataloader):
+            start = i * batch_size
+            end = start + batch_size
+
+            if i == num_batches - 1:
+                end = num_elements
+
+            pred_batch = self.model(train_batch.double().cuda())
+            predictions[start:end] = pred_batch.cpu().detach()
+
+            torch.cuda.empty_cache()
+
+        if validation:
+            self.model.dataset.nn_validation = predictions
+        else:
+            self.model.dataset.nn_predictions = predictions
