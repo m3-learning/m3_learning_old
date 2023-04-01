@@ -737,6 +737,73 @@ class BE_Dataset:
                 np.pi  # shift phase values greater than pi
             return phase_ - self.shift - np.pi
 
+        def raw_data(self, original, predict, predict_label=''):
+            # plot real and imaginary components of resampled data
+            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
+
+            def plot_curve(axs, x, y, label, color, key=''):
+                axs.plot(
+                    x,
+                    y,
+                    key,
+                    label=label,
+                    color=color,
+                )
+
+            plot_curve(axs[0], self.dataset.frequency_bin,
+                       np.abs(original),
+                       "amplitude", 'b')
+
+            plot_curve(axs[0], self.dataset.wvec_freq,
+                       np.angle(predict),
+                       f"amplitude {predict_label}", 'b', key='o')
+
+            axs[0].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+
+            ax2 = axs[0].twinx()
+
+            plot_curve(ax2, self.dataset.frequency_bin,
+                       np.angle(original),
+                       label="phase", color='r')
+
+            plot_curve(ax2, self.dataset.wvec_freq,
+                       np.angle(predict),
+                       label=f"phase {predict_label}", color='r',
+                       key='s')
+
+            ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
+
+            plot_curve(axs[1], self.dataset.frequency_bin,
+                       np.real(original),
+                       "real", 'b')
+
+            plot_curve(axs[1], self.dataset.wvec_freq,
+                       np.real(predict),
+                       f"real {predict_label}", 'b', key='o')
+
+            axs[1].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+
+            ax3 = axs[1].twinx()
+
+            plot_curve(ax3, self.dataset.frequency_bin,
+                       np.imag(original),
+                       label="imaginary",
+                       color='r')
+
+            plot_curve(ax3, self.dataset.wvec_freq,
+                       np.imag(predict),
+                       label=f"imaginary {predict_label}", color='r',
+                       key='s')
+
+            ax3.set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
+
+            plt.tight_layout()
+
+            self.dataset.printing.savefig(fig, filename)
+
+            fig.legend(bbox_to_anchor=(1.16, 0.93),
+                       loc="upper right", borderaxespad=0.0)
+
         def raw_resampled_data(self, filename="Figure_4_raw_and_resampled_raw_data"):
 
             # Select a random point and time step to plot
