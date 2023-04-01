@@ -6,6 +6,7 @@ from ..nn.random import random_seed
 from ..nn.benchmarks.inference import computeTime
 from torch.utils.data import DataLoader
 import time
+import numpy as np
 
 
 class SHO_Model(nn.Module):
@@ -206,3 +207,14 @@ class SHO_NN_Model:
             self.model.dataset.nn_validation = predictions
         else:
             self.model.dataset.nn_predictions = predictions
+
+    def unscale_complex(self, data):
+
+        unscaled = np.zeros(data.shape)
+
+        # unscale the test data and predictions
+        unscaled[:, :, 0] = self.model.dataset.real_scaler.inverse_transform(
+            data[:, :, 0])
+        unscaled[:, :, 1] = self.model.dataset.imag_scaler.inverse_transform(
+            data[:, :, 1])
+        return unscaled[:, :, 0] + 1j * unscaled[:, :, 1]

@@ -655,14 +655,14 @@ class BE_Dataset:
 
             # plots the magnitude spectrum for and phase for the selected pixel and time step
             ax[3].plot(
-                self.dataset.frequency_bin,
+                original_x,
                 self.dataset.get_spectra(
                     self.dataset.magnitude_spectrum_amplitude, pixel, timestep),
             )
             ax[3].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
             ax2 = ax[3].twinx()
             ax2.plot(
-                self.dataset.frequency_bin,
+                original_x,
                 self.dataset.get_spectra(
                     self.dataset.magnitude_spectrum_phase, pixel, timestep),
                 "r",
@@ -670,12 +670,12 @@ class BE_Dataset:
             ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
 
             # plots the real and imaginary components for the selected pixel and time step
-            ax[4].plot(self.dataset.frequency_bin, self.dataset.get_spectra(
+            ax[4].plot(original_x, self.dataset.get_spectra(
                 self.dataset.complex_spectrum_real, pixel, timestep), label="Real")
             ax[4].set(xlabel="Frequency (Hz)", ylabel="Real (Arb. U.)")
             ax3 = ax[4].twinx()
             ax3.plot(
-                self.dataset.frequency_bin, self.dataset.get_spectra(
+                original_x, self.dataset.get_spectra(
                     self.dataset.complex_spectrum_imag, pixel, timestep), 'r', label="Imaginary")
             ax3.set(xlabel="Frequency (Hz)", ylabel="Imag (Arb. U.)")
 
@@ -740,8 +740,19 @@ class BE_Dataset:
         def raw_data(self,
                      original,
                      predict,
-                     predict_label='',
+                     predict_label=None,
                      filename=None):
+
+            if predict_label is not None:
+                predict_label = ' ' + predict_label
+
+            if len(original) == len(self.dataset.wvec_freq):
+                original_x = self.dataset.wvec_freq
+            elif len(original) == len(original_x):
+                original_x = original_x
+            else:
+                raise ValueError(
+                    "original data must be the same length as the frequency bins or the resampled frequency bins")
 
             # plot real and imaginary components of resampled data
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
@@ -755,7 +766,7 @@ class BE_Dataset:
                     color=color,
                 )
 
-            plot_curve(axs[0], self.dataset.frequency_bin,
+            plot_curve(axs[0], original_x,
                        np.abs(original),
                        "amplitude", 'b')
 
@@ -767,38 +778,36 @@ class BE_Dataset:
 
             ax2 = axs[0].twinx()
 
-            plot_curve(ax2, self.dataset.frequency_bin,
+            plot_curve(ax2, original_x,
                        np.angle(original),
-                       label="phase", color='r')
+                       label="phase", color='r', key='s')
 
             plot_curve(ax2, self.dataset.wvec_freq,
                        np.angle(predict),
-                       label=f"phase {predict_label}", color='r',
-                       key='s')
+                       label=f"phase {predict_label}", color='r')
 
             ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
 
-            plot_curve(axs[1], self.dataset.frequency_bin,
+            plot_curve(axs[1], original_x,
                        np.real(original),
-                       "real", 'b')
+                       "real", 'b', key='o')
 
             plot_curve(axs[1], self.dataset.wvec_freq,
                        np.real(predict),
-                       f"real {predict_label}", 'b', key='o')
+                       f"real {predict_label}", 'b')
 
             axs[1].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
 
             ax3 = axs[1].twinx()
 
-            plot_curve(ax3, self.dataset.frequency_bin,
+            plot_curve(ax3, original_x,
                        np.imag(original),
                        label="imaginary",
-                       color='r')
+                       color='r', key='s')
 
             plot_curve(ax3, self.dataset.wvec_freq,
                        np.imag(predict),
-                       label=f"imaginary {predict_label}", color='r',
-                       key='s')
+                       label=f"imaginary {predict_label}", color='r')
 
             ax3.set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
 
