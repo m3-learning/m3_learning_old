@@ -737,7 +737,12 @@ class BE_Dataset:
                 np.pi  # shift phase values greater than pi
             return phase_ - self.shift - np.pi
 
-        def raw_data(self, original, predict, predict_label=''):
+        def raw_data(self,
+                     original,
+                     predict,
+                     predict_label='',
+                     filename=None):
+
             # plot real and imaginary components of resampled data
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
 
@@ -755,7 +760,7 @@ class BE_Dataset:
                        "amplitude", 'b')
 
             plot_curve(axs[0], self.dataset.wvec_freq,
-                       np.angle(predict),
+                       np.abs(predict),
                        f"amplitude {predict_label}", 'b', key='o')
 
             axs[0].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
@@ -797,12 +802,10 @@ class BE_Dataset:
 
             ax3.set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
 
-            plt.tight_layout()
-
-            self.dataset.printing.savefig(fig, filename)
-
             fig.legend(bbox_to_anchor=(1.16, 0.93),
                        loc="upper right", borderaxespad=0.0)
+            if filename is not None:
+                self.dataset.printing.savefig(fig, filename)
 
         def raw_resampled_data(self, filename="Figure_4_raw_and_resampled_raw_data"):
 
@@ -810,67 +813,10 @@ class BE_Dataset:
             pixel = np.random.randint(0, self.dataset.num_pix)
             timestep = np.random.randint(self.dataset.voltage_steps)
 
-            # plot real and imaginary components of resampled data
-            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
-
-            def plot_curve(axs, x, y, label, color, key=''):
-                axs.plot(
-                    x,
-                    y[pixel, timestep],
-                    key,
-                    label=label,
-                    color=color,
-                )
-            plot_curve(axs[0], self.dataset.frequency_bin,
-                       self.dataset.magnitude_spectrum_amplitude,
-                       "amplitude", 'b')
-
-            plot_curve(axs[0], self.dataset.wvec_freq,
-                       self.dataset.magnitude_spectrum_amplitude_resampled,
-                       "amplitude resampled", 'b', key='o')
-
-            axs[0].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
-
-            ax2 = axs[0].twinx()
-
-            plot_curve(ax2, self.dataset.frequency_bin,
-                       self.dataset.magnitude_spectrum_phase, label="phase", color='r')
-
-            plot_curve(ax2, self.dataset.wvec_freq,
-                       self.dataset.magnitude_spectrum_phase_resampled,
-                       label="phase resampled", color='r',
-                       key='s')
-
-            ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
-
-            plot_curve(axs[1], self.dataset.frequency_bin,
-                       self.dataset.complex_spectrum_real,
-                       "real", 'b')
-
-            plot_curve(axs[1], self.dataset.wvec_freq,
-                       self.dataset.complex_spectrum_real_resampled,
-                       "real resampled", 'b', key='o')
-
-            axs[1].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
-
-            ax3 = axs[1].twinx()
-
-            plot_curve(ax3, self.dataset.frequency_bin,
-                       self.dataset.complex_spectrum_imag, label="imaginary", color='r')
-
-            plot_curve(ax3, self.dataset.wvec_freq,
-                       self.dataset.complex_spectrum_imag_resampled,
-                       label="imaginary resampled", color='r',
-                       key='s')
-
-            ax3.set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
-
-            plt.tight_layout()
-
-            self.dataset.printing.savefig(fig, filename)
-
-            fig.legend(bbox_to_anchor=(1.16, 0.93),
-                       loc="upper right", borderaxespad=0.0)
+            self.raw_data(self.dataset.raw_data.reshape(self.dataset.num_pix, -1, self.dataset.num_bins)[pixel, timestep],
+                          self.dataset.raw_data_resampled[pixel, timestep],
+                          predict_label=' resampled',
+                          filename=filename)
 
     def lsqf_viz(self):
         self.lsqf_viz = self.Viz(self, state='lsqf')
