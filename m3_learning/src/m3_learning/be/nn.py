@@ -7,6 +7,7 @@ from ..nn.benchmarks.inference import computeTime
 from torch.utils.data import DataLoader
 import time
 import numpy as np
+from sklearn.metrics import mean_squared_error
 
 
 class SHO_Model(nn.Module):
@@ -218,3 +219,26 @@ class SHO_NN_Model:
         unscaled[:, :, 1] = self.model.dataset.imag_scaler.inverse_transform(
             data[:, :, 1])
         return unscaled[:, :, 0] + 1j * unscaled[:, :, 1]
+
+    def SHO_best_and_worst(self, true, predictions):
+
+        # computes the MSE for the real and imaginary components
+        mse_real = mean_squared_error(
+            true[:, :, 0], predictions[:, :, 0]
+        )
+        mse_imag = mean_squared_error(
+            true[:, :, 1], predictions[:, :, 1]
+        )
+        print(f"MSE for real component: {mse_real}")
+        print(f"MSE for imaginary component: {mse_imag}")
+
+        # computes the average MSE
+        error = (mse_real + mse_imag) / 2.0
+        print(f"Average MSE: {error}")
+
+        errors = np.sum(
+            np.mean(np.square(true - predictions), 1), 1
+        )
+        errors = np.asarray(errors)
+
+        return errors

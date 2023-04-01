@@ -749,7 +749,7 @@ class BE_Dataset:
             if len(original) == len(self.dataset.wvec_freq):
                 original_x = self.dataset.wvec_freq
             elif len(original) == len(original_x):
-                original_x = original_x
+                original_x = self.dataset.frequency_bins
             else:
                 raise ValueError(
                     "original data must be the same length as the frequency bins or the resampled frequency bins")
@@ -1069,3 +1069,4 @@ class BE_Dataset:
 
             self._nn_validation = h5_f[
                 'Raw_Data-SHO_Fit_000/NN_Fit_validation'][:]
+            

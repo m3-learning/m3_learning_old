@@ -58,7 +58,6 @@ def path_maker(axes, locations, facecolor, edgecolor, linestyle, lineweight):
 
 
 def layout_fig(graph, mod=None, figsize=None):
-
     """Utility function that helps lay out many figures
 
     Args:
@@ -153,7 +152,8 @@ def imagemap(ax, data, colorbars=True, clim=None):
 
     if data.ndim == 1:
         data = data.reshape(
-            np.sqrt(data.shape[0]).astype(int), np.sqrt(data.shape[0]).astype(int)
+            np.sqrt(data.shape[0]).astype(
+                int), np.sqrt(data.shape[0]).astype(int)
         )
 
     cmap = plt.get_cmap("viridis")
@@ -229,7 +229,8 @@ def latent_generator(
     # plots all of the embedding maps
     for i in range(embedding_small.shape[1]):
         im = imagemap(
-            ax[i], embedding_small[:, i].reshape(image.shape[0], image.shape[1])
+            ax[i], embedding_small[:, i].reshape(
+                image.shape[0], image.shape[1])
         )
 
     # loops around the number of example loops
@@ -240,7 +241,8 @@ def latent_generator(
 
             if ranges is None:
                 value = np.linspace(
-                    np.min(embedding_small[:, j]), np.max(embedding_small[:, j]), number
+                    np.min(embedding_small[:, j]), np.max(
+                        embedding_small[:, j]), number
                 )
             else:
                 # sets the linear spaced values
@@ -368,7 +370,8 @@ def labelfigs(
             axes.text(
                 x_value,
                 y_value,
-                string.ascii_lowercase[0] + string.ascii_lowercase[number - 26],
+                string.ascii_lowercase[0] +
+                string.ascii_lowercase[number - 26],
                 size=14,
                 weight="bold",
                 ha=text_pos,
@@ -456,3 +459,13 @@ def scalebar(axes, image_size, scale_size, units="nm", loc="br"):
         color="w",
         path_effects=[patheffects.withStroke(linewidth=1.5, foreground="k")],
     )
+
+    def Axis_Ratio(axes, ratio=1):
+        # Set aspect ratio to be proportional to the ratio of data ranges
+        xmin, xmax = axes.get_xlim()
+        ymin, ymax = axes.get_ylim()
+
+        xrange = xmax - xmin
+        yrange = ymax - ymin
+
+        axes.set_aspect(ratio * (xrange / yrange))
