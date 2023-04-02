@@ -1036,18 +1036,30 @@ class BE_Dataset:
     @nn_predictions.setter
     def nn_predictions(self, data):
         with h5py.File(self.dataset, "r+") as h5_f:
-            try:
-                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
-                             'NN_Fit',
-                             data)
-            except:
-                self.delete("Raw_Data-SHO_Fit_000/NN_Fit")
-                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
-                             'NN_Fit',
-                             data)
+            self._nn_predictions = self.data_writer(
+                "Raw_Data-SHO_Fit_000", "NN_predictions", data)
 
-            self._nn_predictions = h5_f[
-                'Raw_Data-SHO_Fit_000/NN_Fit'][:]
+    @property
+    def nn_predictions_params_scaled(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_predictions_params_scaled
+
+    @nn_predictions_params_scaled.setter
+    def nn_predictions_params_scaled(self, data):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            self._nn_predictions_params_scaled = self.data_writer(
+                "Raw_Data-SHO_Fit_000", "NN_predictions_params_scaled", data)
+
+    @property
+    def nn_predictions_params(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_predictions_params
+
+    @nn_predictions_params.setter
+    def nn_predictions_params(self, data):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            self._nn_predictions_params = self.data_writer(
+                "Raw_Data-SHO_Fit_000", "NN_predictions_params", data)
 
     @property
     def nn_validation(self):
@@ -1057,16 +1069,41 @@ class BE_Dataset:
     @nn_validation.setter
     def nn_validation(self, data):
         with h5py.File(self.dataset, "r+") as h5_f:
+            self._nn_validation = self.data_writer(
+                "Raw_Data-SHO_Fit_000", "NN_validation", data)
+
+    @property
+    def nn_validation_params_scaled(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_validation_params_scaled
+
+    @nn_validation_params_scaled.setter
+    def nn_validation_params_scaled(self, data):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            self._nn_validation_params_scaled = self.data_writer(
+                "Raw_Data-SHO_Fit_000", "NN_validation_params_scaled", data)
+
+    @property
+    def nn_validation_params(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_validation_params
+
+    @nn_validation_params.setter
+    def nn_validation_params(self, data):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            self._nn_validation_params = self.data_writer(
+                "Raw_Data-SHO_Fit_000", "NN_validation_params", data)
+
+    def data_writer(self, base, name, data):
+        with h5py.File(self.dataset, "r+") as h5_f:
             try:
-                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
-                             'NN_Fit_validation',
+                make_dataset(h5_f[base],
+                             name,
                              data)
             except:
-                self.delete("Raw_Data-SHO_Fit_000/NN_Fit_validation")
-                make_dataset(h5_f["Raw_Data-SHO_Fit_000"],
-                             'NN_Fit_validation',
+                self.delete(f"{base}/{name}")
+                make_dataset(h5_f[base],
+                             name,
                              data)
 
-            self._nn_validation = h5_f[
-                'Raw_Data-SHO_Fit_000/NN_Fit_validation'][:]
-            
+            return h5_f[f"{base}/{name}"][:]

@@ -4,18 +4,22 @@ from ..nn.SHO_fitter.SHO import SHO_fit_func_torch
 from ..optimizers.AdaHessian import AdaHessian
 from ..nn.random import random_seed
 from ..nn.benchmarks.inference import computeTime
+from ..viz.layout import get_axis_range, set_axis, Axis_Ratio
 from torch.utils.data import DataLoader
 import time
 import numpy as np
 from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
 
 
 class SHO_Model(nn.Module):
-    def __init__(self, dataset):
+    def __init__(self, dataset, training=True):
         super().__init__()
         self.dataset = dataset
         if ~hasattr(self.dataset, "SHO_scaler"):
             self.dataset.SHO_Scaler()
+
+        self.training = training
 
         # Input block of 1d convolution
         self.hidden_x1 = nn.Sequential(
@@ -71,6 +75,14 @@ class SHO_Model(nn.Module):
             nn.Linear(8, 4),
         )
 
+    # @property
+    # def training(self):
+    #     return self._training
+
+    # @training.setter
+    # def train(self, value):
+    #     self._training = value
+
     def forward(self, x, n=-1):
         # output shape - samples, (real, imag), frequency
         x = torch.swapaxes(x, 1, 2)
@@ -105,7 +117,10 @@ class SHO_Model(nn.Module):
             self.dataset.imag_scaler.std
         ).cuda()
         out = torch.stack((real_scaled, imag_scaled), 2)
-        return out
+        if self.training == True:
+            return out
+        if self.training == False:
+            return out, embedding, unscaled_param
 
 
 class SHO_NN_Model:
@@ -180,16 +195,20 @@ class SHO_NN_Model:
         batch_size = int(batch_size)
 
         dataloader = DataLoader(data, batch_size)
+
         # Computes the inference time
         computeTime(self.model, next(iter(dataloader)).double(), batch_size)
 
     def predict(self, data, validation, batch_size=10000):
+
         dataloader = DataLoader(data, batch_size=batch_size)
 
         # preallocate the predictions
         num_elements = len(dataloader.dataset)
         num_batches = len(dataloader)
         predictions = torch.zeros_like(torch.tensor(data))
+        params_scaled = torch.zeros((data.shape[0], 4))
+        params = torch.zeros((data.shape[0], 4))
 
         # compute the predictions
         for i, train_batch in enumerate(dataloader):
@@ -199,16 +218,24 @@ class SHO_NN_Model:
             if i == num_batches - 1:
                 end = num_elements
 
-            pred_batch = self.model(train_batch.double().cuda())
+            pred_batch, params_scaled_, params_ = self.model(
+                train_batch.double().cuda())
+
             predictions[start:end] = pred_batch.cpu().detach()
+            params_scaled[start:end] = params_scaled_.cpu().detach()
+            params[start:end] = params_.cpu().detach()
 
             torch.cuda.empty_cache()
 
         if validation:
-            self.model.dataset.nn_validation = predictions
+            name = "validation"
         else:
-            self.model.dataset.nn_predictions = predictions
+            name = "predictions"
 
+        exec(f"self.model.dataset.nn_{name} = predictions")
+        exec(f"self.model.dataset.nn_{name}_params_scaled=params_scaled")
+        exec(f"self.model.dataset.nn_{name}_params_=params")
+    
     def unscale_complex(self, data):
 
         unscaled = np.zeros(data.shape)
@@ -242,3 +269,74 @@ class SHO_NN_Model:
         errors = np.asarray(errors)
 
         return errors
+
+    def best_and_worst(self, true, prediction, filename="Figure_8_5_worst_and_best_pytorch_fit"):
+
+        def plot_curve(axs, x, y, label, color, key=''):
+            axs.plot(
+                x,
+                y,
+                key,
+                label=label,
+                color=color,
+            )
+
+        errors = self.SHO_best_and_worst(true, prediction)
+
+        # sorting by highest and lowest MSE
+        best = (-errors).argsort()[:5]
+        # sorting by highest and lowest MSE
+        worst = (-errors).argsort()[-5:]
+
+        data = [best, worst]
+
+        # plotting the 5 worst and best reconstructions
+        fig, axs = plt.subplots(2, 5, figsize=(5.5, 2))
+
+        for j, list_ in enumerate(data):
+            ax1 = []
+            for i, ind in enumerate(list_):
+
+                original_ = self.unscale_complex(true[[ind], :])[0]
+                predicted_ = self.unscale_complex(prediction[[ind], :])[0]
+
+                if len(original_) == len(self.model.dataset.wvec_freq):
+                    original_x = self.model.dataset.wvec_freq
+                elif len(original_) == len(original_x):
+                    original_x = self.model.dataset.frequency_bins
+                else:
+                    raise ValueError(
+                        "original data must be the same length as the frequency bins or the resampled frequency bins")
+
+                plot_curve(axs[j, i], original_x, np.abs(original_),
+                           label="Raw Magnitude", color='b', key='o')
+
+                plot_curve(axs[j, i], original_x, np.abs(predicted_),
+                           label="Raw Magnitude", color='b')
+
+                ax1.append(axs[j, i].twinx())
+
+                plot_curve(ax1[i], original_x, np.angle(original_),
+                           label="Raw Phase", color='r', key='o')
+
+                plot_curve(ax1[i], original_x, np.angle(predicted_),
+                           label="Raw Phase", color='r')
+
+                if i > 0:
+                    axs[j, i].set_yticklabels([])
+                else:
+                    axs[j, i].set_ylabel('Magnitude')
+
+                if i < 4:
+                    ax1[i].set_yticklabels([])
+                else:
+                    ax1[i].set_ylabel('Phase')
+
+                if j == 1:
+                    axs[j, i].set_xlabel('Frequency (Hz)')
+
+        set_axis(axs[j, :], get_axis_range(axs[j, :]))
+
+        set_axis(ax1, get_axis_range(ax1))
+
+        self.model.dataset.printing.savefig(fig, filename, tight_layout=False)

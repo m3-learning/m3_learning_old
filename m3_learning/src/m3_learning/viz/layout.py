@@ -460,12 +460,51 @@ def scalebar(axes, image_size, scale_size, units="nm", loc="br"):
         path_effects=[patheffects.withStroke(linewidth=1.5, foreground="k")],
     )
 
-    def Axis_Ratio(axes, ratio=1):
-        # Set aspect ratio to be proportional to the ratio of data ranges
-        xmin, xmax = axes.get_xlim()
-        ymin, ymax = axes.get_ylim()
 
-        xrange = xmax - xmin
-        yrange = ymax - ymin
+def Axis_Ratio(axes, ratio=1):
+    # Set aspect ratio to be proportional to the ratio of data ranges
+    xmin, xmax = axes.get_xlim()
+    ymin, ymax = axes.get_ylim()
 
-        axes.set_aspect(ratio * (xrange / yrange))
+    xrange = xmax - xmin
+    yrange = ymax - ymin
+
+    axes.set_aspect(ratio * (xrange / yrange))
+
+
+def get_axis_range(axs):
+
+    def get_axis_range_(ax):
+        """
+        Return the minimum and maximum values of a Matplotlib axis.
+
+        Parameters:
+            ax (matplotlib.axis.Axis): The Matplotlib axis object to get the range of.
+
+        Returns:
+            tuple: A tuple of the form (xmin, xmax, ymin, ymax), where xmin and xmax are the minimum and maximum values of the x axis, and ymin and ymax are the minimum and maximum values of the y axis.
+        """
+        xmin, xmax = ax.get_xlim()
+        ymin, ymax = ax.get_ylim()
+        return xmin, xmax, ymin, ymax
+
+    for ax in axs:
+        ax_xmin, ax_xmax, ax_ymin, ax_ymax = get_axis_range_(ax)
+        try:
+            xmin = min(xmin, ax_xmin)
+            xmax = max(xmax, ax_xmax)
+            ymin = min(ymin, ax_ymin)
+            ymax = max(ymax, ax_ymax)
+        except:
+            xmin = ax_xmin
+            xmax = ax_xmax
+            ymin = ax_ymin
+            ymax = ax_ymax
+
+    return [xmin, xmax, ymin, ymax]
+
+
+def set_axis(axs, range):
+    for ax in axs:
+        ax.set_xlim(range[0], range[1])
+        ax.set_ylim(range[2], range[3])
