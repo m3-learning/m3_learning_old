@@ -48,6 +48,7 @@ def set_style(name="default"):
             plt.rcParams['ytick.right'] = True
             plt.rcParams['figure.constrained_layout.use'] = True
             plt.rcParams['lines.markersize'] = 2
+            plt.rcParams['axes.grid'] = False
         except:
             pass
 
