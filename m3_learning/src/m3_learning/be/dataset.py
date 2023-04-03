@@ -190,61 +190,61 @@ class BE_Dataset:
     @property
     def be_repeats(self):
         """Number of BE repeats"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f['Measurement_000'].attrs["BE_repeats"]
 
     @property
     def num_bins(self):
         """Number of frequency bins in the data"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"].attrs["num_bins"]
 
     @property
     def num_pix(self):
         """Number of pixels in the data"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"].attrs["num_pix"]
 
     @property
     def num_pix_1d(self):
         """Number of pixels in the data"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return int(np.sqrt(self.num_pix))
 
     @property
     def voltage_steps(self):
         """Number of DC voltage steps"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"].attrs["num_udvs_steps"]
 
     @property
     def sampling_rate(self):
         """Sampling rate in Hz"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"].attrs["IO_rate_[Hz]"]
 
     @property
     def be_bandwidth(self):
         """BE bandwidth in Hz"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"].attrs["BE_band_width_[Hz]"]
 
     @property
     def be_center_frequency(self):
         """BE center frequency in Hz"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"].attrs["BE_center_frequency_[Hz]"]
 
     @property
     def frequency_bin(self):
         """Frequency bin vector in Hz"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]["Bin_Frequencies"][:]
 
     @property
     def wvec_freq(self):
         """Resampled frequency vector in Hz"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             try:
                 return self._wvec_freq
             except:
@@ -258,19 +258,19 @@ class BE_Dataset:
     @property
     def be_waveform(self):
         """BE excitation waveform"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]["Excitation_Waveform"][:]
 
     @property
     def spectroscopic_values(self):
         """Spectroscopic values"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]["Spectroscopic_Values"][:]
 
     @property
     def raw_data(self):
         """Raw data"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]["Raw_Data"][:]
 
     @property
@@ -296,7 +296,7 @@ class BE_Dataset:
     @property
     def shape(self):
         """Shape of the raw data"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.raw_data.shape
 
     @property
@@ -459,12 +459,12 @@ class BE_Dataset:
 
     def get_spectra(self, data, pixel, timestep):
         """Spectra"""
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return data.reshape(self.num_pix, -1, self.num_bins)[pixel, timestep]
 
     @property
     def hysteresis_waveform(self, loop_number=2):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return (
                 self.spectroscopic_values[1, ::len(self.frequency_bin)][int(self.voltage_steps/loop_number):] *
                 self.spectroscopic_values[2, ::len(
@@ -473,42 +473,42 @@ class BE_Dataset:
 
     @property
     def dc_voltage(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["/Raw_Data-SHO_Fit_000/Spectroscopic_Values"][0, 1::2]
 
     @property
     def SHO_fit_on(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self._SHO_fit[:, 1::2, :]
 
     @property
     def SHO_fit_off(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self._SHO_fit[:, ::2, :]
 
     @property
     def SHO_fit_amp(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state()[:, :, 0]
 
     @property
     def SHO_fit_resonance(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state()[:, :, 1]
 
     @property
     def SHO_fit_q(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state()[:, :, 2]
 
     @property
     def SHO_fit_phase(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state()[:, :, 3]
 
     @property
     def SHO_fit_r2(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state()[:, :, 4]
 
     def SHO_state(self):
@@ -519,7 +519,7 @@ class BE_Dataset:
 
     @property
     def SHO_fit(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             try:
                 return self._SHO_fit
             except:
@@ -547,9 +547,21 @@ class BE_Dataset:
                     for i in item:
                         SHO_fit_list.append(i)
 
+            data_ = np.array(SHO_fit_list).reshape(
+                -1, channels)
+
+            # try:
+            #     if self.lsqf_viz.shift is not None:
+            #         data_[:, 3] = self.lsqf_viz.shift_phase(data_[:, 3])
+            # except:
+            #     pass
+
             # flatten parameters list into numpy array
-            self._SHO_fit = np.array(SHO_fit_list).reshape(
+            self._SHO_fit = data_.reshape(
                 self.num_pix, self.voltage_steps, channels)
+
+            # if self.lsqf_viz.shift is not None:
+            #     self.NN_Params_Scaler()
 
     class Viz:
 
@@ -665,7 +677,7 @@ class BE_Dataset:
                 original_x,
                 self.dataset.get_spectra(
                     self.dataset.magnitude_spectrum_phase, pixel, timestep),
-                "r",
+                "r+",
             )
             ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
 
@@ -729,13 +741,18 @@ class BE_Dataset:
             fig.tight_layout()
             self.printing.savefig(fig, filename)
 
-        def shift_phase(self, phase):
+        def shift_phase(self, phase, shift_=None):
+
+            if shift_ is None:
+                shift = self.shift
+            else:
+                shift = shift_
 
             phase_ = phase.copy()
             phase_ += np.pi
-            phase_[phase_ <= self.shift] += 2 *\
+            phase_[phase_ <= shift] += 2 *\
                 np.pi  # shift phase values greater than pi
-            return phase_ - self.shift - np.pi
+            return phase_ - shift - np.pi
 
         def raw_data(self,
                      original,
@@ -839,56 +856,51 @@ class BE_Dataset:
                    save_loc='SHO_fit_scaled',
                    basepath="Raw_Data-SHO_Fit_000"):
         self.SHO_scaler = StandardScaler()
-        data = self._SHO_fit.reshape(-1, 5).copy()
-        try:
-            if shifter.shift is not None:
-                data[:, 3] = shifter.shift_phase(data[:, 3])
-        except:
-            pass
-        fit_results_scaled = self.SHO_scaler.fit_transform(
-            data).reshape(self.num_pix, -1, 5)
+        data = self.SHO_fit.reshape(-1, 5)[:, :-1]
 
-        try:
-            with h5py.File(self.dataset, "r+") as h5_f:
-                # saves the scaled data to the h5 file
-                make_dataset(h5_f[basepath],
-                             save_loc, fit_results_scaled)
-        except:
-            pass
+        if shifter is not None:
+            data[:, 3] = self.lsqf_viz.shift_phase(data[:, 3], shifter)
+
+        fit_results_scaled = self.SHO_scaler.fit_transform(
+            data).reshape(self.num_pix, -1, 4)
+
+        with h5py.File(self.dataset, "r+") as h5_f:
+            self._SHO_params_scaled = self.data_writer(
+                basepath, save_loc, fit_results_scaled)
 
     @property
     def SHO_fit_on_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self._SHO_fit_scaled[:, 1::2, :]
 
     @property
     def SHO_fit_off_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self._SHO_fit_scaled[:, ::2, :]
 
     @property
     def SHO_fit_amp_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state_scaled()[:, :, 0]
 
     @property
     def SHO_fit_resonance_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state_scaled()[:, :, 1]
 
     @property
     def SHO_fit_q_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state_scaled()[:, :, 2]
 
     @property
     def SHO_fit_phase_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state_scaled()[:, :, 3]
 
     @property
     def SHO_fit_r2_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_state_scaled()[:, :, 4]
 
     def SHO_state_scaled(self):
@@ -899,7 +911,7 @@ class BE_Dataset:
 
     @property
     def _SHO_fit_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["/Raw_Data-SHO_Fit_000/SHO_fit_scaled"][:]
 
     @property
@@ -1005,15 +1017,15 @@ class BE_Dataset:
 
         self.printing.savefig(fig, filename)
 
-    def NN_Params_Scaler(self):
-        with h5py.File(self.dataset, "r") as h5_f:
-            self.nn_parms_scalar = StandardScaler()
-            self.nn_parms_scalar.fit(
-                self.SHO_fit.reshape(-1, 5)[:, 0:4])
+    # def NN_Params_Scaler(self):
+    #     with h5py.File(self.dataset, "r+") as h5_f:
+    #         self.nn_parms_scalar = StandardScaler()
+    #         self.nn_parms_scalar.fit(
+    #             self.SHO_fit.reshape(-1, 5)[:, 0:4])
 
     @property
     def nn_raw_input(self):
-        with h5py.File(self.dataset, "r") as h5_f:
+        with h5py.File(self.dataset, "r+") as h5_f:
             real = self._complex_spectrum_real_resampled_scaled.reshape(
                 -1, self.resample_bins)
             imag = self._complex_spectrum_imag_resampled_scaled.reshape(
@@ -1023,10 +1035,13 @@ class BE_Dataset:
 
     @property
     def SHO_params_scaled(self):
-        with h5py.File(self.dataset, "r") as h5_f:
-            if hasattr(self, "nn_parms_scalar") == False:
-                self.NN_Params_Scaler()
-            return self.nn_parms_scalar.transform(self.SHO_fit.reshape(-1, 5)[:, 0:4])
+        with h5py.File(self.dataset, "r+") as h5_f:
+            # self.SHO_scaler.transform(self.SHO_fit.reshape(-1, 5)[:, :-1])
+            return self._SHO_params_scaled
+
+            # if hasattr(self, "nn_parms_scalar") == False:
+            #     self.NN_Params_Scaler()
+            # return self.nn_parms_scalar.transform(self.SHO_fit.reshape(-1, 5)[:, 0:4])
 
     @property
     def nn_predictions(self):
