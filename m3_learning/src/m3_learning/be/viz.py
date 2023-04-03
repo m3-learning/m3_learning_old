@@ -1,10 +1,14 @@
 
-Class BE_Viz:
+
+
+
+
+# Class BE_Viz:
     
-    def __init__(self, dataset, shift=None, **kwargs):
+#     def __init__(self, dataset, shift=None, **kwargs):
         
-        self.dataset = dataset
-        self.shift = shift
+#         self.dataset = dataset
+#         self.shift = shift
         
         
 

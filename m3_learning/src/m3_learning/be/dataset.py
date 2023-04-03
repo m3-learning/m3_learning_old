@@ -1026,12 +1026,6 @@ class BE_Dataset:
 
         self.printing.savefig(fig, filename)
 
-    # def NN_Params_Scaler(self):
-    #     with h5py.File(self.dataset, "r+") as h5_f:
-    #         self.nn_parms_scalar = StandardScaler()
-    #         self.nn_parms_scalar.fit(
-    #             self.SHO_fit.reshape(-1, 5)[:, 0:4])
-
     @property
     def nn_raw_input(self):
         with h5py.File(self.dataset, "r+") as h5_f:
