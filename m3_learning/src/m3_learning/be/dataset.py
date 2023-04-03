@@ -35,6 +35,7 @@ class BE_Dataset:
         self.state = state
         self.printing = printer(basepath=basepath)
         self.resample_bins = 80
+        self.nn_scaled_state_params = False
 
         def pass_(*args, **kwargs):
             pass
@@ -516,6 +517,8 @@ class BE_Dataset:
             return self.SHO_fit_on
         elif self.state == "off":
             return self.SHO_fit_off
+        else:
+            return self.SHO_fit
 
     @property
     def SHO_fit(self):
@@ -861,7 +864,13 @@ class BE_Dataset:
         if shifter is not None:
             data[:, 3] = self.lsqf_viz.shift_phase(data[:, 3], shifter)
 
-        fit_results_scaled = self.SHO_scaler.fit_transform(
+        self.SHO_scaler.fit(data)
+
+        # sets the phase not to scale
+        self.SHO_scaler.mean_[3] = 0
+        self.SHO_scaler.var_[3] = 1
+
+        fit_results_scaled = self.SHO_scaler.transform(
             data).reshape(self.num_pix, -1, 4)
 
         with h5py.File(self.dataset, "r+") as h5_f:
@@ -1122,3 +1131,68 @@ class BE_Dataset:
                              data)
 
             return h5_f[f"{base}/{name}"][:]
+
+    @property
+    def nn_state_params(self):
+        return self._nn_state_params
+
+    @nn_state_params.setter
+    def nn_state_params(self, value):
+        self._nn_state_params = eval(
+            f"self.nn_{value}_params").reshape(-1, self.voltage_steps, 4)
+
+    @property
+    def nn_scaled_state_params(self):
+        return self._nn_scaled_state_params
+
+    @nn_scaled_state_params.setter
+    def nn_scaled_state_params(self, value):
+        self._nn_scaled_state_params = value
+
+    @property
+    def SHO_nn_on(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_state_params[:, 1::2, :]
+
+    @property
+    def SHO_nn_off(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self._nn_state_params[:, ::2, :]
+
+    @property
+    def SHO_nn_amp(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self.SHO_nn_state()[:, :, 0]
+
+    @property
+    def SHO_nn_resonance(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self.SHO_nn_state()[:, :, 1]
+
+    @property
+    def SHO_nn_q(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self.SHO_nn_state()[:, :, 2]
+
+    @property
+    def SHO_nn_phase(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self.SHO_nn_state()[:, :, 3]
+
+    @property
+    def SHO_nn_r2(self):
+        with h5py.File(self.dataset, "r+") as h5_f:
+            return self.SHO_nn_state()[:, :, 4]
+
+    def SHO_nn_state(self):
+        if self.state == "on":
+            data_ = self.SHO_nn_on
+        elif self.state == "off":
+            data_ = self.SHO_nn_off
+        else:
+            data_ = self._nn_state_params
+
+        if self.nn_scaled_state_params:
+            data_ = self.SHO_scaler.transform(data_)
+
+        return data_

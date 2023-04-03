@@ -89,6 +89,7 @@ class SHO_Model(nn.Module):
         x = self.hidden_x1(x)
         xfc = torch.reshape(x, (n, 256))  # batch size, features
         xfc = self.hidden_xfc(xfc)
+
         # batch size, (real, imag), timesteps
         x = torch.reshape(x, (n, 2, 128))
         x = self.hidden_x2(x)
@@ -99,8 +100,8 @@ class SHO_Model(nn.Module):
         # corrects the scaling of the parameters
         unscaled_param = (
             embedding *
-            torch.tensor(self.dataset.SHO_scaler.var_[0:4] ** 0.5).cuda()
-            + torch.tensor(self.dataset.SHO_scaler.mean_[0:4]).cuda()
+            torch.tensor(self.dataset.SHO_scaler.var_ ** 0.5).cuda()
+            + torch.tensor(self.dataset.SHO_scaler.mean_).cuda()
         )
 
         # passes to the pytorch fitting function
@@ -234,8 +235,8 @@ class SHO_NN_Model:
 
         exec(f"self.model.dataset.nn_{name} = predictions")
         exec(f"self.model.dataset.nn_{name}_params_scaled=params_scaled")
-        exec(f"self.model.dataset.nn_{name}_params_=params")
-    
+        exec(f"self.model.dataset.nn_{name}_params =params")
+
     def unscale_complex(self, data):
 
         unscaled = np.zeros(data.shape)
