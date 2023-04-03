@@ -1179,11 +1179,6 @@ class BE_Dataset:
         with h5py.File(self.dataset, "r+") as h5_f:
             return self.SHO_nn_state()[:, :, 3]
 
-    @property
-    def SHO_nn_r2(self):
-        with h5py.File(self.dataset, "r+") as h5_f:
-            return self.SHO_nn_state()[:, :, 4]
-
     def SHO_nn_state(self):
         if self.state == "on":
             data_ = self.SHO_nn_on
@@ -1193,6 +1188,6 @@ class BE_Dataset:
             data_ = self._nn_state_params
 
         if self.nn_scaled_state_params:
-            data_ = self.SHO_scaler.transform(data_)
+            data_ = self.SHO_scaler.transform(data_.reshape(-1, 4))
 
-        return data_
+        return data_.reshape(-1, self.voltage_steps, 4)
