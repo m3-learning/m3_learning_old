@@ -553,18 +553,10 @@ class BE_Dataset:
             data_ = np.array(SHO_fit_list).reshape(
                 -1, channels)
 
-            # try:
-            #     if self.lsqf_viz.shift is not None:
-            #         data_[:, 3] = self.lsqf_viz.shift_phase(data_[:, 3])
-            # except:
-            #     pass
-
             # flatten parameters list into numpy array
             self._SHO_fit = data_.reshape(
                 self.num_pix, self.voltage_steps, channels)
 
-            # if self.lsqf_viz.shift is not None:
-            #     self.NN_Params_Scaler()
 
     class Viz:
 
