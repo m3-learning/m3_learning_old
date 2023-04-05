@@ -49,6 +49,7 @@ def set_style(name="default"):
             plt.rcParams['figure.constrained_layout.use'] = True
             plt.rcParams['lines.markersize'] = 2
             plt.rcParams['axes.grid'] = False
+            plt.rcParams['lines.linewidth'] = .5
         except:
             pass
 
