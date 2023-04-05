@@ -288,7 +288,7 @@ def combine_lines(*args):
 
 
 def labelfigs(
-    axes, number, style="wb", loc="br", string_add="", size=14, text_pos="center"
+    axes, number, style="wb", loc="br", string_add="", size=8, text_pos="center"
 ):
     """Function that labels the figures
 
@@ -353,7 +353,7 @@ def labelfigs(
                 x_value,
                 y_value,
                 string.ascii_lowercase[number],
-                size=14,
+                size=size,
                 weight="bold",
                 ha=text_pos,
                 va="center",
@@ -372,7 +372,7 @@ def labelfigs(
                 y_value,
                 string.ascii_lowercase[0] +
                 string.ascii_lowercase[number - 26],
-                size=14,
+                size=size,
                 weight="bold",
                 ha=text_pos,
                 va="center",
