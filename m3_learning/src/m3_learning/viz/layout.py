@@ -140,7 +140,7 @@ def embedding_maps(data, image, colorbar_shown=True, c_lim=None, mod=None, title
     fig.tight_layout()
 
 
-def imagemap(ax, data, colorbars=True, clim=None):
+def imagemap(ax, data, colorbars=True, clim=None, divider_=True):
     """pretty way to plot image maps with standard formats
 
     Args:
@@ -165,12 +165,18 @@ def imagemap(ax, data, colorbars=True, clim=None):
 
     ax.set_yticklabels("")
     ax.set_xticklabels("")
+    ax.set_yticks([])
+    ax.set_xticks([])
 
     if colorbars:
-        # adds the colorbar
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="10%", pad=0.05)
-        cbar = plt.colorbar(im, cax=cax, format="%.1e")
+        if divider_:
+            # adds the colorbar
+            divider = make_axes_locatable(ax)
+            cax = divider.append_axes("right", size="10%", pad=0.05)
+            cbar = plt.colorbar(im, cax=cax, format="%.1e")
+        else:
+            cb = plt.colorbar(im, fraction=0.046, pad=0.04)
+            cb.ax.tick_params(labelsize=6, width=0.05)
 
 
 def find_nearest(array, value, averaging_number):
@@ -445,19 +451,19 @@ def scalebar(axes, image_size, scale_size, units="nm", loc="br"):
         y_label_height = y_point[np.int((0.9 - 0.075) * image_size // 1)]
 
     # makes the path for the scalebar
-    path_maker(axes, [x_start, x_end, y_start, y_end], "w", "k", "-", 1)
+    path_maker(axes, [x_start, x_end, y_start, y_end], "w", "k", "-", .25)
 
     # adds the text label for the scalebar
     axes.text(
         (x_start + x_end) / 2,
         y_label_height,
         "{0} {1}".format(scale_size, units),
-        size=14,
+        size=6,
         weight="bold",
         ha="center",
         va="center",
         color="w",
-        path_effects=[patheffects.withStroke(linewidth=1.5, foreground="k")],
+        path_effects=[patheffects.withStroke(linewidth=.5, foreground="k")],
     )
 
 

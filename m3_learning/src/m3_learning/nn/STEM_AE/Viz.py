@@ -4,33 +4,75 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from ...viz.layout import layout_fig, imagemap, labelfigs, scalebar
 
 
 class Viz:
 
-    def __init__(self, model,
-                 scaled_data,
-                 embeddings,
-                 image,
-                 channels=None,
-                 color_map='viridis',
+    def __init__(self,
+                 #  model,
+                 #  scaled_data,
+                 #  embeddings,
+                 #  image,
+                 #  channels=None,
+                 #  color_map='viridis',
                  printer=None,
-                 basepath='./'):
+                 labelfigs_=False):
 
         self.printer = printer
-        self.basepath = basepath
-        self.model = model
-        self.image = image
+        self.labelfigs_ = labelfigs_
+        # self.model = model
+        # self.image = image
 
-        # defines the color list
-        self.cmap = plt.get_cmap(color_map)
-        self.embeddings = embeddings
-        self.vector_length = scaled_data.shape[1]
+        # # defines the color list
+        # self.cmap = plt.get_cmap(color_map)
+        # self.embeddings = embeddings
+        # self.vector_length = scaled_data.shape[1]
 
-        if channels == None:
-            self.channels = range(self.embeddings.shape[1])
-        else:
-            self.channels = channels
+        # if channels == None:
+        #     self.channels = range(self.embeddings.shape[1])
+        # else:
+        #     self.channels = channels
+
+    def STEM_raw_and_virtual(self, data, bright_field_=None, dark_field_=None, scalebar_=None, filename=None):
+
+        fig_num = 1
+        if bright_field_ is not None:
+            fig_num += 1
+        if dark_field_ is not None:
+            fig_num += 1
+
+        shape_ = data.data.shape
+
+        fig, axs = layout_fig(fig_num, fig_num, figsize=(1.25*fig_num, 1.25))
+
+        imagemap(axs[0], np.mean(data.log_data.reshape(-1,
+                                                       shape_[2], shape_[3]), axis=0), divider_=False)
+
+        if bright_field_ is not None:
+            bright_field = data.data.reshape(-1, 256, 256)[:, bright_field_[0]:bright_field_[
+                1], bright_field_[2]:bright_field_[3]]
+            bright_field = np.mean(bright_field.reshape(
+                shape_[0]*shape_[1], -1), axis=1).reshape(shape_[0], shape_[1])
+            imagemap(axs[1], bright_field, divider_=False)
+
+        if dark_field_ is not None:
+            dark_field = data.data.reshape(-1, 256, 256)[:, dark_field_[0]:dark_field_[
+                1], dark_field_[2]:dark_field_[3]]
+            dark_field = np.mean(dark_field.reshape(
+                shape_[0]*shape_[1], -1), axis=1).reshape(shape_[0], shape_[1])
+            imagemap(axs[2], dark_field, divider_=False)
+
+        if self.labelfigs_:
+            for i, ax in enumerate(axs):
+                labelfigs(ax, i)
+
+        if scalebar_ is not None:
+            scalebar(axs[2], scalebar_['width'], scalebar_[
+                'scale length'], units=scalebar_['units'])
+
+        if self.printer is not None:
+            self.printer.savefig(fig, filename, tight_layout=False)
 
     def find_nearest(self, array, value, averaging_number):
 
@@ -57,7 +99,7 @@ class Viz:
                          ):
 
         folder = make_folder(
-            self.basepath + f"/generator_images_{folder_name}/")
+            self.printer.basepath + f"/generator_images_{folder_name}/")
         # max_value = -10
         # min_value  = 10
 

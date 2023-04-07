@@ -50,6 +50,7 @@ def set_style(name="default"):
             plt.rcParams['lines.markersize'] = 2
             plt.rcParams['axes.grid'] = False
             plt.rcParams['lines.linewidth'] = .5
+            plt.rcParams['axes.linewidth'] = .5
         except:
             pass
 

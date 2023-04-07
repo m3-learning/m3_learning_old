@@ -17,7 +17,7 @@ class printer:
         self.fileformats = fileformats
         make_folder(self.basepath)
 
-    def savefig(self, fig, name, tight_layout=True):
+    def savefig(self, fig, name, tight_layout=False):
         """Function to save a figure
 
         Args:
