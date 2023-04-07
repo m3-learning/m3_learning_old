@@ -105,8 +105,6 @@ python-dateutil==2.8.2
 pytz==2022.6
 pyUSID==0.0.10
 PyWavelets==1.4.1
-pywin32==304
-pywinpty==2.0.9
 PyYAML==6.0
 pyzmq==24.0.1
 qtconsole==5.4.0
@@ -161,3 +159,4 @@ xlrd==2.0.1
 zenodopy==0.3.0
 zict==2.2.0
 zipfile38==0.0.3
+hyperspy == 1.7.4

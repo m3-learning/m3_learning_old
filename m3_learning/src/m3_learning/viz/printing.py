@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from m3_learning.util.file_IO import make_folder
+from ..util.file_IO import make_folder
 
 
 class printer:

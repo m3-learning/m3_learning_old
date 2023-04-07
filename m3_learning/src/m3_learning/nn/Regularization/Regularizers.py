@@ -6,6 +6,8 @@ import torch.nn.functional as F
 class ContrastiveLoss(nn.Module):
     """Builds a contrastive loss function based on the cosine similarity between the latent vectors.
 
+    $$L = \frac{cof1}{2N} \sum\limits_{i=1}^{N} \left[\left(\sum\limits_{j=1, j\neq i}^{N} \frac{latent_i \cdot latent_j}{\left\lVert latent_i \right\rVert \left\lVert latent_j \right\rVert}\right] - 1\right)$$
+
     Args:
         nn (nn.Module): Pytorch module
     """
@@ -56,7 +58,6 @@ class DivergenceLoss(nn.Module):
         self.cof1 = cof1
 
     def forward(self, latent):
-        
         """Forward pass of the divergence regularization
 
         Args:
@@ -65,7 +66,7 @@ class DivergenceLoss(nn.Module):
         Returns:
             Tensor: Loss value
         """
-        
+
         loss = 0
 
         for i in range(self.batch_size):
