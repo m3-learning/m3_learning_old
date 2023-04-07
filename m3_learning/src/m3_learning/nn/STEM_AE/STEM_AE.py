@@ -18,9 +18,12 @@ class ConvBlock(nn.Module):
         """
 
         super(ConvBlock, self).__init__()
-        self.cov1d_1 = nn.Conv2d(t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
-        self.cov1d_2 = nn.Conv2d(t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
-        self.cov1d_3 = nn.Conv2d(t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
+        self.cov1d_1 = nn.Conv2d(
+            t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
+        self.cov1d_2 = nn.Conv2d(
+            t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
+        self.cov1d_3 = nn.Conv2d(
+            t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
         self.norm_3 = nn.LayerNorm(n_step)
         self.relu_4 = nn.ReLU()
 
@@ -59,7 +62,8 @@ class IdentityBlock(nn.Module):
         """
 
         super(IdentityBlock, self).__init__()
-        self.cov1d_1 = nn.Conv2d(t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
+        self.cov1d_1 = nn.Conv2d(
+            t_size, t_size, 3, stride=1, padding=1, padding_mode='zeros')
         self.norm_1 = nn.LayerNorm(n_step)
         self.relu = nn.ReLU()
 
@@ -108,23 +112,30 @@ class Encoder(nn.Module):
         number_of_blocks = len(pool_list)
 
         blocks.append(ConvBlock(t_size=conv_size, n_step=original_step_size))
-        blocks.append(IdentityBlock(t_size=conv_size, n_step=original_step_size))
+        blocks.append(IdentityBlock(
+            t_size=conv_size, n_step=original_step_size))
         blocks.append(nn.MaxPool2d(pool_list[0], stride=pool_list[0]))
 
         for i in range(1, number_of_blocks):
-            original_step_size = [original_step_size[0]//pool_list[i-1], original_step_size[1]//pool_list[i-1]]
-            blocks.append(ConvBlock(t_size=conv_size, n_step=original_step_size))
-            blocks.append(IdentityBlock(t_size=conv_size, n_step=original_step_size))
+            original_step_size = [
+                original_step_size[0]//pool_list[i-1], original_step_size[1]//pool_list[i-1]]
+            blocks.append(ConvBlock(t_size=conv_size,
+                          n_step=original_step_size))
+            blocks.append(IdentityBlock(
+                t_size=conv_size, n_step=original_step_size))
             blocks.append(nn.MaxPool2d(pool_list[i], stride=pool_list[i]))
 
         self.block_layer = nn.ModuleList(blocks)
         self.layers = len(blocks)
 
-        original_step_size = [original_step_size[0]//pool_list[-1], original_step_size[1]//pool_list[-1]]
+        original_step_size = [original_step_size[0] //
+                              pool_list[-1], original_step_size[1]//pool_list[-1]]
         input_size = original_step_size[0]*original_step_size[1]
 
-        self.cov2d = nn.Conv2d(1, conv_size, 3, stride=1, padding=1, padding_mode='zeros')
-        self.cov2d_1 = nn.Conv2d(conv_size, 1, 3, stride=1, padding=1, padding_mode='zeros')
+        self.cov2d = nn.Conv2d(1, conv_size, 3, stride=1,
+                               padding=1, padding_mode='zeros')
+        self.cov2d_1 = nn.Conv2d(
+            conv_size, 1, 3, stride=1, padding=1, padding_mode='zeros')
 
         self.relu_1 = nn.ReLU()
 
@@ -157,7 +168,7 @@ class Decoder(nn.Module):
 
         Args:
             original_step_size (Int): the x and y size of input image 
-            up_list (Int): the list of parameter for each 2D Upsample layer 
+            up_list (Int): the list of parameter for each 2D upsample layer 
             embedding_size (Int): the value for number of channels
             conv_size (Int): the value of filters number goes to each block
             pool_list (List): the list of parameter for each 2D MaxPool layer
@@ -166,19 +177,27 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.input_size_0 = original_step_size[0]
         self.input_size_1 = original_step_size[1]
-        self.dense = nn.Linear(embedding_size, original_step_size[0]*original_step_size[1])
-        self.cov2d = nn.Conv2d(1, conv_size, 3, stride=1, padding=1, padding_mode='zeros')
-        self.cov2d_1 = nn.Conv2d(conv_size, 1, 3, stride=1, padding=1, padding_mode='zeros')
+        self.dense = nn.Linear(
+            embedding_size, original_step_size[0]*original_step_size[1])
+        self.cov2d = nn.Conv2d(1, conv_size, 3, stride=1,
+                               padding=1, padding_mode='zeros')
+        self.cov2d_1 = nn.Conv2d(
+            conv_size, 1, 3, stride=1, padding=1, padding_mode='zeros')
 
         blocks = []
         number_of_blocks = len(pool_list)
         blocks.append(ConvBlock(t_size=conv_size, n_step=original_step_size))
-        blocks.append(IdentityBlock(t_size=conv_size, n_step=original_step_size))
+        blocks.append(IdentityBlock(
+            t_size=conv_size, n_step=original_step_size))
         for i in range(number_of_blocks):
-            blocks.append(nn.Upsample(scale_factor=up_list[i], mode='bilinear', align_corners=True))
-            original_step_size = [original_step_size[0]*up_list[i], original_step_size[1]*up_list[i]]
-            blocks.append(ConvBlock(t_size=conv_size, n_step=original_step_size))
-            blocks.append(IdentityBlock(t_size=conv_size, n_step=original_step_size))
+            blocks.append(nn.Upsample(
+                scale_factor=up_list[i], mode='bilinear', align_corners=True))
+            original_step_size = [original_step_size[0] *
+                                  up_list[i], original_step_size[1]*up_list[i]]
+            blocks.append(ConvBlock(t_size=conv_size,
+                          n_step=original_step_size))
+            blocks.append(IdentityBlock(
+                t_size=conv_size, n_step=original_step_size))
 
         self.block_layer = nn.ModuleList(blocks)
         self.layers = len(blocks)
