@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from os.path import join as pjoin
+from torch.utils.data import Dataset, DataLoader
+from ..Regularization.Regularizers import ContrastiveLoss, DivergenceLoss
+from tqdm import tqdm
+from ...util.file_IO import make_folder
+import torch.nn.functional as F
 
 
 class ConvAutoencoder():
@@ -47,6 +52,136 @@ class ConvAutoencoder():
         self.optimizer = optim.Adam(
             self.autoencoder.parameters(), lr=self.learning_rate
         )
+
+        self.autoencoder.type(torch.float32)
+
+    def Train(self,
+              data,
+              max_learning_rate=1e-4,
+              coef_1=0,
+              coef_2=0,
+              coef_3=0,
+              seed=12,
+              epochs=100,
+              with_scheduler=True,
+              ln_parm=1,
+              epoch_=None,
+              folder_path='./',
+              batch_size=32,
+              best_train_loss=None):
+
+        make_folder(folder_path)
+
+        # set seed
+        torch.manual_seed(seed)
+
+        # builds the dataloader
+        self.DataLoader_ = DataLoader(data, batch_size=32, shuffle=True)
+
+        # option to use the learning rate scheduler
+        if with_scheduler:
+            scheduler = torch.optim.lr_scheduler.CyclicLR(
+                self.optimizer, base_lr=self.learning_rate, max_lr=max_learning_rate, step_size_up=15, cycle_momentum=False)
+        else:
+            scheduler = None
+
+        # set the number of epochs
+        N_EPOCHS = epochs
+
+        # initializes the best train loss
+        if best_train_loss == None:
+            best_train_loss = float('inf')
+
+        # initialize the epoch counter
+        if epoch_ is None:
+            start_epoch = 0
+        else:
+            start_epoch = epoch_+1
+
+        # training loop
+        for epoch in range(start_epoch, N_EPOCHS):
+
+            train = self.loss_function(
+                self.DataLoader_, coef_1, coef_2, coef_3, ln_parm)
+            train_loss = train
+            train_loss /= len(self.DataLoader_)
+
+            print('.............................')
+
+          #  schedular.step()
+            if best_train_loss > train_loss:
+                best_train_loss = train_loss
+                patience_counter = 1
+                checkpoint = {
+                    "net": self.autoencoder.state_dict(),
+                    'optimizer': self.optimizer.state_dict(),
+                    "epoch": epoch,
+                    "encoder": self.encoder.state_dict(),
+                    'decoder': self.decoder.state_dict(),
+                }
+                if epoch >= 0:
+                    lr_ = format(self.optimizer.param_groups[0]['lr'], '.5f')
+                    file_path = folder_path + 'Weight_' +\
+                        f'epoch:{epoch:04d}_l1coef:{coef_1:.4f}'+'_lr:'+lr_ +\
+                        f'_trainloss:{train_loss:.4f}.pkl'
+                    torch.save(checkpoint, file_path)
+
+            if scheduler is not None:
+                scheduler.step()
+
+    def loss_function(self,
+                      train_iterator,
+                      coef=0,
+                      coef1=0,
+                      coef2=0,
+                      ln_parm=1,
+                      beta=None):
+
+        # set the train mode
+        self.autoencoder.train()
+
+        # loss of the epoch
+        train_loss = 0
+        con_l = ContrastiveLoss(coef1).to(self.device)
+
+        for x in tqdm(train_iterator, leave=True, total=len(train_iterator)):
+
+            x = x.to(self.device, dtype=torch.float)
+
+            maxi_ = DivergenceLoss(x.shape[0], coef2).to(self.device)
+
+            # update the gradients to zero
+            self.optimizer.zero_grad()
+
+            if beta is None:
+                embedding = self.encoder(x)
+            else:
+                embedding, sd, mn = self.encoder(x)
+
+            reg_loss_1 = coef * \
+                torch.norm(embedding, ln_parm).to(self.device)/x.shape[0]
+
+            if reg_loss_1 == 0:
+
+                reg_loss_1 = 0.5
+
+            predicted_x = self.decoder(embedding)
+
+            contras_loss = con_l(embedding)
+            maxi_loss = maxi_(embedding)
+
+            # reconstruction loss
+            loss = F.mse_loss(x, predicted_x, reduction='mean')
+
+            loss = loss + reg_loss_1 + contras_loss - maxi_loss
+
+            # backward pass
+            train_loss += loss.item()
+            loss.backward()
+            # update the weights
+            self.optimizer.step()
+
+        return train_loss
 
 
 class ConvBlock(nn.Module):
