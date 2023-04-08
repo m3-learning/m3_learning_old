@@ -8,7 +8,6 @@ from tqdm import tqdm
 from ...util.file_IO import make_folder
 import torch.nn.functional as F
 
-
 class ConvAutoencoder():
 
     def __init__(self,
@@ -76,7 +75,7 @@ class ConvAutoencoder():
         torch.manual_seed(seed)
 
         # builds the dataloader
-        self.DataLoader_ = DataLoader(data, batch_size=32, shuffle=True)
+        self.DataLoader_ = DataLoader(data.reshape(-1,256,256), batch_size=32, shuffle=True)
 
         # option to use the learning rate scheduler
         if with_scheduler:
