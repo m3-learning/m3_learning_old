@@ -9,179 +9,322 @@ from ...util.file_IO import make_folder
 import torch.nn.functional as F
 
 
-class ConvAutoencoder():
+def make_model(en_original_step_size,
+               pool_list,
+               de_original_step_size,
+               up_list,
+               embedding_size,
+               conv_size,
+               device,
+               learning_rate=3e-5,
+               ):
+    encoder = Encoder(original_step_size=en_original_step_size,
+                      pool_list=pool_list,
+                      embedding_size=embedding_size,
+                      conv_size=conv_size).to(device)
+    decoder = Decoder(original_step_size=de_original_step_size,
+                      up_list=up_list,
+                      embedding_size=embedding_size,
+                      conv_size=conv_size).to(device)
+    join = AutoEncoder(encoder, decoder).to(device)
 
-    def __init__(self,
-                 encoder_step_size,
-                 pooling_list,
-                 decoder_step_size,
-                 upsampling_list,
-                 embedding_size,
-                 conv_size,
-                 device,
-                 learning_rate=3e-5,
-                 ):
-        self.encoder_step_size = encoder_step_size
-        self.pooling_list = pooling_list
-        self.decoder_step_size = decoder_step_size
-        self.upsampling_list = upsampling_list
-        self.embedding_size = embedding_size
-        self.conv_size = conv_size
-        self.device = device
-        self.learning_rate = learning_rate
+    optimizer = optim.Adam(join.parameters(), lr=learning_rate)
 
-        self.compile_model()
+    return encoder, decoder, join, optimizer
 
-    def compile_model(self):
-        self.encoder = Encoder(
-            original_step_size=self.encoder_step_size,
-            pooling_list=self.pooling_list,
-            embedding_size=self.embedding_size,
-            conv_size=self.conv_size,
-        ).to(self.device)
-        self.decoder = Decoder(
-            original_step_size=self.decoder_step_size,
-            upsampling_list=self.upsampling_list,
-            embedding_size=self.embedding_size,
-            conv_size=self.conv_size,
-            pooling_list=self.pooling_list,
-        ).to(self.device)
-        self.autoencoder = AutoEncoder(
-            self.encoder, self.decoder).to(self.device)
+# def compile_model(encoder_step_size,
+#                   pooling_list,
+#                   decoder_step_size,
+#                   upsampling_list,
+#                   embedding_size,
+#                   conv_size,
+#                   device,
+#                   learning_rate=3e-5):
 
-        self.optimizer = optim.Adam(
-            self.autoencoder.parameters(), lr=self.learning_rate
-        )
+#     encoder = Encoder(
+#         original_step_size=encoder_step_size,
+#         pooling_list=pooling_list,
+#         embedding_size=embedding_size,
+#         conv_size=conv_size,
+#     ).to(device)
+#     decoder = Decoder(
+#         original_step_size=decoder_step_size,
+#         upsampling_list=upsampling_list,
+#         embedding_size=embedding_size,
+#         conv_size=conv_size,
+#         pooling_list=pooling_list,
+#     ).to(device)
+#     autoencoder = AutoEncoder(
+#         encoder, decoder).to(device)
 
-        self.autoencoder.type(torch.float32)
+#     # autoencoder.type(torch.float32)
 
-    def Train(self,
-              data,
-              max_learning_rate=1e-4,
-              coef_1=0,
-              coef_2=0,
-              coef_3=0,
-              seed=12,
-              epochs=100,
-              with_scheduler=True,
-              ln_parm=1,
-              epoch_=None,
-              folder_path='./',
-              batch_size=32,
-              best_train_loss=None):
+#     optimizer = optim.Adam(
+#         autoencoder.parameters(), lr=learning_rate
+#     )
 
-        make_folder(folder_path)
+#     return (encoder, decoder, autoencoder, optimizer)
 
-        # set seed
-        torch.manual_seed(seed)
 
-        # builds the dataloader
-        self.DataLoader_ = DataLoader(data, batch_size=32, shuffle=True)
+# def Train(model,
+#           data,
+#           max_learning_rate=1e-4,
+#           coef_1=0,
+#           coef_2=0,
+#           coef_3=0,
+#           seed=12,
+#           epochs=100,
+#           with_scheduler=True,
+#           ln_parm=1,
+#           epoch_=None,
+#           folder_path='./',
+#           learning_rate=3e-5,
+#           batch_size=32,
+#           best_train_loss=None,
+#           device=None):
 
-        # option to use the learning rate scheduler
-        if with_scheduler:
-            scheduler = torch.optim.lr_scheduler.CyclicLR(
-                self.optimizer, base_lr=self.learning_rate, max_lr=max_learning_rate, step_size_up=15, cycle_momentum=False)
-        else:
-            scheduler = None
+#     encoder, decoder, autoencoder, optimizer = model
 
-        # set the number of epochs
-        N_EPOCHS = epochs
+#     make_folder(folder_path)
 
-        # initializes the best train loss
-        if best_train_loss == None:
-            best_train_loss = float('inf')
+#     # set seed
+#     torch.manual_seed(seed)
 
-        # initialize the epoch counter
-        if epoch_ is None:
-            start_epoch = 0
-        else:
-            start_epoch = epoch_+1
+#     # builds the dataloader
+#     DataLoader_ = DataLoader(data, batch_size=32, shuffle=True)
 
-        # training loop
-        for epoch in range(start_epoch, N_EPOCHS):
+#     # option to use the learning rate scheduler
+#     if with_scheduler:
+#         scheduler = torch.optim.lr_scheduler.CyclicLR(
+#             optimizer, base_lr=learning_rate, max_lr=max_learning_rate, step_size_up=15, cycle_momentum=False)
+#     else:
+#         scheduler = None
 
-            train = self.loss_function(
-                self.DataLoader_, coef_1, coef_2, coef_3, ln_parm)
-            train_loss = train
-            train_loss /= len(self.DataLoader_)
+#     # set the number of epochs
+#     N_EPOCHS = epochs
 
-            print('.............................')
+#     # initializes the best train loss
+#     if best_train_loss == None:
+#         best_train_loss = float('inf')
 
-          #  schedular.step()
-            if best_train_loss > train_loss:
-                best_train_loss = train_loss
-                patience_counter = 1
-                checkpoint = {
-                    "net": self.autoencoder.state_dict(),
-                    'optimizer': self.optimizer.state_dict(),
-                    "epoch": epoch,
-                    "encoder": self.encoder.state_dict(),
-                    'decoder': self.decoder.state_dict(),
-                }
-                if epoch >= 0:
-                    lr_ = format(self.optimizer.param_groups[0]['lr'], '.5f')
-                    file_path = folder_path + 'Weight_' +\
-                        f'epoch:{epoch:04d}_l1coef:{coef_1:.4f}'+'_lr:'+lr_ +\
-                        f'_trainloss:{train_loss:.4f}.pkl'
-                    torch.save(checkpoint, file_path)
+#     # initialize the epoch counter
+#     if epoch_ is None:
+#         start_epoch = 0
+#     else:
+#         start_epoch = epoch_+1
 
-            if scheduler is not None:
-                scheduler.step()
+#     # training loop
+#     for epoch in range(start_epoch, N_EPOCHS):
 
-    def loss_function(self,
-                      train_iterator,
-                      coef=0,
-                      coef1=0,
-                      coef2=0,
-                      ln_parm=1,
-                      beta=None):
+#         train = loss_function(model,
+#                               DataLoader_, coef_1, coef_2, coef_3, ln_parm, device=device)
+#         train_loss = train
+#         train_loss /= len(DataLoader_)
 
-        # set the train mode
-        self.autoencoder.train()
+#         print('.............................')
 
-        # loss of the epoch
-        train_loss = 0
-        con_l = ContrastiveLoss(coef1).to(self.device)
+#         #  schedular.step()
+#         if best_train_loss > train_loss:
+#             best_train_loss = train_loss
+#             patience_counter = 1
+#             checkpoint = {
+#                 "net": autoencoder.state_dict(),
+#                 'optimizer': optimizer.state_dict(),
+#                 "epoch": epoch,
+#                 "encoder": encoder.state_dict(),
+#                 'decoder': decoder.state_dict(),
+#             }
+#             if epoch >= 0:
+#                 lr_ = format(optimizer.param_groups[0]['lr'], '.5f')
+#                 file_path = folder_path + 'Weight_' +\
+#                     f'epoch:{epoch:04d}_l1coef:{coef_1:.4f}'+'_lr:'+lr_ +\
+#                     f'_trainloss:{train_loss:.4f}.pkl'
+#                 torch.save(checkpoint, file_path)
 
-        for x in tqdm(train_iterator, leave=True, total=len(train_iterator)):
+#         if scheduler is not None:
+#             scheduler.step()
 
-            x = x.to(self.device, dtype=torch.float)
+def Train(data, encoder, decoder, join, optimizer,
+          learning_rate=3e-5,
+          max_learning_rate=1e-4,
+          coef_1=0,
+          coef_2=0,
+          coef_3=0,
+          seed=12,
+          epochs=100,
+          with_scheduler=True,
+          ln_parm=1,
+          epoch_=None,
+          folder_path='.',
+          best_train_loss=None):
 
-            maxi_ = DivergenceLoss(x.shape[0], coef2).to(self.device)
+    torch.manual_seed(seed)
+    train_iterator = DataLoader(data, batch_size=32, shuffle=True)
 
-            # update the gradients to zero
-            self.optimizer.zero_grad()
+    if with_scheduler:
+        scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=learning_rate, max_lr=max_learning_rate,
+                                                      step_size_up=15, cycle_momentum=False)
+    else:
+        scheduler = None
 
-            if beta is None:
-                embedding = self.encoder(x)
-            else:
-                embedding, sd, mn = self.encoder(x)
+    N_EPOCHS = epochs
+    if best_train_loss == None:
+        best_train_loss = float('inf')
 
-            reg_loss_1 = coef * \
-                torch.norm(embedding, ln_parm).to(self.device)/x.shape[0]
+    if epoch_ == None:
+        start_epoch = 0
+    else:
+        start_epoch = epoch_+1
 
-            if reg_loss_1 == 0:
+    for epoch in range(start_epoch, N_EPOCHS):
 
-                reg_loss_1 = 0.5
+        train = loss_function(join, encoder, decoder, train_iterator,
+                              optimizer, coef_1, coef_2, coef_3, ln_parm)
+        train_loss = train
+        train_loss /= len(train_iterator)
 
-            predicted_x = self.decoder(embedding)
+        print('.............................')
 
-            contras_loss = con_l(embedding)
-            maxi_loss = maxi_(embedding)
+      #  schedular.step()
+        if best_train_loss > train_loss:
+            best_train_loss = train_loss
+            patience_counter = 1
+            checkpoint = {
+                "net": join.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                "epoch": epoch,
+                "encoder": encoder.state_dict(),
+                'decoder': decoder.state_dict(),
+                #                    'start_coef': coef,
+            }
+            if epoch >= 0:
+                lr_ = format(optimizer.param_groups[0]['lr'], '.5f')
+                file_path = folder_path + '/Weight_' +\
+                    f'epoch:{epoch:04d}_l1coef:{coef_1:.4f}'+'_lr:'+lr_ +\
+                    f'_trainloss:{train_loss:.4f}.pkl'
+                torch.save(checkpoint, file_path)
 
-            # reconstruction loss
-            loss = F.mse_loss(x, predicted_x, reduction='mean')
+        if scheduler != None:
+            scheduler.step()
 
-            loss = loss + reg_loss_1 + contras_loss - maxi_loss
 
-            # backward pass
-            train_loss += loss.item()
-            loss.backward()
-            # update the weights
-            self.optimizer.step()
+def loss_function(model,
+                  encoder,
+                  decoder,
+                  train_iterator,
+                  optimizer,
+                  device,
+                  coef=0,
+                  coef1=0,
+                  coef2=0,
+                  ln_parm=1,
+                  ):
 
-        return train_loss
+    # set the train mode
+    model.train()
+
+    # loss of the epoch
+    train_loss = 0
+    con_l = ContrastiveLoss(coef1).to(device)
+    #    for i, x in enumerate(train_iterator):
+    for x in tqdm(train_iterator, leave=True, total=len(train_iterator)):
+
+        x = x.to(device, dtype=torch.float)
+
+        maxi_ = DivergenceLoss(x.shape[0], coef2).to(device)
+
+        # update the gradients to zero
+        optimizer.zero_grad()
+
+        # if beta is None:
+
+        embedding = encoder(x)
+
+        # else:
+
+        #   embedding,sd,mn = encoder(x)
+
+        reg_loss_1 = coef * \
+            torch.norm(embedding, ln_parm).to(device)/x.shape[0]
+
+        if reg_loss_1 == 0:
+
+            reg_loss_1 = 0.5
+
+        predicted_x = decoder(embedding)
+
+        contras_loss = con_l(embedding)
+        maxi_loss = maxi_(embedding)
+        # reconstruction loss
+        loss = F.mse_loss(x, predicted_x, reduction='mean')
+
+        loss = loss + reg_loss_1 + contras_loss - maxi_loss
+
+        # backward pass
+        train_loss += loss.item()
+        loss.backward()
+        # update the weights
+        optimizer.step()
+
+    return train_loss
+
+
+# def loss_function(model,
+#                   train_iterator,
+#                   coef=0,
+#                   coef1=0,
+#                   coef2=0,
+#                   ln_parm=1,
+#                   device=None,
+#                   beta=None):
+
+#     encoder, decoder, autoencoder, optimizer = model
+
+#     # set the train mode
+#     autoencoder.train()
+
+#     # loss of the epoch
+#     train_loss = 0
+#     con_l = ContrastiveLoss(coef1).to(device)
+
+#     for x in tqdm(train_iterator, leave=True, total=len(train_iterator)):
+
+#         x = x.to(device, dtype=torch.float)
+
+#         maxi_ = DivergenceLoss(x.shape[0], coef2).to(device)
+
+#         # update the gradients to zero
+#         optimizer.zero_grad()
+
+#         if beta is None:
+#             embedding = encoder(x)
+#         else:
+#             embedding, sd, mn = encoder(x)
+
+#         reg_loss_1 = coef * \
+#             torch.norm(embedding, ln_parm).to(device)/x.shape[0]
+
+#         if reg_loss_1 == 0:
+
+#             reg_loss_1 = 0.5
+
+#         predicted_x = decoder(embedding)
+
+#         contras_loss = con_l(embedding)
+#         maxi_loss = maxi_(embedding)
+
+#         # reconstruction loss
+#         loss = F.mse_loss(x, predicted_x, reduction='mean')
+
+#         loss = loss + reg_loss_1 + contras_loss - maxi_loss
+
+#         # backward pass
+#         train_loss += loss.item()
+#         loss.backward()
+#         # update the weights
+#         optimizer.step()
+
+#     return train_loss
 
 
 class ConvBlock(nn.Module):
