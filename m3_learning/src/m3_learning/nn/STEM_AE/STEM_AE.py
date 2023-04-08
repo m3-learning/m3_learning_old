@@ -39,6 +39,7 @@ class ConvAutoencoder():
             upsampling_list=self.upsampling_list,
             embedding_size=self.embedding_size,
             conv_size=self.conv_size,
+            pooling_list=self.pooling_list,
         ).to(self.device)
         self.autoencoder = AutoEncoder(
             self.encoder, self.decoder).to(self.device)
