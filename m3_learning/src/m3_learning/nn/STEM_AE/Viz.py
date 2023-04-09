@@ -88,7 +88,7 @@ class Viz:
     def generator_images(self,
                          folder_name='',
                          ranges=None,
-                         number_of_loops=200,
+                         generator_iters=200,
                          averaging_number=100,
                          graph_layout=[2, 2],
                          # y_lim = [-2,12],
@@ -103,7 +103,7 @@ class Viz:
         # max_value = -10
         # min_value  = 10
 
-        for i in tqdm(range(number_of_loops)):
+        for i in tqdm(range(generator_iters)):
 
             fig, ax = layout_fig(graph_layout[0], graph_layout[1])
 
@@ -128,7 +128,7 @@ class Viz:
 
                 # linear space values for the embeddings
                 value = np.linspace(ranges[j][0], ranges[j][1],
-                                    number_of_loops)
+                                    generator_iters)
 
                 # finds the nearest point to the value and then takes the average
                 # average number of points based on the averaging number
@@ -160,7 +160,7 @@ class Viz:
 
                 ax[j].imshow(generated, clim=[0, 6])
                 ax[j].plot(3, 3, marker='o', markerfacecolor=self.cmap(
-                    (i + 1) / number_of_loops))
+                    (i + 1) / generator_iters))
 
                 # formats the graph
                 ax[j].set_xlabel(xlabel)
@@ -180,3 +180,102 @@ class Viz:
             ax[0].set_ylabel(ylabel)
 
             # TODO: add the save figure function
+            
+def generator_images(model,
+                    channels,
+                    folder, 
+                    ranges = None,
+                    generator_iters = 200, 
+                    averaging_number = 100,
+                    graph_layout = [2,2], 
+                    y_lim = [-2,12],
+                    xlabel = '',
+                    ylabel = '',
+                    xvalues = None,
+                    in_radon=False,
+                    **kwargs
+                    ):
+    
+    folder = make_folder(folder)
+    
+    if channels == None:
+        channels = range(model.embeddings.shape[1])
+    else: 
+        channels = channels
+    
+    # max_value = -10
+    # min_value  = 10
+    
+    for i in tqdm(range(generator_iters)):
+
+        # builds the figure
+        fig, ax = layout_fig(graph_layout[0], graph_layout[1], **kwargs)
+        ax = ax.reshape(-1)
+
+        # loops around all of the embeddings
+        for j, channel  in enumerate(channels):
+            
+            # checks if the value is None and if so skips tp next iteration
+            if i is None:
+                continue
+                
+            
+            if ranges is None: 
+                ranges =  np.stack((np.min(model.embeddings,axis=0),
+                            np.max(model.embeddings,axis=0)), axis=1)
+
+            # linear space values for the embeddings
+            value = np.linspace(ranges[j][0], ranges[j][1], 
+                                generator_iters)
+
+            # finds the nearest point to the value and then takes the average
+            # average number of points based on the averaging number
+            idx = find_nearest(
+                self.embeddings[:,channel], 
+                value[i], 
+                averaging_number)
+            
+            # computes the mean of the selected index
+            gen_value = np.mean(model.embeddings[idx], axis=0)
+            
+            # specifically updates the value of the embedding to visualize based on the
+            # linear spaced vector
+            gen_value[channel] = value[i]
+
+            # generates the loop based on the model
+            generated = model.generate_spectra(gen_value).squeeze()
+            # min_ = np.min(generated)
+            # max_ = np.max(generated)
+            # if min_<min_value:
+            #     min_value = min_
+                
+            # if max_>max_value:
+            #     max_value = max_
+            
+
+            # plots the graph
+            if in_radon==True:
+                generated = iradon(generated)
+    
+            ax[j].imshow(generated,clim=[0,6])
+            ax[j].plot(3,3, marker='o', markerfacecolor=self.cmap((i + 1) / generator_iters))
+            
+
+            # formats the graph
+            ax[j].set_xlabel(xlabel)
+
+            # gets the position of the axis on the figure
+            pos = ax[j].get_position()
+
+            # plots and formats the binary cluster map
+            axes_in = plt.axes([pos.x0-0.10 , pos.y1, .12 * 4, .12 * 4])
+
+            # plots the imagemap and formats
+            axes_in.imshow(self.embeddings[:, channel].reshape(self.image.shape[0:2]), clim=ranges[j])
+            axes_in.set_yticklabels('')
+            axes_in.set_xticklabels('')
+
+        ax[0].set_ylabel(ylabel)
+
+
+        plt.close(fig)
