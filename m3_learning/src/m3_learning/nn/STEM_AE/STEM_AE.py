@@ -7,6 +7,8 @@ from ..Regularization.Regularizers import ContrastiveLoss, DivergenceLoss
 from tqdm import tqdm
 from ...util.file_IO import make_folder
 import torch.nn.functional as F
+from torch.autograd import Variable
+import numpy as np
 
 
 class ConvAutoencoder():
@@ -76,7 +78,8 @@ class ConvAutoencoder():
         torch.manual_seed(seed)
 
         # builds the dataloader
-        self.DataLoader_ = DataLoader(data.reshape(-1,256,256), batch_size=32, shuffle=True)
+        self.DataLoader_ = DataLoader(
+            data.reshape(-1, 256, 256), batch_size=32, shuffle=True)
 
         # option to use the learning rate scheduler
         if with_scheduler:
@@ -94,18 +97,19 @@ class ConvAutoencoder():
 
         # initialize the epoch counter
         if epoch_ is None:
-            start_epoch = 0
+            self.start_epoch = 0
         else:
-            start_epoch = epoch_+1
+            self.start_epoch = epoch_+1
 
         # training loop
-        for epoch in range(start_epoch, N_EPOCHS):
+        for epoch in range(self.start_epoch, N_EPOCHS):
 
             train = self.loss_function(
                 self.DataLoader_, coef_1, coef_2, coef_3, ln_parm)
             train_loss = train
             train_loss /= len(self.DataLoader_)
-
+            print(
+                f'Epoch: {epoch:03d}/{N_EPOCHS:03d} | Train Loss: {train_loss:.4f}')
             print('.............................')
 
           #  schedular.step()
@@ -121,7 +125,7 @@ class ConvAutoencoder():
                 }
                 if epoch >= 0:
                     lr_ = format(self.optimizer.param_groups[0]['lr'], '.5f')
-                    file_path = folder_path + 'Weight_' +\
+                    file_path = folder_path + '/Weight_' +\
                         f'epoch:{epoch:04d}_l1coef:{coef_1:.4f}'+'_lr:'+lr_ +\
                         f'_trainloss:{train_loss:.4f}.pkl'
                     torch.save(checkpoint, file_path)
@@ -182,6 +186,72 @@ class ConvAutoencoder():
             self.optimizer.step()
 
         return train_loss
+
+    def load_weights(self, path_checkpoint):
+
+        checkpoint = torch.load(path_checkpoint)
+        self.autoencoder.load_state_dict(checkpoint['net'])
+        self.encoder.load_state_dict(checkpoint['encoder'])
+        self.decoder.load_state_dict(checkpoint['decoder'])
+        self.optimizer.load_state_dict(checkpoint['optimizer'])
+        self.start_epoch = checkpoint['epoch']
+
+    def get_embedding(self, data, batch_size=32):
+
+        # builds the dataloader
+        dataloader = DataLoader(
+            data.reshape(-1, data.shape[2], data.shape[3]), batch_size, shuffle=False)
+
+        embedding_ = np.zeros(
+            [data.shape[0]*data.shape[1], self.embedding_size])
+        for i, x in enumerate(tqdm(dataloader, leave=True, total=len(dataloader))):
+            with torch.no_grad():
+                value = x
+                test_value = Variable(value.to(self.device))
+                test_value = test_value.float()
+                embedding = self.encoder(test_value).to('cpu').detach().numpy()
+                embedding_[i*batch_size:(i+1)*batch_size, :] = embedding
+
+        self.embedding = embedding_
+
+        return embedding_
+    
+    def generate_spectra(self, embedding): 
+        embedding = torch.from_numpy(np.atleast_2d(embedding))
+        embedding = self.decoder(embedding.float())
+        embedding = embedding.detach().numpy()
+        return embedding
+
+
+
+# class Generator:
+    
+#     def __init__(self, 
+#                  model,
+#                 #  image, 
+#                  channels = None,
+#                  color_map = 'viridis'):
+        
+#         # self.model = model
+#         # # self.image = image
+        
+#         # defines the colorlist
+#         self.cmap = plt.get_cmap(color_map)
+        
+            
+        
+            
+#         # self.embeddings = embedding_out
+#         # self.predict = predictor
+#         self.vector_length = scaled_data.shape[1]
+#         if channels == None:
+#             self.channels = range(self.embeddings.shape[1])
+#         else: 
+#             self.channels = channels
+        
+
+
+
 
 
 class ConvBlock(nn.Module):
@@ -469,3 +539,4 @@ class AutoEncoder(nn.Module):
         predicted = self.dec(embedding)
 
         return predicted
+    
