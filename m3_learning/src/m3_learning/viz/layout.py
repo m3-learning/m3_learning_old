@@ -57,7 +57,7 @@ def path_maker(axes, locations, facecolor, edgecolor, linestyle, lineweight):
     axes.add_patch(pathpatch)
 
 
-def layout_fig(graph, mod=None, figsize=None):
+def layout_fig(graph, mod=None, figsize=None, **kwargs):
     """Utility function that helps lay out many figures
 
     Args:
@@ -140,7 +140,7 @@ def embedding_maps(data, image, colorbar_shown=True, c_lim=None, mod=None, title
     fig.tight_layout()
 
 
-def imagemap(ax, data, colorbars=True, clim=None, divider_=True):
+def imagemap(ax, data, colorbars=True, clim=None, divider_=True, cbar_number_format="%.1e", **kwargs):
     """pretty way to plot image maps with standard formats
 
     Args:
@@ -173,7 +173,7 @@ def imagemap(ax, data, colorbars=True, clim=None, divider_=True):
             # adds the colorbar
             divider = make_axes_locatable(ax)
             cax = divider.append_axes("right", size="10%", pad=0.05)
-            cbar = plt.colorbar(im, cax=cax, format="%.1e")
+            cbar = plt.colorbar(im, cax=cax, format=cbar_number_format)
         else:
             cb = plt.colorbar(im, fraction=0.046, pad=0.04)
             cb.ax.tick_params(labelsize=6, width=0.05)
