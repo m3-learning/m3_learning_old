@@ -10,26 +10,23 @@ from os.path import join as pjoin
 
 class Viz:
 
+    """Visualization class for the STEM_AE class
+    """
+
     def __init__(self,
-                 #  scaled_data,
-                 #  embeddings,
-                 #  image,
                  channels=None,
                  color_map='viridis',
                  printer=None,
                  labelfigs_=False,
+                 scalebar_=None,
                  ):
+        """Initialization of the Viz class
+        """
 
         self.printer = printer
         self.labelfigs_ = labelfigs_
-        # self.model = model
-        # self.image = image
-
-        # # defines the color list
+        self.scalebar_ = scalebar_
         self.cmap = plt.get_cmap(color_map)
-        # self.embeddings = embeddings
-        # self.vector_length = scaled_data.shape[1]
-
         self.channels = channels
 
     @property
@@ -43,15 +40,33 @@ class Viz:
 
     @model.setter
     def model(self, model):
+        """Model setter
+
+        Args:
+            model (object): neural network model
+        """
         self._model = model
 
     @property
     def channels(self):
+        """channel that are visualized getter
+
+        Returns:
+            list: channels that are visualized
+        """
+
         return self._channels
 
     @channels.setter
     def channels(self, channels):
+        """channel that are visualized setter
+
+        Args:
+            channels (list): channels that are visualized
+        """
+
         if channels == None:
+            # if none is given, all channels are visualized
             try:
                 self._channels = range(self.model.embedding.shape[1])
             except:
@@ -59,56 +74,111 @@ class Viz:
         else:
             self._channels = channels
 
-    def STEM_raw_and_virtual(self, data, bright_field_=None, dark_field_=None, scalebar_=None, filename=None):
+    def add_scalebar(self, ax, scalebar_):
+        """Adds a scalebar to the figure
 
+        Args:
+            ax (axes): axes to add the scalebar to
+            scalebar_ (dict): dictionary containing the scalebar information
+        """
+
+        if scalebar_ == True:
+            scalebar_ = self.scalebar_
+
+        if scalebar_ is not None:
+            scalebar(ax, scalebar_['width'], scalebar_[
+                'scale length'], units=scalebar_['units'])
+
+    def STEM_raw_and_virtual(self, data,
+                             bright_field_=None,
+                             dark_field_=None,
+                             scalebar_=True,
+                             filename=None,
+                             shape_=[256, 256, 256, 256]):
+        """visualizes the raw STEM data and the virtual STEM data
+
+        Args:
+            data (np.array): raw data to visualize
+            bright_field_ (list, optional): bounding box for the bright field diffraction spot. Defaults to None.
+            dark_field_ (list, optional): bounding box for the dark field diffraction spot. Defaults to None.
+            scalebar_ (bool, optional): determines if the scalebar is shown. Defaults to True.
+            filename (string, optional): Name of the file to save. Defaults to None.
+            shape_ (list, optional): shape of the original data structure. Defaults to [265, 256, 256, 256].
+        """
+
+        # sets the number of figures based on how many plots are shown
         fig_num = 1
         if bright_field_ is not None:
             fig_num += 1
         if dark_field_ is not None:
             fig_num += 1
 
-        shape_ = data.data.shape
-
+        # creates the figure
         fig, axs = layout_fig(fig_num, fig_num, figsize=(1.25*fig_num, 1.25))
 
+        # plots the raw STEM data
         imagemap(axs[0], np.mean(data.log_data.reshape(-1,
                                                        shape_[2], shape_[3]), axis=0), divider_=False)
 
+        # plots the virtual bright field image
         if bright_field_ is not None:
-            bright_field = data.data.reshape(-1, 256, 256)[:, bright_field_[0]:bright_field_[
+            bright_field = data.data.reshape(-1, shape_[2], shape_[3])[:, bright_field_[0]:bright_field_[
                 1], bright_field_[2]:bright_field_[3]]
             bright_field = np.mean(bright_field.reshape(
                 shape_[0]*shape_[1], -1), axis=1).reshape(shape_[0], shape_[1])
             imagemap(axs[1], bright_field, divider_=False)
 
+        # plots the virtual dark field image
         if dark_field_ is not None:
-            dark_field = data.data.reshape(-1, 256, 256)[:, dark_field_[0]:dark_field_[
+            dark_field = data.data.reshape(-1, shape_[2], shape_[3])[:, dark_field_[0]:dark_field_[
                 1], dark_field_[2]:dark_field_[3]]
             dark_field = np.mean(dark_field.reshape(
                 shape_[0]*shape_[1], -1), axis=1).reshape(shape_[0], shape_[1])
             imagemap(axs[2], dark_field, divider_=False)
 
+        # adds labels to the figure
         if self.labelfigs_:
             for i, ax in enumerate(axs):
                 labelfigs(ax, i)
 
-        if scalebar_ is not None:
-            scalebar(axs[2], scalebar_['width'], scalebar_[
-                'scale length'], units=scalebar_['units'])
+        # adds a scalebar to the figure
+        self.add_scalebar(axs[-1], scalebar_)
 
+        # saves the figure
         if self.printer is not None:
             self.printer.savefig(fig, filename, tight_layout=False)
 
     def find_nearest(self, array, value, averaging_number):
+        """Finds the nearest value in an array
+
+        This is useful when generating data from the embedding space.
+
+        Args:
+            array (array): embedding values
+            value (array): current value
+            averaging_number (int): how many spectra to use for averaging in the embedding space
+
+        Returns:
+            list : list of indexes to use for averaging
+        """
 
         idx = (np.abs(array-value)).argsort()[0:averaging_number]
         return idx
 
     def predictor(self, values):
-        values = torch.from_numpy(np.atleast_2d(values))
-        values = self.model(values.float())
-        values = values.detach().numpy()
-        return values
+        """Computes the forward pass of the autoencoder
+
+        Args:
+            values (array): input values to predict
+
+        Returns:
+            array: predicted output values
+        """
+        with torch.no_grad():
+            values = torch.from_numpy(np.atleast_2d(values))
+            values = self.model(values.float())
+            values = values.detach().numpy()
+            return values
 
     def generator_images(self,
                          embedding=None,
@@ -117,13 +187,26 @@ class Viz:
                          generator_iters=200,
                          averaging_number=100,
                          graph_layout=[2, 2],
-                         shape=[256, 256, 256, 256],
+                         shape_=[256, 256, 256, 256],
                          **kwargs
                          ):
+        """Generates images as the variables traverse the latent space
 
+        Args:
+            embedding (tensor, optional): embedding to predict with. Defaults to None.
+            folder_name (str, optional): name of folder where images are saved. Defaults to ''.
+            ranges (list, optional): sets the range to generate images over. Defaults to None.
+            generator_iters (int, optional): number of iterations to use in generation. Defaults to 200.
+            averaging_number (int, optional): number of embeddings to average. Defaults to 100.
+            graph_layout (list, optional): layout parameters of the graph. Defaults to [2, 2].
+            shape_ (list, optional): initial shape of the image. Defaults to [256, 256, 256, 256].
+        """
+
+        # sets the kwarg values
         for key, value in kwargs.items():
             exec(f'{key} = value')
 
+        # sets the channels to use in the object
         if "channels" in kwargs:
             self.channels = kwargs["channels"]
 
@@ -131,9 +214,11 @@ class Viz:
         if embedding is None:
             embedding = self.model.embedding
 
+        # makes the folder to save the images
         folder = make_folder(
             self.printer.basepath + f"generator_images_{folder_name}/")
 
+        # loops around the number of iterations to generate
         for i in tqdm(range(generator_iters)):
 
             # builds the figure
@@ -142,10 +227,6 @@ class Viz:
 
             # loops around all of the embeddings
             for j, channel in enumerate(self.channels):
-
-                # # checks if the value is None and if so skips tp next iteration
-                # if i is None:
-                #     continue
 
                 if ranges is None:
                     ranges = np.stack((np.min(self.model.embedding, axis=0),
@@ -171,39 +252,46 @@ class Viz:
 
                 # generates the loop based on the model
                 generated = self.model.generate_spectra(gen_value).squeeze()
-                # min_ = np.min(generated)
-                # max_ = np.max(generated)
-                # if min_<min_value:
-                #     min_value = min_
-
-                # if max_>max_value:
-                #     max_value = max_
-
-                # # plots the graph
-                # if in_radon==True:
-                #     generated = iradon(generated)
 
                 imagemap(ax[j], generated.reshape(
-                    shape[0], shape[1]), clim=[0, 6], **kwargs)
+                    shape_[0], shape_[1]), clim=[0, 6], **kwargs)
                 ax[j].plot(3, 3, marker='o', markerfacecolor=self.cmap(
                     (i + 1) / generator_iters))
-
-                # # formats the graph
-                # ax[j].set_xlabel(xlabel)
-
-                # # gets the position of the axis on the figure
-                # pos = ax[j].get_position()
 
                 axes_in = ax[j].inset_axes([0.55, 0.02, 0.43, 0.43])
 
                 # plots the imagemap and formats
                 imagemap(axes_in, self.model.embedding[:, channel].reshape(
-                    shape[2], shape[3]), clim=ranges[j], colorbars=False)
-
-            # ax[0].set_ylabel(ylabel)
+                    shape_[2], shape_[3]), clim=ranges[j], colorbars=False)
 
             if self.printer is not None:
                 self.printer.savefig(fig,
                                      f'{i:04d}_maps', tight_layout=False, basepath=folder)
 
             plt.close(fig)
+
+    def embeddings(self, mod=4,
+                   channels=False, scalebar_=None,
+                   shape_=[265, 256, 256, 256], name="", **kwargs):
+
+        if channels == False:
+            channels = range(self.model.embedding.shape[1])
+
+        if channels == True:
+            channels = self.channels
+
+        fig, axs = layout_fig(len(channels), mod, **kwargs)
+
+        for i in channels:
+            imagemap(axs[i], self.model.embedding[:, i].reshape(
+                shape_[0], shape_[1]), divider_=False)
+
+        if self.labelfigs_:
+            for i, ax in enumerate(axs):
+                labelfigs(ax, i)
+
+        self.add_scalebar(axs.flatten()[-1], scalebar_)
+
+        if self.printer is not None:
+            self.printer.savefig(fig,
+                                 f'{name}_embedding_maps', tight_layout=False)
