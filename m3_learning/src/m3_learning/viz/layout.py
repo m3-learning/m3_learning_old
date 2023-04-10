@@ -101,7 +101,7 @@ def layout_fig(graph, mod=None, figsize=None, **kwargs):
         if i + 1 > graph:
             fig.delaxes(axes[i])
 
-    return fig, axes
+    return fig, axes[:graph]
 
 
 def embedding_maps(data, image, colorbar_shown=True, c_lim=None, mod=None, title=None):
@@ -328,8 +328,8 @@ def labelfigs(
 
     # Sets the location of the label on the figure
     if loc == "br":
-        y_value = y_max - 0.1 * (y_max - y_min)
-        x_value = 0.08 * (x_max - x_min) + x_min
+        y_value = y_max - 0.15 * (y_max - y_min)
+        x_value = 0.15 * (x_max - x_min) + x_min
     elif loc == "tr":
         y_value = y_max - 0.9 * (y_max - y_min)
         x_value = 0.08 * (x_max - x_min) + x_min

@@ -1,32 +1,24 @@
 import glob as glob
-# from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
 import cv2
+from m3_learning.util.file_IO import make_folder
 
 
 def make_movie(movie_name, input_folder, output_folder, file_format,
                fps, output_format='mp4', reverse=False):
-    """
-    Function which makes movies from an image series
+    """Function that constructs a movie from images
 
-    Parameters
-    ----------
-    movie_name : string
-        name of the movie
-    input_folder  : string
-        folder where the image series is located
-    output_folder  : string
-        folder where the movie will be saved
-    file_format  : string
-        sets the format of the files to import
-    fps  : numpy, int
-        frames per second
-    output_format  : string, optional
-        sets the format for the output file
-        supported types .mp4 and gif
-        animated gif create large files
-    reverse : bool, optional
-        sets if the movie will be one way of there and back
+    Args:
+        movie_name (string): filename to save the movie
+        input_folder (path): folder where the images are located
+        output_folder (path): path where the movies will be saved
+        file_format (string): format of the images to use when generating a movie
+        fps (int): frames per second
+        output_format (str, optional): movie file format. Defaults to 'mp4'.
+        reverse (bool, optional): selects if should go in a cycle. Defaults to False.
     """
+
+    # makes the output folder
+    output_folder = make_folder(output_folder)
 
     # searches the folder and finds the files
     file_list = glob.glob(input_folder + '/*.' + file_format)
@@ -42,19 +34,21 @@ def make_movie(movie_name, input_folder, output_folder, file_format,
     else:
         new_list = file_list
 
-    print(new_list)
+    # reads the first image to get the shape
+    img = cv2.imread(new_list[0])
+    shape_ = (img.shape[1], img.shape[0])
 
     # Create the video writer
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_writer = cv2.VideoWriter(
-        f"{output_folder}/{movie_name}.mp4", fourcc, fps, cv2.imread(new_list[0]).shape[0:2])
+        f"{output_folder}/{movie_name}.{output_format}", fourcc, fps, shape_)
 
-    print(f"{output_folder}{movie_name}")
     # Add frames to the video
     for image in new_list:
         frame = cv2.imread(image)
         video_writer.write(frame)
 
+    # Release the video writer
     video_writer.release()
 
     # Release the resources
