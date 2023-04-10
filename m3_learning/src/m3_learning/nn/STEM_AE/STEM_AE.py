@@ -215,43 +215,36 @@ class ConvAutoencoder():
         self.embedding = embedding_
 
         return embedding_
-    
-    def generate_spectra(self, embedding): 
-        embedding = torch.from_numpy(np.atleast_2d(embedding))
+
+    def generate_spectra(self, embedding):
+        embedding = torch.from_numpy(np.atleast_2d(embedding)).to(self.device)
         embedding = self.decoder(embedding.float())
-        embedding = embedding.detach().numpy()
+        embedding = embedding.cpu().detach().numpy()
         return embedding
 
 
-
 # class Generator:
-    
-#     def __init__(self, 
+
+#     def __init__(self,
 #                  model,
-#                 #  image, 
+#                 #  image,
 #                  channels = None,
 #                  color_map = 'viridis'):
-        
+
 #         # self.model = model
 #         # # self.image = image
-        
+
 #         # defines the colorlist
 #         self.cmap = plt.get_cmap(color_map)
-        
-            
-        
-            
+
+
 #         # self.embeddings = embedding_out
 #         # self.predict = predictor
 #         self.vector_length = scaled_data.shape[1]
 #         if channels == None:
 #             self.channels = range(self.embeddings.shape[1])
-#         else: 
+#         else:
 #             self.channels = channels
-        
-
-
-
 
 
 class ConvBlock(nn.Module):
@@ -539,4 +532,3 @@ class AutoEncoder(nn.Module):
         predicted = self.dec(embedding)
 
         return predicted
-    

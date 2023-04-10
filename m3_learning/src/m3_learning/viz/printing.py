@@ -17,7 +17,7 @@ class printer:
         self.fileformats = fileformats
         make_folder(self.basepath)
 
-    def savefig(self, fig, name, tight_layout=False):
+    def savefig(self, fig, name, tight_layout=False, basepath=None):
         """Function to save a figure
 
         Args:
@@ -27,10 +27,13 @@ class printer:
         if tight_layout:
             fig.tight_layout()
 
+        if basepath is None:
+            basepath = self.basepath
+
         for fileformat in self.fileformats:
-            print(self.basepath + name + "." + fileformat)
+            print(basepath + name + "." + fileformat)
             fig.savefig(
-                self.basepath + name + "." + fileformat,
+                basepath + name + "." + fileformat,
                 dpi=self.dpi,
                 bbox_inches="tight",
             )
