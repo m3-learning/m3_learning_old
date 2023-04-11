@@ -5,13 +5,15 @@ from os.path import join as pjoin
 from torch.utils.data import Dataset, DataLoader
 from ..Regularization.Regularizers import ContrastiveLoss, DivergenceLoss
 from tqdm import tqdm
-from ...util.file_IO import make_folder
+from m3_learning.util.file_IO import make_folder
 import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 
 
 class ConvAutoencoder():
+    """builds the convolutional autoencoder
+    """
 
     def __init__(self,
                  encoder_step_size,
@@ -23,6 +25,18 @@ class ConvAutoencoder():
                  device,
                  learning_rate=3e-5,
                  ):
+        """Initialization function
+
+        Args:
+            encoder_step_size (list): sets the size of the encoder
+            pooling_list (list): sets the pooling list to define the pooling layers
+            decoder_step_size (list): sets the size of the decoder
+            upsampling_list (list): sets the size for upsampling
+            embedding_size (int): number of embedding channels
+            conv_size (int): sets the number of convolutional neurons in the model
+            device (torch.device): set the device to run the model
+            learning_rate (float, optional): sets the learning rate for the optimizer. Defaults to 3e-5.
+        """
         self.encoder_step_size = encoder_step_size
         self.pooling_list = pooling_list
         self.decoder_step_size = decoder_step_size
@@ -32,15 +46,22 @@ class ConvAutoencoder():
         self.device = device
         self.learning_rate = learning_rate
 
+        # complies the network
         self.compile_model()
 
     def compile_model(self):
+        """function that complies the neural network model
+        """
+
+        # builds the encoder
         self.encoder = Encoder(
             original_step_size=self.encoder_step_size,
             pooling_list=self.pooling_list,
             embedding_size=self.embedding_size,
             conv_size=self.conv_size,
         ).to(self.device)
+
+        # builds the decoder
         self.decoder = Decoder(
             original_step_size=self.decoder_step_size,
             upsampling_list=self.upsampling_list,
@@ -48,13 +69,17 @@ class ConvAutoencoder():
             conv_size=self.conv_size,
             pooling_list=self.pooling_list,
         ).to(self.device)
+
+        # builds the autoencoder
         self.autoencoder = AutoEncoder(
             self.encoder, self.decoder).to(self.device)
 
+        # sets the optimizers
         self.optimizer = optim.Adam(
             self.autoencoder.parameters(), lr=self.learning_rate
         )
 
+        # sets the datatype of the model to float32
         self.autoencoder.type(torch.float32)
 
     def Train(self,
@@ -71,6 +96,23 @@ class ConvAutoencoder():
               folder_path='./',
               batch_size=32,
               best_train_loss=None):
+        """function that trains the model
+
+        Args:
+            data (torch.tensor): data to train the model
+            max_learning_rate (float, optional): sets the max learning rate for the learning rate cycler. Defaults to 1e-4.
+            coef_1 (float, optional): hyperparameter for ln loss. Defaults to 0.
+            coef_2 (float, optional): hyperparameter for contrastive loss. Defaults to 0.
+            coef_3 (float, optional): hyperparameter for divergency loss. Defaults to 0.
+            seed (int, optional): sets the random seed. Defaults to 12.
+            epochs (int, optional): number of epochs to train. Defaults to 100.
+            with_scheduler (bool, optional): sets if you should use the learning rate cycler. Defaults to True.
+            ln_parm (int, optional): order of the Ln regularization. Defaults to 1.
+            epoch_ (int, optional): current epoch for continuing training. Defaults to None.
+            folder_path (str, optional): path where to save the weights. Defaults to './'.
+            batch_size (int, optional): sets the batch size for training. Defaults to 32.
+            best_train_loss (float, optional): current loss value to determine if you should save the value. Defaults to None.
+        """
 
         make_folder(folder_path)
 
@@ -79,7 +121,7 @@ class ConvAutoencoder():
 
         # builds the dataloader
         self.DataLoader_ = DataLoader(
-            data.reshape(-1, 256, 256), batch_size=32, shuffle=True)
+            data.reshape(-1, 256, 256), batch_size=batch_size, shuffle=True)
 
         # option to use the learning rate scheduler
         if with_scheduler:
@@ -115,7 +157,6 @@ class ConvAutoencoder():
           #  schedular.step()
             if best_train_loss > train_loss:
                 best_train_loss = train_loss
-                patience_counter = 1
                 checkpoint = {
                     "net": self.autoencoder.state_dict(),
                     'optimizer': self.optimizer.state_dict(),
@@ -140,6 +181,19 @@ class ConvAutoencoder():
                       coef2=0,
                       ln_parm=1,
                       beta=None):
+        """computes the loss function for the training
+
+        Args:
+            train_iterator (torch.Dataloader): dataloader for the training
+            coef (float, optional): Ln hyperparameter. Defaults to 0.
+            coef1 (float, optional): hyperparameter for contrastive loss. Defaults to 0.
+            coef2 (float, optional): hyperparameter for divergence loss. Defaults to 0.
+            ln_parm (float, optional): order of the regularization. Defaults to 1.
+            beta (float, optional): beta value for VAE. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
 
         # set the train mode
         self.autoencoder.train()
@@ -188,7 +242,11 @@ class ConvAutoencoder():
         return train_loss
 
     def load_weights(self, path_checkpoint):
+        """loads the weights from a checkpoint
 
+        Args:
+            path_checkpoint (str): path where checkpoints are saved 
+        """
         checkpoint = torch.load(path_checkpoint)
         self.autoencoder.load_state_dict(checkpoint['net'])
         self.encoder.load_state_dict(checkpoint['encoder'])
@@ -197,6 +255,15 @@ class ConvAutoencoder():
         self.start_epoch = checkpoint['epoch']
 
     def get_embedding(self, data, batch_size=32):
+        """extracts embeddings from the data
+
+        Args:
+            data (torch.tensor): data to get embeddings from
+            batch_size (int, optional): batchsize for inference. Defaults to 32.
+
+        Returns:
+            torch.tensor: predicted embeddings
+        """
 
         # builds the dataloader
         dataloader = DataLoader(
@@ -217,34 +284,19 @@ class ConvAutoencoder():
         return embedding_
 
     def generate_spectra(self, embedding):
+        """generates spectra from embeddings
+
+        Args:
+            embedding (torch.tensor): predicted embeddings to decode
+
+        Returns:
+            torch.tensor: decoded spectra
+        """
+
         embedding = torch.from_numpy(np.atleast_2d(embedding)).to(self.device)
         embedding = self.decoder(embedding.float())
         embedding = embedding.cpu().detach().numpy()
         return embedding
-
-
-# class Generator:
-
-#     def __init__(self,
-#                  model,
-#                 #  image,
-#                  channels = None,
-#                  color_map = 'viridis'):
-
-#         # self.model = model
-#         # # self.image = image
-
-#         # defines the colorlist
-#         self.cmap = plt.get_cmap(color_map)
-
-
-#         # self.embeddings = embedding_out
-#         # self.predict = predictor
-#         self.vector_length = scaled_data.shape[1]
-#         if channels == None:
-#             self.channels = range(self.embeddings.shape[1])
-#         else:
-#             self.channels = channels
 
 
 class ConvBlock(nn.Module):
@@ -421,6 +473,12 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
+    """Decoder class
+
+    Args:
+        nn (nn.module): base class for all neural network modules
+    """
+
     def __init__(
         self,
         original_step_size,
