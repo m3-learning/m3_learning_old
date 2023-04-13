@@ -94,7 +94,8 @@ class Viz:
                              dark_field_=None,
                              scalebar_=True,
                              filename=None,
-                             shape_=[256, 256, 256, 256]):
+                             shape_=[256, 256, 256, 256],
+                             **kwargs):
         """visualizes the raw STEM data and the virtual STEM data
 
         Args:
@@ -114,7 +115,8 @@ class Viz:
             fig_num += 1
 
         # creates the figure
-        fig, axs = layout_fig(fig_num, fig_num, figsize=(1.25*fig_num, 1.25))
+        fig, axs = layout_fig(fig_num, fig_num, figsize=(
+            1.5*fig_num, 1.25))
 
         # plots the raw STEM data
         imagemap(axs[0], np.mean(data.log_data.reshape(-1,

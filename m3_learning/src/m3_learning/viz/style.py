@@ -37,7 +37,7 @@ def set_style(name="default"):
         try:
             import matplotlib.pyplot as plt
             # setting default plotting params
-            plt.rcParams['image.cmap'] = 'magma'
+            plt.rcParams['image.cmap'] = 'viridis'
             plt.rcParams['axes.labelsize'] = 6
             plt.rcParams['xtick.labelsize'] = 5
             plt.rcParams['ytick.labelsize'] = 5
@@ -46,7 +46,7 @@ def set_style(name="default"):
             plt.rcParams['ytick.direction'] = 'in'
             plt.rcParams['xtick.top'] = True
             plt.rcParams['ytick.right'] = True
-            plt.rcParams['figure.constrained_layout.use'] = True
+            # plt.rcParams['figure.constrained_layout.use'] = True
             plt.rcParams['lines.markersize'] = 2
             plt.rcParams['axes.grid'] = False
             plt.rcParams['lines.linewidth'] = .5

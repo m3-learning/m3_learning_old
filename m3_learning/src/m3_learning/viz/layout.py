@@ -57,7 +57,7 @@ def path_maker(axes, locations, facecolor, edgecolor, linestyle, lineweight):
     axes.add_patch(pathpatch)
 
 
-def layout_fig(graph, mod=None, figsize=None, **kwargs):
+def layout_fig(graph, mod=None, figsize=None, layout='compressed', **kwargs):
     """Utility function that helps lay out many figures
 
     Args:
@@ -67,6 +67,10 @@ def layout_fig(graph, mod=None, figsize=None, **kwargs):
     Returns:
         tuple: figure and axis
     """
+
+    # sets the kwarg values
+    for key, value in kwargs.items():
+        exec(f'{key} = value')
 
     # Sets the layout of graphs in matplotlib in a pretty way based on the number of plots
 
@@ -92,7 +96,7 @@ def layout_fig(graph, mod=None, figsize=None, **kwargs):
     fig, axes = plt.subplots(
         graph // mod + (graph % mod > 0),
         mod,
-        figsize=figsize,
+        figsize=figsize, layout=layout
     )
 
     # deletes extra unneeded axes
