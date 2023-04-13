@@ -88,6 +88,8 @@ def layout_fig(graph, mod=None, figsize=None, layout='compressed', **kwargs):
             mod = 6
         elif graph < 37:
             mod = 7
+            
+    print(figsize)
 
     if figsize is None:
         figsize = (3 * mod, 3 * (graph // mod + (graph % mod > 0)))
@@ -518,3 +520,15 @@ def set_axis(axs, range):
     for ax in axs:
         ax.set_xlim(range[0], range[1])
         ax.set_ylim(range[2], range[3])
+        
+def add_scalebar(ax, scalebar_):
+    """Adds a scalebar to the figure
+
+    Args:
+        ax (axes): axes to add the scalebar to
+        scalebar_ (dict): dictionary containing the scalebar information
+    """
+
+    if scalebar_ is not None:
+        scalebar(ax, scalebar_['width'], scalebar_[
+            'scale length'], units=scalebar_['units'])

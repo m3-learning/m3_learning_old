@@ -1,12 +1,12 @@
-from ...util.file_IO import make_folder
-from ...viz.layout import layout_fig
+from m3_learning.util.file_IO import make_folder
+from m3_learning.viz.layout import layout_fig
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from ...viz.layout import layout_fig, imagemap, labelfigs, scalebar, find_nearest
+from ...viz.layout import layout_fig, imagemap, labelfigs, find_nearest, add_scalebar
 from os.path import join as pjoin
-
+from m3_learning.viz.nn import embeddings as embeddings_
 
 class Viz:
 
@@ -74,21 +74,6 @@ class Viz:
         else:
             self._channels = channels
 
-    def add_scalebar(self, ax, scalebar_):
-        """Adds a scalebar to the figure
-
-        Args:
-            ax (axes): axes to add the scalebar to
-            scalebar_ (dict): dictionary containing the scalebar information
-        """
-
-        if scalebar_ == True:
-            scalebar_ = self.scalebar_
-
-        if scalebar_ is not None:
-            scalebar(ax, scalebar_['width'], scalebar_[
-                'scale length'], units=scalebar_['units'])
-
     def STEM_raw_and_virtual(self, data,
                              bright_field_=None,
                              dark_field_=None,
@@ -143,8 +128,9 @@ class Viz:
             for i, ax in enumerate(axs):
                 labelfigs(ax, i)
 
-        # adds a scalebar to the figure
-        self.add_scalebar(axs[-1], scalebar_)
+        if scalebar_:
+            # adds a scalebar to the figure
+            add_scalebar(axs[-1], self.scalebar_)
 
         # saves the figure
         if self.printer is not None:
@@ -271,3 +257,12 @@ class Viz:
                                      f'{i:04d}_maps', tight_layout=False, basepath=folder)
 
             plt.close(fig)
+            
+    def embeddings(self, **kwargs):
+        
+        embeddings_(self.model.embedding, 
+                   channels=self.channels, 
+                   labelfigs_ = self.labelfigs_,
+                   printer = self.printer, 
+                   **kwargs)
+        
