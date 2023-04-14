@@ -3,7 +3,7 @@ import torch.nn.functional as F
 import torch
 from tqdm import tqdm
 import numpy as np
-
+from IPython.display import clear_output
 
 class Regularization(nn.Module):
     def __init__(self, model, weight_decay, p=2, device="cuda"):
@@ -230,6 +230,10 @@ def Train(
         device (str, optional): selects the device to use. Defaults to "cuda".
 
     """
+    
+    clear_output()
+    
+
     N_EPOCHS = epochs
     best_train_loss = float("inf")
 

@@ -89,8 +89,6 @@ def layout_fig(graph, mod=None, figsize=None, layout='compressed', **kwargs):
         elif graph < 37:
             mod = 7
             
-    print(figsize)
-
     if figsize is None:
         figsize = (3 * mod, 3 * (graph // mod + (graph % mod > 0)))
 
@@ -198,92 +196,6 @@ def find_nearest(array, value, averaging_number):
     """
     idx = (np.abs(array - value)).argsort()[0:averaging_number]
     return idx
-
-
-def latent_generator(
-    model,
-    embeddings,
-    image,
-    number,
-    average_number,
-    indx=None,
-    ranges=None,
-    x_values=None,
-    y_scale=[-2.2, 4],
-    device="cuda",
-):
-    """Plots the generator results
-
-    Args:
-        model (PyTorch object): neural network model
-        embeddings (float, array): the input embedding (or output from the encoder)
-        image (array): Original image, this is used to extract the size of the embedding
-        number (int): number of divisions to plot
-        average_number (int): number of samples to average in the generation process
-        indx (list, optional): embedding indexes to use. Defaults to None.
-        ranges (float, array, optional): set the ranges for the embeddings. Defaults to None.
-        x_values (array, optional): allows addition of x_values. Defaults to None.
-        y_scale (list, optional): Scale of the y-axis. Defaults to [-2.2, 4].
-        device (str, optional): the device where the data will be processed. Defaults to 'cuda'.
-    """
-
-    # sets the colormap
-    cmap = plt.cm.viridis
-
-    if indx is None:
-        embedding_small = embeddings.squeeze()
-    else:
-        embedding_small = embeddings[:, indx].squeeze()
-
-    # creates the figures and axes in a pretty way
-    fig, ax = layout_fig(embedding_small.shape[1] * 2, mod=3)
-
-    # plots all of the embedding maps
-    for i in range(embedding_small.shape[1]):
-        im = imagemap(
-            ax[i], embedding_small[:, i].reshape(
-                image.shape[0], image.shape[1])
-        )
-
-    # loops around the number of example loops
-    for i in range(number):
-
-        # loops around the number of embeddings from the range file
-        for j in range(embedding_small.shape[1]):
-
-            if ranges is None:
-                value = np.linspace(
-                    np.min(embedding_small[:, j]), np.max(
-                        embedding_small[:, j]), number
-                )
-            else:
-                # sets the linear spaced values
-                value = np.linspace(0, ranges[j], number)
-
-            idx = find_nearest(embedding_small[:, j], value[i], average_number)
-            gen_value = np.mean(embeddings[idx], axis=0)
-            gen_value[j] = value[i]
-
-            # computes the generated results
-            gen_value_1 = torch.from_numpy(np.atleast_2d(gen_value)).to(device)
-            generated = model(gen_value_1)
-            generated = generated.to("cpu")
-            generated = generated.detach().numpy().squeeze()
-
-            # plots and formats the graphs
-            if x_values is None:
-                ax[j + embedding_small.shape[1]].plot(
-                    generated, color=cmap((i + 1) / number)
-                )
-            else:
-                ax[j + embedding_small.shape[1]].plot(
-                    x_values, generated, color=cmap((i + 1) / number)
-                )
-
-            ax[j + embedding_small.shape[1]].set_ylim(y_scale)
-            # ax[j + embedding_small.shape[1]].set_yticklabels('')
-            plt.tight_layout(pad=1)
-
 
 def combine_lines(*args):
 
