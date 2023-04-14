@@ -4,7 +4,7 @@ def random_seed(seed = 42, pytorch_ = True, numpy_ = True, tensorflow_ = True):
     try:
         if pytorch_:
             import torch
-            torch.set_default_dtype(torch.float64)
+            # torch.set_default_dtype(torch.float64)
             torch.manual_seed(seed)
             print(f'Pytorch seed was set to {42}')
     except: 
