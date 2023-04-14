@@ -1,7 +1,7 @@
-m3\_learning.viz.style
-======================
+m3\_learning.viz.Movies
+=======================
 
-.. automodule:: m3_learning.viz.style
+.. automodule:: m3_learning.viz.Movies
 
    
    
@@ -13,7 +13,7 @@ m3\_learning.viz.style
 
    .. autosummary::
    
-      set_style
+      make_movie
    
    
 

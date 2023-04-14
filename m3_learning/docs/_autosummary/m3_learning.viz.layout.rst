@@ -13,11 +13,18 @@ m3\_learning.viz.layout
 
    .. autosummary::
    
+      Axis_Ratio
+      add_scalebar
+      combine_lines
       embedding_maps
       find_nearest
+      get_axis_range
       imagemap
-      latent_generator
+      labelfigs
       layout_fig
+      path_maker
+      scalebar
+      set_axis
    
    
 
