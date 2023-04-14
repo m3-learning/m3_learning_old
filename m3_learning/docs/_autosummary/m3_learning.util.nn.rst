@@ -1,7 +1,7 @@
-m3\_learning.viz.style
-======================
+m3\_learning.util.nn
+====================
 
-.. automodule:: m3_learning.viz.style
+.. automodule:: m3_learning.util.nn
 
    
    
@@ -13,7 +13,7 @@ m3\_learning.viz.style
 
    .. autosummary::
    
-      set_style
+      find_device
    
    
 
