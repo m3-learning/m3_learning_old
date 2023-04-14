@@ -78,22 +78,3 @@ class DivergenceLoss(nn.Module):
         loss = loss / self.batch_size
 
         return loss
-
-    # def to(self, device):
-    #     self.device = device
-    #     super().to(device)
-    #     return self
-
-
-# def to(self, device):
-#     """Function to move the model to a specific device
-
-#         Args:
-#             device : hardware device to use
-
-#         Returns:
-#             Torch: Torch object on device
-#         """
-#     self.device = device
-#     super().to(device)
-#     return self

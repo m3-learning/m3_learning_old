@@ -2,6 +2,11 @@ import cpuinfo
 import torch
 
 def find_device():
+    """Function that helps find the device for training the neural network.
+
+    Returns:
+        string: device name
+    """    
         
     cpudata = cpuinfo.get_cpu_info()["brand_raw"]
     cpuname = cpudata.split(" ")[1]

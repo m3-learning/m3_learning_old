@@ -259,6 +259,8 @@ class Viz:
             plt.close(fig)
             
     def embeddings(self, **kwargs):
+        """function to plot the embeddings of the data
+        """        
         
         embeddings_(self.model.embedding, 
                    channels=self.channels, 
