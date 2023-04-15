@@ -49,77 +49,48 @@ def reporthook(count, block_size, total_size):
 
 
 def download_file(url, filename):
-    """
-    A function that downloads the data file from a URL
+    """ A function that downloads the data file from a URL
 
-    Parameters
-    ----------
-
-    url : string
-        url where the file to download is located
-    filename : string
-        location where to save the file
-    reporthook : function
-        callback to display the download progress
-
-    """
+    Args:
+        url (string): url where the file to download is located
+        filename (string): location where to save the file
+    """    
     if not os.path.isfile(filename):
         urllib.request.urlretrieve(url, filename, reporthook)
 
 
 def compress_folder(base_name, format, root_dir=None):
-    """
-    Function that zips a folder can save zip and tar
+    """Function that zips a folder can save zip and tar
 
-    Parameters
-    ----------
-
-    base_name : string
-        base name of the zip file
-    format : string
-        sets the format of the zip file. Can either be zip or tar
-    root_dir : string (optional)
-        sets the root directory to save the file
-
-    """
-
+    Args:
+        base_name (string): base name of the zip file
+        format (string): sets the format of the zip file. Can either be zip or tar
+        root_dir (string, optional): sets the root directory to save the file. Defaults to None.
+    """    
     shutil.make_archive(base_name, format, root_dir)
 
 def unzip(filename, path):
-    """
-    Function that unzips the files
+    """Function that unzips the files
 
-    Parameters
-    ----------
 
-    filename : string
-        base name of the zip file
-    path : string
-        path where the zip file will be saved
-
-    """
+    Args:
+        filename (string): base name of the zip file
+        path (string): path where the zip file will be saved
+    """    
     zip_ref = zipfile.ZipFile('./' + filename, 'r')
     zip_ref.extractall(path)
     zip_ref.close()
 
 def get_size(start_path='.'):
-    """
+    """A function that computes the size of a folder
 
-    A function that computes the size of a folder
 
-   Parameters
-   ----------
+    Args:
+        start_path (str, optional): Path to compute the size of. Defaults to '.'.
 
-   start_path : string
-       Path to compute the size of
-
-    Return
-   ----------
-
-   total_size : float
-       Size of the folder
-    """
-
+    Returns:
+        float: Size of the folder
+    """    
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
