@@ -57,7 +57,7 @@ def path_maker(axes, locations, facecolor, edgecolor, linestyle, lineweight):
     axes.add_patch(pathpatch)
 
 
-def layout_fig(graph, mod=None, figsize=None):
+def layout_fig(graph, mod=None, figsize=None, layout='compressed', **kwargs):
     """Utility function that helps lay out many figures
 
     Args:
@@ -67,6 +67,10 @@ def layout_fig(graph, mod=None, figsize=None):
     Returns:
         tuple: figure and axis
     """
+
+    # sets the kwarg values
+    for key, value in kwargs.items():
+        exec(f'{key} = value')
 
     # Sets the layout of graphs in matplotlib in a pretty way based on the number of plots
 
@@ -84,7 +88,7 @@ def layout_fig(graph, mod=None, figsize=None):
             mod = 6
         elif graph < 37:
             mod = 7
-
+            
     if figsize is None:
         figsize = (3 * mod, 3 * (graph // mod + (graph % mod > 0)))
 
@@ -92,7 +96,7 @@ def layout_fig(graph, mod=None, figsize=None):
     fig, axes = plt.subplots(
         graph // mod + (graph % mod > 0),
         mod,
-        figsize=figsize,
+        figsize=figsize, layout=layout
     )
 
     # deletes extra unneeded axes
@@ -101,7 +105,7 @@ def layout_fig(graph, mod=None, figsize=None):
         if i + 1 > graph:
             fig.delaxes(axes[i])
 
-    return fig, axes
+    return fig, axes[:graph]
 
 
 def embedding_maps(data, image, colorbar_shown=True, c_lim=None, mod=None, title=None):
@@ -140,7 +144,7 @@ def embedding_maps(data, image, colorbar_shown=True, c_lim=None, mod=None, title
     fig.tight_layout()
 
 
-def imagemap(ax, data, colorbars=True, clim=None):
+def imagemap(ax, data, colorbars=True, clim=None, divider_=True, cbar_number_format="%.1e", **kwargs):
     """pretty way to plot image maps with standard formats
 
     Args:
@@ -165,12 +169,18 @@ def imagemap(ax, data, colorbars=True, clim=None):
 
     ax.set_yticklabels("")
     ax.set_xticklabels("")
+    ax.set_yticks([])
+    ax.set_xticks([])
 
     if colorbars:
-        # adds the colorbar
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="10%", pad=0.05)
-        cbar = plt.colorbar(im, cax=cax, format="%.1e")
+        if divider_:
+            # adds the colorbar
+            divider = make_axes_locatable(ax)
+            cax = divider.append_axes("right", size="10%", pad=0.05)
+            cbar = plt.colorbar(im, cax=cax, format=cbar_number_format)
+        else:
+            cb = plt.colorbar(im, fraction=0.046, pad=0.04)
+            cb.ax.tick_params(labelsize=6, width=0.05)
 
 
 def find_nearest(array, value, averaging_number):
@@ -186,92 +196,6 @@ def find_nearest(array, value, averaging_number):
     """
     idx = (np.abs(array - value)).argsort()[0:averaging_number]
     return idx
-
-
-def latent_generator(
-    model,
-    embeddings,
-    image,
-    number,
-    average_number,
-    indx=None,
-    ranges=None,
-    x_values=None,
-    y_scale=[-2.2, 4],
-    device="cuda",
-):
-    """Plots the generator results
-
-    Args:
-        model (PyTorch object): neural network model
-        embeddings (float, array): the input embedding (or output from the encoder)
-        image (array): Original image, this is used to extract the size of the embedding
-        number (int): number of divisions to plot
-        average_number (int): number of samples to average in the generation process
-        indx (list, optional): embedding indexes to use. Defaults to None.
-        ranges (float, array, optional): set the ranges for the embeddings. Defaults to None.
-        x_values (array, optional): allows addition of x_values. Defaults to None.
-        y_scale (list, optional): Scale of the y-axis. Defaults to [-2.2, 4].
-        device (str, optional): the device where the data will be processed. Defaults to 'cuda'.
-    """
-
-    # sets the colormap
-    cmap = plt.cm.viridis
-
-    if indx is None:
-        embedding_small = embeddings.squeeze()
-    else:
-        embedding_small = embeddings[:, indx].squeeze()
-
-    # creates the figures and axes in a pretty way
-    fig, ax = layout_fig(embedding_small.shape[1] * 2, mod=3)
-
-    # plots all of the embedding maps
-    for i in range(embedding_small.shape[1]):
-        im = imagemap(
-            ax[i], embedding_small[:, i].reshape(
-                image.shape[0], image.shape[1])
-        )
-
-    # loops around the number of example loops
-    for i in range(number):
-
-        # loops around the number of embeddings from the range file
-        for j in range(embedding_small.shape[1]):
-
-            if ranges is None:
-                value = np.linspace(
-                    np.min(embedding_small[:, j]), np.max(
-                        embedding_small[:, j]), number
-                )
-            else:
-                # sets the linear spaced values
-                value = np.linspace(0, ranges[j], number)
-
-            idx = find_nearest(embedding_small[:, j], value[i], average_number)
-            gen_value = np.mean(embeddings[idx], axis=0)
-            gen_value[j] = value[i]
-
-            # computes the generated results
-            gen_value_1 = torch.from_numpy(np.atleast_2d(gen_value)).to(device)
-            generated = model(gen_value_1)
-            generated = generated.to("cpu")
-            generated = generated.detach().numpy().squeeze()
-
-            # plots and formats the graphs
-            if x_values is None:
-                ax[j + embedding_small.shape[1]].plot(
-                    generated, color=cmap((i + 1) / number)
-                )
-            else:
-                ax[j + embedding_small.shape[1]].plot(
-                    x_values, generated, color=cmap((i + 1) / number)
-                )
-
-            ax[j + embedding_small.shape[1]].set_ylim(y_scale)
-            # ax[j + embedding_small.shape[1]].set_yticklabels('')
-            plt.tight_layout(pad=1)
-
 
 def combine_lines(*args):
 
@@ -322,8 +246,8 @@ def labelfigs(
 
     # Sets the location of the label on the figure
     if loc == "br":
-        y_value = y_max - 0.1 * (y_max - y_min)
-        x_value = 0.08 * (x_max - x_min) + x_min
+        y_value = y_max - 0.15 * (y_max - y_min)
+        x_value = 0.15 * (x_max - x_min) + x_min
     elif loc == "tr":
         y_value = y_max - 0.9 * (y_max - y_min)
         x_value = 0.08 * (x_max - x_min) + x_min
@@ -445,19 +369,19 @@ def scalebar(axes, image_size, scale_size, units="nm", loc="br"):
         y_label_height = y_point[np.int((0.9 - 0.075) * image_size // 1)]
 
     # makes the path for the scalebar
-    path_maker(axes, [x_start, x_end, y_start, y_end], "w", "k", "-", 1)
+    path_maker(axes, [x_start, x_end, y_start, y_end], "w", "k", "-", .25)
 
     # adds the text label for the scalebar
     axes.text(
         (x_start + x_end) / 2,
         y_label_height,
         "{0} {1}".format(scale_size, units),
-        size=14,
+        size=6,
         weight="bold",
         ha="center",
         va="center",
         color="w",
-        path_effects=[patheffects.withStroke(linewidth=1.5, foreground="k")],
+        path_effects=[patheffects.withStroke(linewidth=.5, foreground="k")],
     )
 
 
@@ -508,3 +432,15 @@ def set_axis(axs, range):
     for ax in axs:
         ax.set_xlim(range[0], range[1])
         ax.set_ylim(range[2], range[3])
+        
+def add_scalebar(ax, scalebar_):
+    """Adds a scalebar to the figure
+
+    Args:
+        ax (axes): axes to add the scalebar to
+        scalebar_ (dict): dictionary containing the scalebar information
+    """
+
+    if scalebar_ is not None:
+        scalebar(ax, scalebar_['width'], scalebar_[
+            'scale length'], units=scalebar_['units'])

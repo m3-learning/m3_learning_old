@@ -13,7 +13,7 @@ m3\_learning.viz.style
 
    .. autosummary::
    
-      style
+      set_style
    
    
 
