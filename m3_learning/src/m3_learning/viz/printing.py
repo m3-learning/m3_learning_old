@@ -17,7 +17,7 @@ class printer:
         self.fileformats = fileformats
         make_folder(self.basepath)
 
-    def savefig(self, fig, name, tight_layout=False, basepath=None):
+    def savefig(self, fig, name, tight_layout=False, basepath=None, label_figs=None, **kwargs):
         """Function to save a figure
 
         Args:
@@ -29,6 +29,10 @@ class printer:
 
         if basepath is None:
             basepath = self.basepath
+
+        if label_figs is not None:
+            for i, ax in enumerate(label_figs):
+                labelfigs(ax, i, **kwargs)
 
         for fileformat in self.fileformats:
             print(basepath + name + "." + fileformat)
