@@ -36,31 +36,31 @@ class Viz:
 
         # Select a random point and time step to plot
         pixel = np.random.randint(0, dataset.num_pix)
-        timestep = np.random.randint(0, dataset.voltage_steps)
+        voltagestep = np.random.randint(0, dataset.voltage_steps)
 
         # Plots the amplitude and phase for the selected pixel and time step
         fig, ax = layout_fig(5, 5, figsize=(5 * (5/3), 1.3))
 
         # constructs the BE waveform and plot
-        be_timesteps = len(dataset.be_waveform) / \
+        be_voltagesteps = len(dataset.be_waveform) / \
             dataset.be_repeats
 
         # plots the BE waveform
-        ax[0].plot(dataset.be_waveform[: int(be_timesteps)])
+        ax[0].plot(dataset.be_waveform[: int(be_voltagesteps)])
         ax[0].set(xlabel="Time (sec)", ylabel="Voltage (V)")
 
         # plots the resonance graph
         resonance_graph = np.fft.fft(
-            dataset.be_waveform[: int(be_timesteps)])
-        fftfreq = fftpack.fftfreq(int(be_timesteps)) * \
+            dataset.be_waveform[: int(be_voltagesteps)])
+        fftfreq = fftpack.fftfreq(int(be_voltagesteps)) * \
             dataset.sampling_rate
         ax[1].plot(
-            fftfreq[: int(be_timesteps) //
-                    2], np.abs(resonance_graph[: int(be_timesteps) // 2])
+            fftfreq[: int(be_voltagesteps) //
+                    2], np.abs(resonance_graph[: int(be_voltagesteps) // 2])
         )
         ax[1].axvline(
             x=dataset.be_center_frequency,
-            ymax=np.max(resonance_graph[: int(be_timesteps) // 2]),
+            ymax=np.max(resonance_graph[: int(be_voltagesteps) // 2]),
             linestyle="--",
             color="r",
         )
@@ -94,7 +94,7 @@ class Viz:
         dataset.resampled = False
 
         # gets the data for the selected pixel and time step
-        data_ = dataset.raw_spectra(pixel, timestep)
+        data_ = dataset.raw_spectra(pixel, voltagestep)
 
         # plots the magnitude spectrum for and phase for the selected pixel and time step
         ax[3].plot(
@@ -111,7 +111,7 @@ class Viz:
         ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
 
         dataset.raw_format = "complex"
-        data_ = dataset.raw_spectra(pixel, timestep)
+        data_ = dataset.raw_spectra(pixel, voltagestep)
 
         # plots the real and imaginary components for the selected pixel and time step
         ax[4].plot(dataset.frequency_bin, data_[0].flatten(), label="Real")
@@ -185,29 +185,43 @@ class Viz:
                 "original data must be the same length as the frequency bins or the resampled frequency bins")
         return x
 
-    def get_timestep(self, timestep):
-        if timestep is None:
+    def get_voltagestep(self, voltagestep):
+        if voltagestep is None:
 
             if self.dataset.measurement_state == 'on' or self.dataset.measurement_state == 'off':
-                timestep = np.random.randint(
+                voltagestep = np.random.randint(
                     0, self.dataset.voltage_steps // 2)
             else:
-                timestep = np.random.randint(0, self.dataset.voltage_steps)
-        return timestep
+                voltagestep = np.random.randint(0, self.dataset.voltage_steps)
+        return voltagestep
+    
+    def fit_tester(self, true, predict, **kwargs):
+        
+        # if a pixel is not provided it will select a random pixel
+        if pixel is None:
+
+            # Select a random point and time step to plot
+            pixel = np.random.randint(0, self.dataset.num_pix)
+
+        # gets the voltagestep with consideration of the current state
+        voltagestep = self.get_voltagestep(voltagestep)
+        
+        params = self.dataset.SHO_LSQF(pixel = pixel, voltage_step = voltagestep)
+        
 
     def raw_data_comparison(self,
                             true,
                             predict=None,
                             filename=None,
                             pixel=None,
-                            timestep=None,
+                            voltagestep=None,
                             legend=True,
                             **kwargs):
 
-        def _get_data(pixel, timestep, **kwargs):
+        def _get_data(pixel, voltagestep, **kwargs):
 
             data = self.dataset.raw_spectra(pixel=pixel,
-                                            voltage_step=timestep,
+                                            voltage_step=voltagestep,
                                             **kwargs)
 
             # get the correct frequency
@@ -225,13 +239,13 @@ class Viz:
             # Select a random point and time step to plot
             pixel = np.random.randint(0, self.dataset.num_pix)
 
-        # gets the timestep with consideration of the current state
-        timestep = self.get_timestep(timestep)
+        # gets the voltagestep with consideration of the current state
+        voltagestep = self.get_voltagestep(voltagestep)
 
         # sets the dataset state to grab the magnitude spectrum
         self.dataset.raw_format = "magnitude spectrum"
 
-        x, data = _get_data(pixel, timestep, **kwargs)
+        x, data = _get_data(pixel, voltagestep, **kwargs)
 
         axs[0].plot(x, data[0].flatten(), 'b',
                     label=self.dataset.label + " Amplitude")
@@ -241,7 +255,7 @@ class Viz:
 
         if predict is not None:
             self.set_attributes(**predict)
-            x, data = _get_data(pixel, timestep)
+            x, data = _get_data(pixel, voltagestep)
             axs[0].plot(x, data[0].flatten(), 'bo',
                         label=self.dataset.label + " Amplitude")
             ax1.plot(x, data[1].flatten(), 'ro',
@@ -254,7 +268,7 @@ class Viz:
 
         self.dataset.raw_format = "complex"
 
-        x, data = _get_data(pixel, timestep, **kwargs)
+        x, data = _get_data(pixel, voltagestep, **kwargs)
 
         axs[1].plot(x, data[0].flatten(), 'k',
                     label=self.dataset.label + " Real")
@@ -267,7 +281,7 @@ class Viz:
 
         if predict is not None:
             self.set_attributes(**predict)
-            x, data = _get_data(pixel, timestep)
+            x, data = _get_data(pixel, voltagestep)
             axs[1].plot(x, data[0].flatten(), 'ko',
                         label=self.dataset.label + " Real")
             ax2.plot(x, data[1].flatten(), 'gs',
@@ -333,35 +347,35 @@ class Viz:
 
 #             # Select a random point and time step to plot
 #             pixel = np.random.randint(0, self.dataset.num_pix)
-#             timestep = np.random.randint(self.dataset.voltage_steps)
+#             voltagestep = np.random.randint(self.dataset.voltage_steps)
 
 #             # prints the pixel and time step
-#             print(pixel, timestep)
+#             print(pixel, voltagestep)
 
 #             # Plots the amplitude and phase for the selected pixel and time step
 #             fig, ax = layout_fig(5, 5, figsize=(6 * 11.2, 10))
 
 #             # constructs the BE waveform and plot
-#             be_timesteps = len(self.dataset.be_waveform) / \
+#             be_voltagesteps = len(self.dataset.be_waveform) / \
 #                 self.dataset.be_repeats
 
 #             # plots the BE waveform
-#             ax[0].plot(self.dataset.be_waveform[: int(be_timesteps)])
+#             ax[0].plot(self.dataset.be_waveform[: int(be_voltagesteps)])
 #             ax[0].set(xlabel="Time (sec)", ylabel="Voltage (V)")
 #             ax[0].set_title("BE Waveform")
 
 #             # plots the resonance graph
 #             resonance_graph = np.fft.fft(
-#                 self.dataset.be_waveform[: int(be_timesteps)])
-#             fftfreq = fftpack.fftfreq(int(be_timesteps)) * \
+#                 self.dataset.be_waveform[: int(be_voltagesteps)])
+#             fftfreq = fftpack.fftfreq(int(be_voltagesteps)) * \
 #                 self.dataset.sampling_rate
 #             ax[1].plot(
-#                 fftfreq[: int(be_timesteps) //
-#                         2], np.abs(resonance_graph[: int(be_timesteps) // 2])
+#                 fftfreq[: int(be_voltagesteps) //
+#                         2], np.abs(resonance_graph[: int(be_voltagesteps) // 2])
 #             )
 #             ax[1].axvline(
 #                 x=self.dataset.be_center_frequency,
-#                 ymax=np.max(resonance_graph[: int(be_timesteps) // 2]),
+#                 ymax=np.max(resonance_graph[: int(be_voltagesteps) // 2]),
 #                 linestyle="--",
 #                 color="r",
 #             )
@@ -412,26 +426,26 @@ class Viz:
 #             ax[3].plot(
 #                 original_x,
 #                 self.dataset.get_spectra(
-#                     self.dataset.magnitude_spectrum_amplitude, pixel, timestep),
+#                     self.dataset.magnitude_spectrum_amplitude, pixel, voltagestep),
 #             )
 #             ax[3].set(xlabel="Frequency (Hz)", ylabel="Amplitude (Arb. U.)")
 #             ax2 = ax[3].twinx()
 #             ax2.plot(
 #                 original_x,
 #                 self.dataset.get_spectra(
-#                     self.dataset.magnitude_spectrum_phase, pixel, timestep),
+#                     self.dataset.magnitude_spectrum_phase, pixel, voltagestep),
 #                 "r+",
 #             )
 #             ax2.set(xlabel="Frequency (Hz)", ylabel="Phase (rad)")
 
 #             # plots the real and imaginary components for the selected pixel and time step
 #             ax[4].plot(original_x, self.dataset.get_spectra(
-#                 self.dataset.complex_spectrum_real, pixel, timestep), label="Real")
+#                 self.dataset.complex_spectrum_real, pixel, voltagestep), label="Real")
 #             ax[4].set(xlabel="Frequency (Hz)", ylabel="Real (Arb. U.)")
 #             ax3 = ax[4].twinx()
 #             ax3.plot(
 #                 original_x, self.dataset.get_spectra(
-#                     self.dataset.complex_spectrum_imag, pixel, timestep), 'r', label="Imaginary")
+#                     self.dataset.complex_spectrum_imag, pixel, voltagestep), 'r', label="Imaginary")
 #             ax3.set(xlabel="Frequency (Hz)", ylabel="Imag (Arb. U.)")
 
 #             # saves the figure
@@ -580,9 +594,9 @@ class Viz:
 
 #             # Select a random point and time step to plot
 #             pixel = np.random.randint(0, self.dataset.num_pix)
-#             timestep = np.random.randint(self.dataset.voltage_steps)
+#             voltagestep = np.random.randint(self.dataset.voltage_steps)
 
-#             self.raw_data(self.dataset.raw_data.reshape(self.dataset.num_pix, -1, self.dataset.num_bins)[pixel, timestep],
-#                           self.dataset.raw_data_resampled[pixel, timestep],
+#             self.raw_data(self.dataset.raw_data.reshape(self.dataset.num_pix, -1, self.dataset.num_bins)[pixel, voltagestep],
+#                           self.dataset.raw_data_resampled[pixel, voltagestep],
 #                           predict_label=' resampled',
 #                           filename=filename)
