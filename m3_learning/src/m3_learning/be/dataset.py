@@ -14,24 +14,24 @@ from scipy.signal import resample
 from scipy import fftpack
 from sklearn.preprocessing import StandardScaler
 from m3_learning.util.preprocessing import global_scaler
-from m3_learning.nn.SHO_fitter.SHO import SHO_fit_func_torch
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from m3_learning.be.processing import convert_amp_phase
+from m3_learning.be.nn import SHO_fit_func_nn
 
 
 class BE_Dataset:
 
-    def __init__(self, dataset, 
-                 scaled = False, 
-                 raw_format = "complex", 
-                 fitter = 'LSQF', 
-                 output_shape = 'pixels',
-                 measurement_state = 'all',
-                 resampled = False, 
-                 resampled_bins = 80,
-                 LSQF_phase_shift = None,
+    def __init__(self, dataset,
+                 scaled=False,
+                 raw_format="complex",
+                 fitter='LSQF',
+                 output_shape='pixels',
+                 measurement_state='all',
+                 resampled=False,
+                 resampled_bins=80,
+                 LSQF_phase_shift=None,
                  NN_phase_shift=None,
                  **kwargs):
         self.dataset = dataset
@@ -41,25 +41,24 @@ class BE_Dataset:
         self.fitter = fitter
         self.output_shape = output_shape
         self.measurement_state = measurement_state
-        self.resampled_bins = 80
+        self.resampled_bins = resampled_bins
         self.LSQF_phase_shift = LSQF_phase_shift
         self.NN_phase_shift = NN_phase_shift
-        
+
         for key, value in kwargs.items():
             setattr(self, key, value)
-            
+
         try:
             self.set_preprocessing()
         except:
             pass
-        
+
     def set_preprocessing(self):
         self.set_raw_data()
         self.set_raw_data_resampler()
         self.set_SHO_LSQF()
         self.raw_data_scaler = self.Raw_Data_Scaler(self.raw_data)
-        
-    
+
     def print_be_tree(self):
         """Utility file to print the Tree of a BE Dataset
 
@@ -92,7 +91,7 @@ class BE_Dataset:
             for key in h5_f.file["/Measurement_000"].attrs:
                 print("{} : {}".format(
                     key, h5_f.file["/Measurement_000"].attrs[key]))
-    
+
     def data_writer(self, base, name, data):
         with h5py.File(self.dataset, "r+") as h5_f:
             try:
@@ -104,7 +103,7 @@ class BE_Dataset:
                 make_dataset(h5_f[base],
                              name,
                              data)
-                
+
     # delete a dataset
     def delete(self, name):
         with h5py.File(self.dataset, "r+") as h5_f:
@@ -112,7 +111,7 @@ class BE_Dataset:
                 del h5_f[name]
             except KeyError:
                 print("Dataset not found, could not be deleted")
-                
+
     def SHO_Fitter(self, force=False, max_cores=-1, max_mem=1024*8):
         """Function that computes the SHO fit results
 
@@ -122,10 +121,10 @@ class BE_Dataset:
             max_mem (_type_, optional): maximum ram to use. Defaults to 1024*8.
         """
 
-        #TODO fix delete
+        # TODO fix delete
         # if force:
         #     self.delete(None)
-        
+
         start_time_lsqf = time.time()
 
         (data_dir, filename) = os.path.split(self.dataset)
@@ -207,13 +206,13 @@ class BE_Dataset:
 
         print(
             f"LSQF method took {time.time() - start_time_lsqf} seconds to compute parameters")
-    
+
     @property
     def spectroscopic_values(self):
         """Spectroscopic values"""
         with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]["Spectroscopic_Values"][:]
-        
+
     @property
     def be_repeats(self):
         """Number of BE repeats"""
@@ -225,7 +224,7 @@ class BE_Dataset:
         """Number of frequency bins in the data"""
         with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"].attrs["num_bins"]
-        
+
     @property
     def dc_voltage(self):
         with h5py.File(self.dataset, "r+") as h5_f:
@@ -272,7 +271,7 @@ class BE_Dataset:
         """Frequency bin vector in Hz"""
         with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]["Bin_Frequencies"][:]
-    
+
     @property
     def be_waveform(self):
         """BE excitation waveform"""
@@ -287,34 +286,34 @@ class BE_Dataset:
                 self.spectroscopic_values[2, ::len(
                     self.frequency_bin)][int(self.voltage_steps/loop_number):]
             )
-            
-    # raw_be_data as complex    
+
+    # raw_be_data as complex
     @property
     def original_data(self):
         with h5py.File(self.dataset, "r+") as h5_f:
             return h5_f["Measurement_000"]["Channel_000"]["Raw_Data"][:]
-        
+
     def raw_data(self, pixel=None, voltage_step=None):
         """Raw data"""
         if pixel is not None and voltage_step is not None:
             with h5py.File(self.dataset, "r+") as h5_f:
                 return h5_f["Measurement_000"]["Channel_000"]["Raw_Data_Reshaped"][[pixel], :, :][:, [voltage_step], :]
-        else: 
+        else:
             with h5py.File(self.dataset, "r+") as h5_f:
                 return h5_f["Measurement_000"]["Channel_000"]["Raw_Data_Reshaped"][:]
-        
-    
+
     def set_raw_data(self):
         with h5py.File(self.dataset, "r+") as h5_f:
-            self.data_writer("Measurement_000/Channel_000", "Raw_Data_Reshaped", self.original_data.reshape(self.num_pix, self.voltage_steps, self.num_bins))
-        
-    def SHO_Scaler(self, 
-                save_loc='SHO_LSQF_scaled',
-                basepath="Raw_Data-SHO_Fit_000"):
-        
+            self.data_writer("Measurement_000/Channel_000", "Raw_Data_Reshaped",
+                             self.original_data.reshape(self.num_pix, self.voltage_steps, self.num_bins))
+
+    def SHO_Scaler(self,
+                   save_loc='SHO_LSQF_scaled',
+                   basepath="Raw_Data-SHO_Fit_000"):
+
         self.SHO_scaler = StandardScaler()
         data = self.SHO_LSQF().reshape(-1, 4)
-        
+
         phase_data = data[:, 3]
 
         self.SHO_scaler.fit(data)
@@ -326,14 +325,11 @@ class BE_Dataset:
 
         fit_results_scaled = self.SHO_scaler.transform(
             data).reshape(self.num_pix, -1, 4)
-        
-        
 
         with h5py.File(self.dataset, "r+") as h5_f:
             self.data_writer(
                 basepath, save_loc, fit_results_scaled)
-            
-    
+
     def SHO_LSQF(self, pixel=None, voltage_step=None):
         with h5py.File(self.dataset, "r+") as h5_f:
             if pixel is not None and voltage_step is not None:
@@ -343,8 +339,7 @@ class BE_Dataset:
             else:
                 return h5_f['/Raw_Data-SHO_Fit_000/SHO_LSQF'][:]
 
-
-    def set_SHO_LSQF(self, basepath = "Raw_Data-SHO_Fit_000", save_loc='SHO_LSQF'):
+    def set_SHO_LSQF(self, basepath="Raw_Data-SHO_Fit_000", save_loc='SHO_LSQF'):
         """Utility function to convert the SHO fit results to an array
 
         Args:
@@ -366,29 +361,28 @@ class BE_Dataset:
 
             data_ = np.array(SHO_LSQF_list).reshape(
                 -1, 5)
-            
+
             # writes all but the r2
             self.data_writer(
                 basepath, save_loc, data_.reshape(
-                    self.num_pix, self.voltage_steps, 5)[:,:,:-1])
-            
+                    self.num_pix, self.voltage_steps, 5)[:, :, :-1])
+
             self.SHO_Scaler()
 
-    
     def shift_phase(self, phase, shift_=None):
 
-            if shift_ is None:
-                return phase
-            else:
-                shift = shift_
+        if shift_ is None:
+            return phase
+        else:
+            shift = shift_
 
-            phase_ = phase.copy()
-            phase_ += np.pi
-            phase_[phase_ <= shift] += 2 *\
-                np.pi  # shift phase values greater than pi
-            return phase_ - shift - np.pi
-        
-    def raw_data_resampled(self, pixel = None, voltage_step = None):
+        phase_ = phase.copy()
+        phase_ += np.pi
+        phase_[phase_ <= shift] += 2 *\
+            np.pi  # shift phase values greater than pi
+        return phase_ - shift - np.pi
+
+    def raw_data_resampled(self, pixel=None, voltage_step=None):
         """Resampled real part of the complex data resampled"""
         if pixel is not None and voltage_step is not None:
             with h5py.File(self.dataset, "r+") as h5_f:
@@ -398,7 +392,7 @@ class BE_Dataset:
             with h5py.File(self.dataset, "r+") as h5_f:
                 return h5_f[
                     "Measurement_000/Channel_000/raw_data_resampled"][:]
-            
+
     def measurement_state_voltage(self, voltage_step):
         """determines the pixel value based on the measurement state
 
@@ -407,35 +401,37 @@ class BE_Dataset:
 
         Returns:
             voltage_step (int): pixel value in the correct state
-        """        
+        """
         if voltage_step is not None:
-            
+
             # changes the pixel to collect the value for the on or off state
             if self.measurement_state == 'on':
-                voltage_step = np.arange(0, self.voltage_steps)[1::2][voltage_step]
+                voltage_step = np.arange(0, self.voltage_steps)[
+                    1::2][voltage_step]
             elif self.measurement_state == 'off':
-                voltage_step = np.arange(0, self.voltage_steps)[::2][voltage_step]
-                
+                voltage_step = np.arange(0, self.voltage_steps)[
+                    ::2][voltage_step]
+
         return voltage_step
 
-    
     def SHO_fit_results(self, pixel=None, voltage_step=None):
         """Fit results"""
         with h5py.File(self.dataset, "r+") as h5_f:
-            
+
             voltage_step = self.measurement_state_voltage(voltage_step)
-            
+
             data = eval(f"self.SHO_{self.fitter}(pixel, voltage_step)")
-            
+
             data_shape = data.shape
-            
+
             data = data.reshape(-1, 4)
-            
+
             if eval(f"self.{self.fitter}_phase_shift") is not None:
-                data[:, 3] = eval(f"self.shift_phase(data[:, 3], self.{self.fitter}_phase_shift)")
-            
+                data[:, 3] = eval(
+                    f"self.shift_phase(data[:, 3], self.{self.fitter}_phase_shift)")
+
             data = data.reshape(data_shape)
-            
+
             # does not sample if just a pixel is returned
             if pixel is None or voltage_step is None:
                 # only does this if getting the full dataset, will reduce to off and on state
@@ -445,29 +441,39 @@ class BE_Dataset:
                     data = data[:, 1::2, :]
                 elif self.measurement_state == 'off':
                     data = data[:, ::2, :]
-                    
+
             if self.scaled:
-                data = self.SHO_scaler.transform(data.reshape(-1, 4)).reshape(data_shape)
-                
+                data = self.SHO_scaler.transform(
+                    data.reshape(-1, 4)).reshape(data_shape)
+
             return data
-                
-            
-    def raw_spectra(self, pixel=None, voltage_step=None):
+
+    def raw_spectra(self, pixel=None, voltage_step=None, fit_results=None):
         """Raw spectra"""
         with h5py.File(self.dataset, "r+") as h5_f:
-            
+
             voltage_step = self.measurement_state_voltage(voltage_step)
-            
-            if self.resampled:
-                voltage_steps = self.resample_bins
-                data = self.raw_data_resampled(
-                    pixel=pixel, voltage_step=voltage_step)
+
+            if fit_results is None:
+                if self.resampled:
+                    data = self.raw_data_resampled(
+                        pixel=pixel, voltage_step=voltage_step)
+                else:
+                    data = self.raw_data(
+                        pixel=pixel, voltage_step=voltage_step)
             else:
-                voltage_steps = self.num_bins
-                data = self.raw_data(pixel=pixel, voltage_step=voltage_step)
+                if self.resampled:
+                    bins = self.resample_bins
+                    frequency_bins = resample(self.frequency_bin,
+                                              self.resampled_bins)
+                else:
+                    frequency_bins = self.frequency_bin
                 
+                exec(
+                    f"data = self.SHO_fit_func_{self.fitter}(fit_results, frequency_bins)")
+
             data_shape = data.shape
-            
+
             # does not sample if just a pixel is returned
             if pixel is None or voltage_step is None:
                 # only does this if getting the full dataset, will reduce to off and on state
@@ -477,18 +483,19 @@ class BE_Dataset:
                     data = data[:, 1::2, :]
                 elif self.measurement_state == 'off':
                     data = data[:, ::2, :]
-                
+
             if self.raw_format == 'complex':
                 # computes the scaler on the raw data
                 if self.scaled:
-                    data = self.raw_data_scaler.transform(data.reshape(-1, self.voltage_steps)).reshape(data_shape)
+                    data = self.raw_data_scaler.transform(
+                        data.reshape(-1, self.voltage_steps)).reshape(data_shape)
                 data = [np.real(data), np.imag(data)]
             elif self.raw_format == "magnitude spectrum":
-                data = [np.abs(data), np.angle(data)] 
+                data = [np.abs(data), np.angle(data)]
             return data
-            
-    def set_raw_data_resampler(self, 
-                               basepath="Measurement_000/Channel_000", 
+
+    def set_raw_data_resampler(self,
+                               basepath="Measurement_000/Channel_000",
                                save_loc='raw_data_resampled'):
         with h5py.File(self.dataset, "r+") as h5_f:
             resampled_ = self.resampler(
@@ -503,7 +510,7 @@ class BE_Dataset:
                                 self.resample_bins, axis=axis)
             except ValueError:
                 print("Resampling failed, check that the number of bins is defined")
-                
+
     @property
     def extraction_state(self):
         print(f'''
@@ -518,31 +525,31 @@ class BE_Dataset:
                   LSQF Phase Shift = {self.LSQF_phase_shift}
                   NN Phase Shift = {self.NN_phase_shift}
                   ''')
-                
+
     class Raw_Data_Scaler():
-        
+
         def __init__(self, raw_data):
             self.raw_data = raw_data
-            
+
         def fit(self):
             data = self.raw_data()
             real = np.real(data)
             imag = np.imag(data)
             self.real_scaler = global_scaler()
             self.imag_scaler = global_scaler()
-            
+
             self.real_scaler.fit(real)
             self.imag_scaler.fit(real)
-        
+
         def transform(self, data):
             real = np.real(data)
             imag = np.imag(data)
-            
+
             real = self.real_scaler.transform(real)
             imag = self.imag_scaler.transform(imag)
-            
+
             return real + 1j*imag
-        
+
         def inverse_transform(self, data):
             real = np.real(data)
             imag = np.imag(data)
@@ -551,7 +558,6 @@ class BE_Dataset:
             imag = self.imag_scaler.inverse_transform(imag)
 
             return real + 1j*imag
-    
 
 
 # from m3_learning.util.h5_util import print_tree

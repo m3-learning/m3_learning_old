@@ -3,6 +3,7 @@ from m3_learning.viz.layout import layout_fig
 from scipy.signal import resample
 from scipy import fftpack
 
+
 class Viz:
 
     def __init__(self, dataset, Printer=None, verbose=False, labelfigs_=True):
@@ -172,7 +173,7 @@ class Viz:
         for key, value in kwargs.items():
             setattr(self.dataset, key, value)
 
-    def get_voltage_values(self, data):
+    def get_freq_values(self, data):
         data = data.flatten()
         if len(data) == self.dataset.resampled_bins:
             x = resample(self.dataset.frequency_bin,
@@ -182,7 +183,6 @@ class Viz:
         else:
             raise ValueError(
                 "original data must be the same length as the frequency bins or the resampled frequency bins")
-
         return x
 
     def get_timestep(self, timestep):
@@ -201,14 +201,17 @@ class Viz:
                             filename=None,
                             pixel=None,
                             timestep=None,
-                            legend=True):
+                            legend=True,
+                            **kwargs):
 
-        def _get_data(pixel, timestep):
+        def _get_data(pixel, timestep, **kwargs):
 
-            data = self.dataset.raw_spectra(pixel=pixel, voltage_step=timestep)
+            data = self.dataset.raw_spectra(pixel=pixel,
+                                            voltage_step=timestep,
+                                            **kwargs)
 
-            # get the correct voltage values
-            x = self.get_voltage_values(data[0])
+            # get the correct frequency
+            x = self.get_freq_values(data[0])
             return x, data
 
         self.set_attributes(**true)
@@ -228,7 +231,7 @@ class Viz:
         # sets the dataset state to grab the magnitude spectrum
         self.dataset.raw_format = "magnitude spectrum"
 
-        x, data = _get_data(pixel, timestep)
+        x, data = _get_data(pixel, timestep, **kwargs)
 
         axs[0].plot(x, data[0].flatten(), 'b',
                     label=self.dataset.label + " Amplitude")
@@ -245,17 +248,17 @@ class Viz:
                      label=self.dataset.label + " Phase")
             self.set_attributes(**true)
 
-        axs[0].set_xlabel("Voltage Steps")
+        axs[0].set_xlabel("Frequency (Hz)")
         axs[0].set_ylabel("Amplitude (Arb. U.)")
         ax1.set_ylabel("Phase (rad)")
 
         self.dataset.raw_format = "complex"
 
-        x, data = _get_data(pixel, timestep)
+        x, data = _get_data(pixel, timestep, **kwargs)
 
         axs[1].plot(x, data[0].flatten(), 'k',
                     label=self.dataset.label + " Real")
-        axs[1].set_xlabel("Voltage Steps")
+        axs[1].set_xlabel("Frequency (Hz)")
         axs[1].set_ylabel("Real (Arb. U.)")
         ax2 = axs[1].twinx()
         ax2.set_ylabel("Imag (Arb. U.)")
