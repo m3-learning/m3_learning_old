@@ -46,10 +46,13 @@ def set_style(name="default"):
             plt.rcParams['ytick.direction'] = 'in'
             plt.rcParams['xtick.top'] = True
             plt.rcParams['ytick.right'] = True
-            plt.rcParams['lines.markersize'] = 2
+            plt.rcParams['lines.markersize'] = .5
             plt.rcParams['axes.grid'] = False
             plt.rcParams['lines.linewidth'] = .5
             plt.rcParams['axes.linewidth'] = .5
+            plt.rcParams['legend.fontsize'] = 5
+            plt.rcParams['legend.loc'] = "upper left"
+            plt.rcParams['legend.frameon'] = False
         except:
             pass
 
