@@ -9,6 +9,7 @@ import time
 import numpy as np
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
+from scipy.signal import resample
 
 
 def SHO_fit_func_nn(params,
@@ -47,33 +48,33 @@ def SHO_fit_func_nn(params,
     return func
 
 
-def SHO_fit_func_torch(parms,
-                       wvec_freq,
-                       device='cpu'):
+# def SHO_fit_func_nn(parms,
+#                        wvec_freq,
+#                        device='cpu'):
 
-    Amp = parms[:, 0].type(torch.complex128)
-    w_0 = parms[:, 1].type(torch.complex128)
-    Q = parms[:, 2].type(torch.complex128)
-    phi = parms[:, 3].type(torch.complex128)
-    wvec_freq = torch.tensor(wvec_freq)
+#     Amp = parms[:, 0].type(torch.complex128)
+#     w_0 = parms[:, 1].type(torch.complex128)
+#     Q = parms[:, 2].type(torch.complex128)
+#     phi = parms[:, 3].type(torch.complex128)
+#     wvec_freq = torch.tensor(wvec_freq)
 
-    Amp = torch.unsqueeze(Amp, 1)
-    w_0 = torch.unsqueeze(w_0, 1)
-    phi = torch.unsqueeze(phi, 1)
-    Q = torch.unsqueeze(Q, 1)
+#     Amp = torch.unsqueeze(Amp, 1)
+#     w_0 = torch.unsqueeze(w_0, 1)
+#     phi = torch.unsqueeze(phi, 1)
+#     Q = torch.unsqueeze(Q, 1)
 
-    wvec_freq = wvec_freq.to(device)
+#     wvec_freq = wvec_freq.to(device)
 
-    numer = Amp * torch.exp((1.j) * phi) * torch.square(w_0)
-    den_1 = torch.square(wvec_freq)
-    den_2 = (1.j) * wvec_freq.to(device) * w_0 / Q
-    den_3 = torch.square(w_0)
+#     numer = Amp * torch.exp((1.j) * phi) * torch.square(w_0)
+#     den_1 = torch.square(wvec_freq)
+#     den_2 = (1.j) * wvec_freq.to(device) * w_0 / Q
+#     den_3 = torch.square(w_0)
 
-    den = den_1 - den_2 - den_3
+#     den = den_1 - den_2 - den_3
 
-    func = numer / den
+#     func = numer / den
 
-    return func
+#     return func
 
 
 class SHO_Model(nn.Module):
@@ -168,18 +169,21 @@ class SHO_Model(nn.Module):
             + torch.tensor(self.dataset.SHO_scaler.mean_).cuda()
         )
 
+        frequency_bins = resample(self.dataset.frequency_bin,
+                                  self.dataset.resampled_bins)
+
         # passes to the pytorch fitting function
-        fits = SHO_fit_func_torch(
-            unscaled_param, self.dataset.wvec_freq, device="cuda")
+        fits = SHO_fit_func_nn(
+            unscaled_param, frequency_bins, device="cuda")
 
         # extract and return real and imaginary
         real = torch.real(fits)
-        real_scaled = (real - torch.tensor(self.dataset.real_scaler.mean).cuda()) / torch.tensor(
-            self.dataset.real_scaler.std
+        real_scaled = (real - torch.tensor(self.dataset.raw_data_scalar.real_scaler.mean).cuda()) / torch.tensor(
+            self.dataset.raw_data_scalar.real_scaler.std
         ).cuda()
         imag = torch.imag(fits)
-        imag_scaled = (imag - torch.tensor(self.dataset.imag_scaler.mean).cuda()) / torch.tensor(
-            self.dataset.imag_scaler.std
+        imag_scaled = (imag - torch.tensor(self.dataset.raw_data_scalar.imag_scaler.mean).cuda()) / torch.tensor(
+            self.dataset.raw_data_scalar.imag_scaler.std
         ).cuda()
         out = torch.stack((real_scaled, imag_scaled), 2)
         if self.training == True:
