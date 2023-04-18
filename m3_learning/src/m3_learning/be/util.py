@@ -1,8 +1,6 @@
 import pyUSID as usid
 import h5py
 from ..util.h5_util import print_tree
-import time
-import os
 from BGlib import be as belib
 import sidpy
 import numpy as np
