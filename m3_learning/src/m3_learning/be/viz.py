@@ -2,6 +2,7 @@ import numpy as np
 from m3_learning.viz.layout import layout_fig
 from scipy.signal import resample
 from scipy import fftpack
+import matplotlib.pyplot as plt
 
 
 class Viz:
@@ -194,9 +195,9 @@ class Viz:
             else:
                 voltagestep = np.random.randint(0, self.dataset.voltage_steps)
         return voltagestep
-    
-    def fit_tester(self, true, predict, **kwargs):
-        
+
+    def fit_tester(self, true, predict, pixel=None, voltagestep=None, **kwargs):
+
         # if a pixel is not provided it will select a random pixel
         if pixel is None:
 
@@ -205,9 +206,71 @@ class Viz:
 
         # gets the voltagestep with consideration of the current state
         voltagestep = self.get_voltagestep(voltagestep)
-        
-        params = self.dataset.SHO_LSQF(pixel = pixel, voltage_step = voltagestep)
-        
+
+        params = self.dataset.SHO_LSQF(pixel=pixel, voltage_step=voltagestep)
+
+        self.raw_data_comparison(
+            true, predict, pixel=pixel, voltagestep=voltagestep, fit_results=params, **kwargs)
+
+    def nn_checker(self, state, filename=None,
+                   pixel=None, voltagestep=None, legend=True, **kwargs):
+
+        # if a pixel is not provided it will select a random pixel
+        if pixel is None:
+
+            # Select a random point and time step to plot
+            pixel = np.random.randint(0, self.dataset.num_pix)
+
+        # gets the voltagestep with consideration of the current state
+        voltagestep = self.get_voltagestep(voltagestep)
+
+        self.set_attributes(**state)
+
+        data = self.dataset.raw_spectra(pixel=pixel, voltage_step=voltagestep)
+
+        # plot real and imaginary components of resampled data
+        fig = plt.figure(figsize=(3, 1.25), layout='compressed')
+        axs = plt.subplot(111)
+
+        self.dataset.raw_format = "complex"
+
+        x, data = self._get_data(pixel, voltagestep, **kwargs)
+
+        axs.plot(x, data[0].flatten(), 'k',
+                 label=self.dataset.label + " Real")
+        axs.set_xlabel("Frequency (Hz)")
+        axs.set_ylabel("Real (Arb. U.)")
+        ax2 = axs.twinx()
+        ax2.set_ylabel("Imag (Arb. U.)")
+        ax2.plot(x, data[1].flatten(), 'g',
+                 label=self.dataset.label + " Imag")
+
+        axes = [axs, ax2]
+
+        for ax in axes:
+            ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+            ax.set_box_aspect(1)
+
+        if self.verbose:
+            self.dataset.extraction_state
+
+        if legend:
+            fig.legend(bbox_to_anchor=(1., 1),
+                       loc="upper right", borderaxespad=0.1)
+
+        # prints the figure
+        if self.Printer is not None and filename is not None:
+            self.Printer.savefig(fig, filename, style='b')
+
+    def _get_data(self, pixel, voltagestep, **kwargs):
+
+        data = self.dataset.raw_spectra(pixel=pixel,
+                                        voltage_step=voltagestep,
+                                        **kwargs)
+
+        # get the correct frequency
+        x = self.get_freq_values(data[0])
+        return x, data
 
     def raw_data_comparison(self,
                             true,
@@ -217,16 +280,6 @@ class Viz:
                             voltagestep=None,
                             legend=True,
                             **kwargs):
-
-        def _get_data(pixel, voltagestep, **kwargs):
-
-            data = self.dataset.raw_spectra(pixel=pixel,
-                                            voltage_step=voltagestep,
-                                            **kwargs)
-
-            # get the correct frequency
-            x = self.get_freq_values(data[0])
-            return x, data
 
         self.set_attributes(**true)
 
@@ -245,7 +298,7 @@ class Viz:
         # sets the dataset state to grab the magnitude spectrum
         self.dataset.raw_format = "magnitude spectrum"
 
-        x, data = _get_data(pixel, voltagestep, **kwargs)
+        x, data = self._get_data(pixel, voltagestep, **kwargs)
 
         axs[0].plot(x, data[0].flatten(), 'b',
                     label=self.dataset.label + " Amplitude")
@@ -255,7 +308,7 @@ class Viz:
 
         if predict is not None:
             self.set_attributes(**predict)
-            x, data = _get_data(pixel, voltagestep)
+            x, data = self._get_data(pixel, voltagestep)
             axs[0].plot(x, data[0].flatten(), 'bo',
                         label=self.dataset.label + " Amplitude")
             ax1.plot(x, data[1].flatten(), 'ro',
@@ -268,7 +321,7 @@ class Viz:
 
         self.dataset.raw_format = "complex"
 
-        x, data = _get_data(pixel, voltagestep, **kwargs)
+        x, data = self._get_data(pixel, voltagestep, **kwargs)
 
         axs[1].plot(x, data[0].flatten(), 'k',
                     label=self.dataset.label + " Real")
@@ -281,7 +334,7 @@ class Viz:
 
         if predict is not None:
             self.set_attributes(**predict)
-            x, data = _get_data(pixel, voltagestep)
+            x, data = self._get_data(pixel, voltagestep)
             axs[1].plot(x, data[0].flatten(), 'ko',
                         label=self.dataset.label + " Real")
             ax2.plot(x, data[1].flatten(), 'gs',
